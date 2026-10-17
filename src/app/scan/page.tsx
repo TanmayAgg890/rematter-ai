@@ -11,10 +11,7 @@ import {
   AlertCircle, 
   Sparkles, 
   ArrowRight, 
-  Check, 
-  ShieldAlert,
-  Loader2,
-  FileText
+  Loader2 
 } from "lucide-react"
 
 const SCAN_STAGES = [
@@ -76,7 +73,6 @@ export default function ScanPage() {
     reader.onload = (e) => {
       const result = e.target?.result as string
       setPreview(result)
-      // Extract base64
       const parts = result.split(",")
       if (parts.length === 2) {
         setBase64Image(parts[1])
@@ -117,7 +113,6 @@ export default function ScanPage() {
       return
     }
 
-    // Save inputs to persisted store
     setScanInput({
       itemDescription: description,
       imagePreviewUrl: preview,
@@ -157,7 +152,6 @@ export default function ScanPage() {
     }
   }
 
-  // Quick Demo Buttons
   const loadDemoItem = (name: string, desc: string, defaultQty: string) => {
     setDescription(desc)
     setQty(defaultQty)
@@ -168,45 +162,45 @@ export default function ScanPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-display font-semibold text-forest mb-2">
+        <h1 className="text-3xl font-display font-semibold text-textPrimary mb-2">
           What would you like to do with your waste?
         </h1>
-        <p className="text-secondaryText text-sm">
+        <p className="text-textSecondary text-sm">
           Upload a photo or describe the material. Our safety and material analysis will assess feasible circular pathways.
         </p>
       </div>
 
-      {/* Quick Demo Pre-fills for Testing */}
-      <div className="mb-6 p-4 bg-white rounded-card border border-borderTone">
-        <span className="text-xs font-semibold text-forest uppercase tracking-wider block mb-2">
+      {/* Quick Test Samples */}
+      <div className="mb-6 p-4 bg-white rounded-card border border-borderLight shadow-sm">
+        <span className="text-xs font-semibold text-textPrimary uppercase tracking-wider block mb-2">
           Quick Test Samples (Demo Mode):
         </span>
         <div className="flex flex-wrap gap-2 text-xs">
           <button
             type="button"
             onClick={() => loadDemoItem("Plastic Bottle", "Clear 1-liter plastic PET water bottle with cap", "1 bottle")}
-            className="px-3 py-1.5 rounded-pill bg-ivory text-forest border border-borderTone hover:border-leaf-green transition-colors"
+            className="px-3 py-1.5 rounded-pill bg-ivory text-textPrimary border border-borderLight hover:border-emerald-primary transition-colors font-medium"
           >
             🍾 Clear PET Bottle
           </button>
           <button
             type="button"
             onClick={() => loadDemoItem("Cardboard Box", "Corrugated kraft cardboard shipping box", "1 box")}
-            className="px-3 py-1.5 rounded-pill bg-ivory text-forest border border-borderTone hover:border-leaf-green transition-colors"
+            className="px-3 py-1.5 rounded-pill bg-ivory text-textPrimary border border-borderLight hover:border-emerald-primary transition-colors font-medium"
           >
             📦 Shipping Carton
           </button>
           <button
             type="button"
             onClick={() => loadDemoItem("Old T-Shirt", "100% cotton crewneck t-shirt with worn collar", "1 shirt")}
-            className="px-3 py-1.5 rounded-pill bg-ivory text-forest border border-borderTone hover:border-leaf-green transition-colors"
+            className="px-3 py-1.5 rounded-pill bg-ivory text-textPrimary border border-borderLight hover:border-emerald-primary transition-colors font-medium"
           >
             👕 Cotton T-Shirt
           </button>
           <button
             type="button"
             onClick={() => loadDemoItem("Old Phone", "Old smartphone with cracked screen and bulging swollen battery", "1 phone")}
-            className="px-3 py-1.5 rounded-pill bg-amber-50 text-amber-900 border border-amber-200 hover:border-amber-400 transition-colors"
+            className="px-3 py-1.5 rounded-pill bg-amber-50 text-amber-950 border border-amber-200 hover:border-amber-400 transition-colors font-medium"
           >
             ⚠️ Swollen Battery (Hazardous Test)
           </button>
@@ -215,13 +209,13 @@ export default function ScanPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Upload / Camera Box */}
-        <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm">
-          <label className="block text-sm font-semibold text-forest mb-2">
+        <div className="bg-white p-6 rounded-card border border-borderLight shadow-sm">
+          <label className="block text-sm font-semibold text-textPrimary mb-2">
             Item Photo (Optional but Recommended)
           </label>
 
           {preview ? (
-            <div className="relative rounded-lg overflow-hidden border border-borderTone bg-slate-50 flex items-center justify-center max-h-80">
+            <div className="relative rounded-lg overflow-hidden border border-borderLight bg-slate-50 flex items-center justify-center max-h-80">
               <img
                 src={preview}
                 alt="Waste item preview"
@@ -231,7 +225,7 @@ export default function ScanPage() {
                 type="button"
                 onClick={handleRemoveImage}
                 aria-label="Remove image"
-                className="absolute top-3 right-3 p-1.5 bg-forest-ink/80 text-white rounded-full hover:bg-forest-ink transition-colors"
+                className="absolute top-3 right-3 p-1.5 bg-forest-900/80 text-white rounded-full hover:bg-forest-900 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -240,14 +234,14 @@ export default function ScanPage() {
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
-              className="border-2 border-dashed border-borderTone hover:border-leaf-green transition-colors rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer bg-ivory/40"
+              className="border-2 border-dashed border-borderLight hover:border-emerald-primary transition-colors rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer bg-ivory/40"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Upload className="w-10 h-10 text-leaf-green mb-3" />
-              <p className="text-sm font-medium text-forest mb-1">
+              <Upload className="w-10 h-10 text-emerald-primary mb-3" />
+              <p className="text-sm font-medium text-textPrimary mb-1">
                 Drag and drop your photo here, or browse
               </p>
-              <p className="text-xs text-secondaryText mb-4">
+              <p className="text-xs text-textSecondary mb-4">
                 JPEG, PNG, or WebP up to 10 MB
               </p>
 
@@ -255,16 +249,16 @@ export default function ScanPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2 rounded-pill bg-white border border-borderTone text-xs font-semibold hover:border-leaf-green transition-colors shadow-sm"
+                  className="px-4 py-2 rounded-pill bg-white border border-borderLight text-xs font-semibold text-textPrimary hover:border-emerald-primary transition-colors shadow-sm"
                 >
                   Choose File
                 </button>
                 <button
                   type="button"
                   onClick={() => cameraInputRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-pill bg-white border border-borderTone text-xs font-semibold hover:border-leaf-green transition-colors shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-pill bg-white border border-borderLight text-xs font-semibold text-textPrimary hover:border-emerald-primary transition-colors shadow-sm"
                 >
-                  <Camera className="w-3.5 h-3.5" />
+                  <Camera className="w-3.5 h-3.5 text-textSecondary" />
                   Take Photo
                 </button>
               </div>
@@ -289,9 +283,9 @@ export default function ScanPage() {
         </div>
 
         {/* Item Description */}
-        <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm space-y-4">
+        <div className="bg-white p-6 rounded-card border border-borderLight shadow-sm space-y-4">
           <div>
-            <label htmlFor="description" className="block text-sm font-semibold text-forest mb-1">
+            <label htmlFor="description" className="block text-sm font-semibold text-textPrimary mb-1">
               Description & Visible Details {!preview && <span className="text-danger">*</span>}
             </label>
             <textarea
@@ -300,16 +294,16 @@ export default function ScanPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g. Empty 2L plastic soda bottle with #1 PET mark, or cotton denim jeans with broken zipper..."
-              className="w-full px-4 py-2.5 rounded-lg border border-borderTone text-sm focus:outline-none focus:ring-2 focus:ring-leaf-green"
+              className="w-full px-4 py-2.5 rounded-lg border border-borderLight text-sm text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald-primary"
             />
-            <p className="text-xs text-secondaryText mt-1">
+            <p className="text-xs text-textSecondary mt-1">
               Include any numbers stamped inside the triangle recycling symbol (e.g. 1, 2, 5).
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="quantity" className="block text-sm font-semibold text-forest mb-1">
+              <label htmlFor="quantity" className="block text-sm font-semibold text-textPrimary mb-1">
                 Estimated Quantity
               </label>
               <input
@@ -318,19 +312,19 @@ export default function ScanPage() {
                 value={qty}
                 onChange={(e) => setQty(e.target.value)}
                 placeholder="e.g. 1 unit, 5 bottles, 2 kg"
-                className="w-full px-4 py-2 rounded-lg border border-borderTone text-sm focus:outline-none focus:ring-2 focus:ring-leaf-green"
+                className="w-full px-4 py-2 rounded-lg border border-borderLight text-sm text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald-primary"
               />
             </div>
 
             <div>
-              <label htmlFor="condition" className="block text-sm font-semibold text-forest mb-1">
+              <label htmlFor="condition" className="block text-sm font-semibold text-textPrimary mb-1">
                 Cleanliness & Condition
               </label>
               <select
                 id="condition"
                 value={condition}
                 onChange={(e) => setCondition(e.target.value as any)}
-                className="w-full px-4 py-2 rounded-lg border border-borderTone text-sm bg-white focus:outline-none focus:ring-2 focus:ring-leaf-green"
+                className="w-full px-4 py-2 rounded-lg border border-borderLight text-sm text-textPrimary bg-white focus:outline-none focus:ring-2 focus:ring-emerald-primary"
               >
                 <option value="clean">Clean / Rinsed</option>
                 <option value="lightly_soiled">Lightly soiled (needs rinse)</option>
@@ -343,20 +337,20 @@ export default function ScanPage() {
         </div>
 
         {/* Consent Notice */}
-        <div className="p-4 rounded-card bg-ivory-200/80 border border-borderTone text-xs text-secondaryText flex items-start gap-3">
+        <div className="p-4 rounded-card bg-ivory border border-borderLight text-xs text-textSecondary flex items-start gap-3">
           <input
             id="consent"
             type="checkbox"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
-            className="mt-0.5 rounded border-borderTone text-leaf-green focus:ring-leaf-green w-4 h-4 cursor-pointer"
+            className="mt-0.5 rounded border-borderLight text-emerald-primary focus:ring-emerald-primary w-4 h-4 cursor-pointer"
           />
           <label htmlFor="consent" className="cursor-pointer">
-            <strong>Privacy Consent:</strong> I agree to submit this photo and description for AI material and feasibility evaluation. Images are processed ephemerally and are never used to train public AI models.
+            <strong className="text-textPrimary">Privacy Consent:</strong> I agree to submit this photo and description for AI material and feasibility evaluation. Images are processed ephemerally and are never used to train public AI models.
           </label>
         </div>
 
-        {/* Validation / Server Errors */}
+        {/* Validation Errors */}
         {(validationError || assessmentError) && (
           <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-danger text-sm flex items-start gap-2.5">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -370,23 +364,23 @@ export default function ScanPage() {
         {/* Submit Button & Analysis Animation */}
         <div>
           {isAssessing ? (
-            <div className="p-6 rounded-card bg-forest-ink text-ivory text-center space-y-3 animate-pulse">
+            <div className="p-6 rounded-card bg-forest-900 border border-white/10 text-textLight text-center space-y-3 animate-pulse">
               <div className="flex items-center justify-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin text-lime-fresh" />
-                <span className="text-sm font-semibold text-lime-fresh">
+                <Loader2 className="w-5 h-5 animate-spin text-emerald-light" />
+                <span className="text-sm font-semibold text-emerald-light">
                   Analyzing Waste Stream
                 </span>
               </div>
-              <p className="text-xs text-ivory/80 font-mono">
+              <p className="text-xs text-textLightMuted font-mono">
                 {SCAN_STAGES[currentStageIndex]}
               </p>
             </div>
           ) : (
             <button
               type="submit"
-              className="w-full h-13 py-3.5 px-6 rounded-pill bg-leaf-green text-white font-semibold text-base hover:bg-leaf-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              className="w-full h-13 py-3.5 px-6 rounded-pill bg-emerald-primary text-forest-950 font-bold text-base hover:bg-emerald-400 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-light focus:ring-offset-2"
             >
-              <Sparkles className="w-5 h-5 text-lime-fresh" />
+              <Sparkles className="w-5 h-5 text-forest-950" />
               <span>Assess Material Possibilities</span>
               <ArrowRight className="w-5 h-5" />
             </button>

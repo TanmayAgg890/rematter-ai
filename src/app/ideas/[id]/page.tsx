@@ -110,13 +110,13 @@ export default function IdeaPlanPage() {
   if (!currentIdea && !plan && !loading) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-xl font-bold text-forest mb-2">Project Plan Not Found</h2>
-        <p className="text-sm text-secondaryText mb-6">
+        <h2 className="text-xl font-bold text-textPrimary mb-2">Project Plan Not Found</h2>
+        <p className="text-sm text-textSecondary mb-6">
           The requested idea could not be located in your current session.
         </p>
         <Link
           href="/results"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-leaf-green text-white text-xs font-semibold"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald text-white text-xs font-semibold hover:bg-emerald/90 transition-colors shadow-sm"
         >
           Return to Recommendations
         </Link>
@@ -177,7 +177,7 @@ export default function IdeaPlanPage() {
       <div className="mb-6">
         <Link
           href="/results"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondaryText hover:text-forest transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-textSecondary hover:text-textPrimary transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to All Ideas</span>
@@ -185,13 +185,13 @@ export default function IdeaPlanPage() {
       </div>
 
       {/* Plan Header */}
-      <div className="bg-white rounded-card border border-borderTone p-6 sm:p-8 shadow-sm mb-8">
+      <div className="bg-white rounded-2xl border border-borderLight p-6 sm:p-8 shadow-sm mb-8">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-pill bg-leaf-green/15 text-leaf-green text-xs font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald/10 text-emerald text-xs font-bold uppercase tracking-wider">
               {currentIdea?.category || "Project Plan"}
             </span>
-            <span className="px-2 py-0.5 rounded-pill bg-slate-100 text-forest text-xs font-bold uppercase">
+            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-textPrimary text-xs font-bold uppercase">
               Level {currentIdea?.level || 1}
             </span>
           </div>
@@ -200,10 +200,10 @@ export default function IdeaPlanPage() {
             <button
               type="button"
               onClick={() => toggleSaveIdea(ideaId)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill text-xs font-semibold border transition-colors ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                 isSaved
-                  ? "bg-leaf-green text-white border-leaf-green"
-                  : "bg-white text-forest border-borderTone hover:border-leaf-green"
+                  ? "bg-emerald text-white border-emerald"
+                  : "bg-white text-textPrimary border-borderLight hover:border-emerald"
               }`}
             >
               {isSaved ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
@@ -214,55 +214,55 @@ export default function IdeaPlanPage() {
               type="button"
               onClick={() => setReportModalOpen(true)}
               title="Report incorrect or unsafe advice"
-              className="p-1.5 rounded-full text-secondaryText hover:text-danger hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors"
+              className="p-1.5 rounded-full text-textSecondary hover:text-danger hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors"
             >
               <Flag className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-forest mb-3">
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-textPrimary mb-3">
           {plan?.title || currentIdea?.title}
         </h1>
 
-        <p className="text-secondaryText text-sm leading-relaxed mb-6">
+        <p className="text-textSecondary text-sm leading-relaxed mb-6">
           {plan?.outcome || currentIdea?.description}
         </p>
 
         {/* Quick Specs Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-borderTone text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-borderLight text-xs">
           <div>
-            <span className="text-secondaryText block mb-0.5 flex items-center gap-1">
+            <span className="text-textSecondary block mb-0.5 flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" /> Prep Time
             </span>
-            <span className="font-semibold text-forest">
+            <span className="font-semibold text-textPrimary">
               {plan?.prepTimeMinutes || 5} mins
             </span>
           </div>
 
           <div>
-            <span className="text-secondaryText block mb-0.5 flex items-center gap-1">
+            <span className="text-textSecondary block mb-0.5 flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" /> Execution
             </span>
-            <span className="font-semibold text-forest">
+            <span className="font-semibold text-textPrimary">
               {plan?.executionTimeMinutes || currentIdea?.estimatedMinutes || 25} mins
             </span>
           </div>
 
           <div>
-            <span className="text-secondaryText block mb-0.5 flex items-center gap-1">
+            <span className="text-textSecondary block mb-0.5 flex items-center gap-1">
               <Coins className="w-3.5 h-3.5" /> Extra Budget
             </span>
-            <span className="font-semibold text-forest">
+            <span className="font-semibold text-textPrimary">
               {plan?.budgetEstimate || "₹0 (Free)"}
             </span>
           </div>
 
           <div>
-            <span className="text-secondaryText block mb-0.5 flex items-center gap-1">
+            <span className="text-textSecondary block mb-0.5 flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" /> Difficulty
             </span>
-            <span className="font-semibold text-forest capitalize">
+            <span className="font-semibold text-textPrimary capitalize">
               {plan?.difficulty || currentIdea?.difficulty || "Beginner"}
             </span>
           </div>
@@ -272,19 +272,19 @@ export default function IdeaPlanPage() {
       {/* Materials & Tools Needed ("Already Have vs Need to Get") */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Materials */}
-        <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm">
-          <h2 className="text-sm font-bold text-forest uppercase tracking-wider mb-4 flex items-center gap-2">
+        <div className="bg-white p-6 rounded-2xl border border-borderLight shadow-sm">
+          <h2 className="text-sm font-bold text-textPrimary uppercase tracking-wider mb-4 flex items-center gap-2">
             <span>Materials Checklist</span>
           </h2>
           <ul className="space-y-2.5 text-xs">
             {plan?.materialsNeeded && plan.materialsNeeded.length > 0 ? (
               plan.materialsNeeded.map((m, i) => (
-                <li key={i} className="flex items-center justify-between p-2 rounded bg-ivory/60 border border-borderTone/70">
-                  <span className="font-medium text-forest">{m.name}</span>
+                <li key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-ivory/60 border border-borderLight">
+                  <span className="font-medium text-textPrimary">{m.name}</span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                    className={`px-2.5 py-0.5 rounded text-[10px] font-semibold ${
                       m.alreadyHaveLikely
-                        ? "bg-emerald-100 text-emerald-800"
+                        ? "bg-emerald/15 text-emerald-800"
                         : "bg-amber-100 text-amber-900"
                     }`}
                   >
@@ -293,39 +293,39 @@ export default function IdeaPlanPage() {
                 </li>
               ))
             ) : (
-              <li className="text-secondaryText italic">Only your primary reclaimed item</li>
+              <li className="text-textSecondary italic">Only your primary reclaimed item</li>
             )}
           </ul>
         </div>
 
         {/* Tools */}
-        <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm">
-          <h2 className="text-sm font-bold text-forest uppercase tracking-wider mb-4 flex items-center gap-2">
-            <Wrench className="w-4 h-4 text-leaf-green" />
+        <div className="bg-white p-6 rounded-2xl border border-borderLight shadow-sm">
+          <h2 className="text-sm font-bold text-textPrimary uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Wrench className="w-4 h-4 text-emerald" />
             <span>Required Equipment</span>
           </h2>
           <ul className="space-y-2.5 text-xs">
             {plan?.toolsNeeded && plan.toolsNeeded.length > 0 ? (
               plan.toolsNeeded.map((t, i) => (
-                <li key={i} className="flex items-center justify-between p-2 rounded bg-ivory/60 border border-borderTone/70">
-                  <span className="font-medium text-forest">{t.name}</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-100 text-forest text-[10px] font-semibold">
+                <li key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-ivory/60 border border-borderLight">
+                  <span className="font-medium text-textPrimary">{t.name}</span>
+                  <span className="px-2.5 py-0.5 rounded bg-slate-100 text-textPrimary text-[10px] font-semibold">
                     Standard toolkit
                   </span>
                 </li>
               ))
             ) : (
-              <li className="text-secondaryText italic">No tools required</li>
+              <li className="text-textSecondary italic">No tools required</li>
             )}
           </ul>
         </div>
       </div>
 
       {/* Step-by-Step Instructions */}
-      <div className="bg-white rounded-card border border-borderTone p-6 sm:p-8 shadow-sm mb-8">
-        <div className="flex items-center justify-between pb-4 border-b border-borderTone mb-6">
-          <h2 className="text-lg font-bold text-forest">Numbered Execution Steps</h2>
-          <span className="text-xs text-secondaryText font-medium">
+      <div className="bg-white rounded-2xl border border-borderLight p-6 sm:p-8 shadow-sm mb-8">
+        <div className="flex items-center justify-between pb-4 border-b border-borderLight mb-6">
+          <h2 className="text-lg font-bold text-textPrimary">Numbered Execution Steps</h2>
+          <span className="text-xs text-textSecondary font-medium">
             {completedSteps.length} of {plan?.steps?.length || 0} completed
           </span>
         </div>
@@ -338,26 +338,26 @@ export default function IdeaPlanPage() {
                 key={st.stepNumber}
                 className={`p-5 rounded-xl border transition-all ${
                   isStepDone
-                    ? "bg-emerald-50/40 border-emerald-200"
-                    : "bg-ivory/40 border-borderTone"
+                    ? "bg-emerald/5 border-emerald/30"
+                    : "bg-ivory/40 border-borderLight"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-full bg-forest text-lime-fresh text-xs font-bold flex items-center justify-center shrink-0">
+                    <span className="w-7 h-7 rounded-full bg-forest text-lime text-xs font-bold flex items-center justify-center shrink-0">
                       {st.stepNumber}
                     </span>
-                    <h3 className="text-base font-bold text-forest">{st.title}</h3>
+                    <h3 className="text-base font-bold text-textPrimary">{st.title}</h3>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleToggleStepComplete(st.stepNumber)}
                     aria-label={`Mark step ${st.stepNumber} complete`}
-                    className={`px-3 py-1 rounded-pill text-xs font-semibold flex items-center gap-1.5 border transition-colors ${
+                    className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 border transition-colors ${
                       isStepDone
-                        ? "bg-emerald-600 text-white border-emerald-600"
-                        : "bg-white text-secondaryText border-borderTone hover:border-slate-300"
+                        ? "bg-emerald text-white border-emerald"
+                        : "bg-white text-textSecondary border-borderLight hover:border-slate-300"
                     }`}
                   >
                     <Check className="w-3.5 h-3.5" />
@@ -365,7 +365,7 @@ export default function IdeaPlanPage() {
                   </button>
                 </div>
 
-                <p className="text-sm text-secondaryText leading-relaxed pl-10 mb-3">
+                <p className="text-sm text-textSecondary leading-relaxed pl-10 mb-3">
                   {st.instruction}
                 </p>
 
@@ -379,7 +379,7 @@ export default function IdeaPlanPage() {
 
                 {/* Pro-tip if present */}
                 {st.tip && (
-                  <div className="ml-10 text-xs text-leaf-green italic">
+                  <div className="ml-10 text-xs text-emerald italic font-medium">
                     💡 Tip: {st.tip}
                   </div>
                 )}
@@ -389,20 +389,20 @@ export default function IdeaPlanPage() {
         </div>
 
         {/* Completion Action */}
-        <div className="mt-8 pt-6 border-t border-borderTone flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 pt-6 border-t border-borderLight flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             {isCompleted ? (
-              <div className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-pill border border-emerald-200">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <div className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 bg-emerald/10 px-4 py-2 rounded-full border border-emerald/20">
+                <CheckCircle2 className="w-4 h-4 text-emerald" />
                 <span>Project marked completed!</span>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={handleMarkProjectCompleted}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-leaf-green text-white text-sm font-semibold hover:bg-leaf-600 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald text-white text-sm font-semibold hover:bg-emerald/90 transition-colors shadow-sm"
               >
-                <CheckCircle2 className="w-4 h-4 text-lime-fresh" />
+                <CheckCircle2 className="w-4 h-4 text-lime" />
                 <span>Mark Project as Completed</span>
               </button>
             )}
@@ -410,9 +410,9 @@ export default function IdeaPlanPage() {
 
           <Link
             href="/recycling"
-            className="text-xs font-semibold text-secondaryText hover:text-forest inline-flex items-center gap-1"
+            className="text-xs font-semibold text-textSecondary hover:text-textPrimary inline-flex items-center gap-1.5"
           >
-            <Recycle className="w-3.5 h-3.5" />
+            <Recycle className="w-3.5 h-3.5 text-emerald" />
             <span>Recycling alternative if you abandon project</span>
           </Link>
         </div>
@@ -420,12 +420,12 @@ export default function IdeaPlanPage() {
 
       {/* Safety & Common Mistakes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-forest mb-3 flex items-center gap-1.5">
+        <div className="bg-white p-6 rounded-2xl border border-borderLight shadow-sm">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-textPrimary mb-3 flex items-center gap-1.5">
             <ShieldAlert className="w-4 h-4 text-amber-600" />
             <span>Safety Checklist</span>
           </h3>
-          <ul className="space-y-2 text-xs text-secondaryText">
+          <ul className="space-y-2 text-xs text-textSecondary">
             {plan?.safetyChecklist && plan.safetyChecklist.map((sc, i) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-amber-600 font-bold">•</span>
@@ -435,15 +435,15 @@ export default function IdeaPlanPage() {
           </ul>
         </div>
 
-        <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-forest mb-3 flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-secondaryText" />
+        <div className="bg-white p-6 rounded-2xl border border-borderLight shadow-sm">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-textPrimary mb-3 flex items-center gap-1.5">
+            <AlertTriangle className="w-4 h-4 text-textSecondary" />
             <span>Common Pitfalls to Avoid</span>
           </h3>
-          <ul className="space-y-2 text-xs text-secondaryText">
+          <ul className="space-y-2 text-xs text-textSecondary">
             {plan?.commonMistakes && plan.commonMistakes.map((cm, i) => (
               <li key={i} className="flex items-start gap-2">
-                <span className="text-secondaryText font-bold">•</span>
+                <span className="text-textSecondary font-bold">•</span>
                 <span>{cm}</span>
               </li>
             ))}
@@ -453,17 +453,17 @@ export default function IdeaPlanPage() {
 
       {/* Report Modal */}
       {reportModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-card max-w-md w-full p-6 shadow-xl border border-borderTone">
-            <h3 className="text-lg font-bold text-forest mb-2">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-borderLight">
+            <h3 className="text-lg font-bold text-textPrimary mb-2">
               Report Incorrect or Unsafe Advice
             </h3>
-            <p className="text-xs text-secondaryText mb-4">
+            <p className="text-xs text-textSecondary mb-4">
               Help maintain strict safety and material fidelity. Tell us what is incorrect about this plan.
             </p>
 
             {reportSent ? (
-              <div className="p-4 bg-emerald-50 text-emerald-800 rounded-lg text-sm text-center">
+              <div className="p-4 bg-emerald/10 text-emerald-800 rounded-lg text-sm text-center font-medium">
                 ✓ Report submitted. Thank you for keeping ReMatter safe.
               </div>
             ) : (
@@ -473,20 +473,20 @@ export default function IdeaPlanPage() {
                   value={reportReason}
                   onChange={(e) => setReportReason(e.target.value)}
                   placeholder="e.g. Chemical incompatibility, unsafe cutting instruction, impossible tool requirement..."
-                  className="w-full px-3 py-2 text-xs border border-borderTone rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-leaf-green"
+                  className="w-full px-3.5 py-2.5 text-xs border border-borderLight rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-emerald text-textPrimary placeholder:text-textSecondary/60"
                 />
                 <div className="flex items-center justify-end gap-3">
                   <button
                     type="button"
                     onClick={() => setReportModalOpen(false)}
-                    className="px-4 py-2 rounded-pill text-xs font-semibold text-secondaryText"
+                    className="px-4 py-2 rounded-full text-xs font-semibold text-textSecondary hover:text-textPrimary"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleSendReport}
-                    className="px-5 py-2 rounded-pill bg-danger text-white text-xs font-semibold"
+                    className="px-5 py-2 rounded-full bg-danger text-white text-xs font-semibold shadow-sm"
                   >
                     Send Report
                   </button>

@@ -49,21 +49,21 @@ export default function DashboardPage() {
   return (
     <div className="max-w-container mx-auto px-4 sm:px-6 py-12">
       {/* Dashboard Top */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-borderTone mb-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-borderLight mb-10">
         <div>
-          <span className="px-2.5 py-0.5 rounded-pill bg-leaf-green/15 text-leaf-green text-xs font-bold uppercase tracking-wider block mb-1">
+          <span className="px-2.5 py-0.5 rounded-full bg-emerald/10 text-emerald text-xs font-bold uppercase tracking-wider block mb-1">
             Personal Workspace
           </span>
-          <h1 className="text-3xl font-display font-semibold text-forest">
+          <h1 className="text-3xl font-display font-semibold text-textPrimary">
             Your Projects & Saved Pathways
           </h1>
         </div>
 
         <Link
           href="/scan"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-leaf-green text-white text-xs font-semibold hover:bg-leaf-600 transition-colors shadow-sm self-start"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald text-white text-xs font-semibold hover:bg-emerald/90 transition-colors shadow-sm self-start"
         >
-          <Sparkles className="w-3.5 h-3.5 text-lime-fresh" />
+          <Sparkles className="w-3.5 h-3.5 text-lime" />
           <span>New Waste Scan</span>
         </Link>
       </div>
@@ -71,15 +71,15 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Active Scan Session */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-card border border-borderTone shadow-sm">
-            <h2 className="text-sm font-bold text-forest uppercase tracking-wider mb-4 flex items-center justify-between">
+          <div className="bg-white p-6 rounded-2xl border border-borderLight shadow-sm">
+            <h2 className="text-sm font-bold text-textPrimary uppercase tracking-wider mb-4 flex items-center justify-between">
               <span>Active Scan Session</span>
               {assessment && (
                 <button
                   type="button"
                   onClick={() => setDeleteScanDialogOpen(true)}
                   title="Delete scan and clear memory"
-                  className="text-secondaryText hover:text-danger p-1 rounded transition-colors"
+                  className="text-textSecondary hover:text-danger p-1 rounded transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -88,12 +88,12 @@ export default function DashboardPage() {
 
             {assessment ? (
               <div className="space-y-3">
-                <div className="p-3.5 rounded-lg bg-ivory border border-borderTone/80">
-                  <span className="text-xs text-secondaryText block mb-0.5">Assessed Material:</span>
-                  <span className="text-sm font-bold text-forest block mb-1">
+                <div className="p-3.5 rounded-xl bg-ivory border border-borderLight">
+                  <span className="text-xs text-textSecondary block mb-0.5">Assessed Material:</span>
+                  <span className="text-sm font-bold text-textPrimary block mb-1">
                     {assessment.detectedMaterial}
                   </span>
-                  <div className="flex items-center gap-2 text-[11px] text-secondaryText">
+                  <div className="flex items-center gap-2 text-[11px] text-textSecondary">
                     <span className="capitalize">{assessment.category}</span>
                     <span>•</span>
                     <span className="capitalize">{assessment.condition}</span>
@@ -103,14 +103,14 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-2 pt-2">
                   <Link
                     href="/results"
-                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-pill bg-forest text-white text-xs font-semibold hover:bg-forest-800 transition-colors shadow-sm"
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-forest text-white text-xs font-semibold hover:bg-forest/90 transition-colors shadow-sm"
                   >
                     <span>Open Results</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-lime-fresh" />
+                    <ArrowRight className="w-3.5 h-3.5 text-lime" />
                   </Link>
                   <Link
                     href="/preferences"
-                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-pill bg-ivory border border-borderTone text-xs font-medium text-forest hover:border-leaf-green transition-colors"
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-full bg-ivory border border-borderLight text-xs font-medium text-textPrimary hover:border-emerald transition-colors"
                   >
                     <span>Change Resources</span>
                   </Link>
@@ -118,10 +118,10 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-xs text-secondaryText mb-3">No active scan in this session.</p>
+                <p className="text-xs text-textSecondary mb-3">No active scan in this session.</p>
                 <Link
                   href="/scan"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-leaf-green hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald hover:underline"
                 >
                   <span>Start a scan now</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -135,13 +135,13 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-8">
           {/* Saved Ideas */}
           <div>
-            <h2 className="text-lg font-bold text-forest mb-4 flex items-center gap-2">
-              <Bookmark className="w-5 h-5 text-leaf-green" />
+            <h2 className="text-lg font-bold text-textPrimary mb-4 flex items-center gap-2">
+              <Bookmark className="w-5 h-5 text-emerald" />
               <span>Saved Ideas ({savedIdeas.length})</span>
             </h2>
 
             {savedIdeas.length === 0 ? (
-              <div className="bg-white rounded-card border border-borderTone p-8 text-center text-xs text-secondaryText">
+              <div className="bg-white rounded-2xl border border-borderLight p-8 text-center text-xs text-textSecondary">
                 You haven't bookmarked any ideas yet. Explore ideas from the recommendations or the gallery.
               </div>
             ) : (
@@ -149,32 +149,32 @@ export default function DashboardPage() {
                 {savedIdeas.map((idea) => (
                   <div
                     key={idea.id}
-                    className="bg-white p-5 rounded-card border border-borderTone shadow-sm flex flex-col justify-between"
+                    className="bg-white p-5 rounded-2xl border border-borderLight shadow-sm flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-pill bg-slate-100 text-forest">
+                        <span className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-textPrimary">
                           Level {idea.level}
                         </span>
                         <button
                           type="button"
                           onClick={() => toggleSaveIdea(idea.id)}
                           title="Remove from saved"
-                          className="text-secondaryText hover:text-danger"
+                          className="text-textSecondary hover:text-danger"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                      <h3 className="font-bold text-sm text-forest mb-1">{idea.title}</h3>
-                      <p className="text-xs text-secondaryText line-clamp-2 mb-3">{idea.description}</p>
+                      <h3 className="font-bold text-sm text-textPrimary mb-1">{idea.title}</h3>
+                      <p className="text-xs text-textSecondary line-clamp-2 mb-3">{idea.description}</p>
                     </div>
 
                     <Link
                       href={`/ideas/${idea.id}`}
-                      className="inline-flex items-center justify-center gap-1.5 py-2 rounded-pill bg-forest text-white text-xs font-semibold hover:bg-forest-800 transition-colors"
+                      className="inline-flex items-center justify-center gap-1.5 py-2 rounded-full bg-forest text-white text-xs font-semibold hover:bg-forest/90 transition-colors"
                     >
                       <span>Resume Plan</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-lime-fresh" />
+                      <ArrowRight className="w-3.5 h-3.5 text-lime" />
                     </Link>
                   </div>
                 ))}
@@ -184,13 +184,13 @@ export default function DashboardPage() {
 
           {/* Completed Projects */}
           <div>
-            <h2 className="text-lg font-bold text-forest mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <h2 className="text-lg font-bold text-textPrimary mb-4 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald" />
               <span>Completed Projects ({completedProjects.length})</span>
             </h2>
 
             {completedProjects.length === 0 ? (
-              <div className="bg-white rounded-card border border-borderTone p-6 text-center text-xs text-secondaryText">
+              <div className="bg-white rounded-2xl border border-borderLight p-6 text-center text-xs text-textSecondary">
                 No completed builds yet. Mark an idea completed inside its full plan guide to log it here.
               </div>
             ) : (
@@ -200,17 +200,17 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={p.ideaId}
-                      className="bg-white p-4 rounded-xl border border-borderTone flex items-center justify-between"
+                      className="bg-white p-4 rounded-xl border border-borderLight flex items-center justify-between"
                     >
                       <div>
-                        <h3 className="text-sm font-bold text-forest">{idea?.title || "Completed Project"}</h3>
-                        <p className="text-xs text-secondaryText">
+                        <h3 className="text-sm font-bold text-textPrimary">{idea?.title || "Completed Project"}</h3>
+                        <p className="text-xs text-textSecondary">
                           Completed on: {p.completedAt ? new Date(p.completedAt).toLocaleDateString() : "Recently"}
                         </p>
                       </div>
                       <Link
                         href={`/ideas/${p.ideaId}`}
-                        className="text-xs font-semibold text-leaf-green hover:underline"
+                        className="text-xs font-semibold text-emerald hover:underline"
                       >
                         View Checklist
                       </Link>
@@ -225,17 +225,17 @@ export default function DashboardPage() {
 
       {/* Delete Scan Confirm Dialog */}
       {deleteScanDialogOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-card max-w-sm w-full p-6 shadow-xl border border-borderTone">
-            <h3 className="text-base font-bold text-forest mb-2">Delete Active Scan?</h3>
-            <p className="text-xs text-secondaryText leading-relaxed mb-6">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-borderLight">
+            <h3 className="text-base font-bold text-textPrimary mb-2">Delete Active Scan?</h3>
+            <p className="text-xs text-textSecondary leading-relaxed mb-6">
               This will clear the current waste item assessment and generated ideas from this browser session.
             </p>
             <div className="flex items-center justify-end gap-3 text-xs">
               <button
                 type="button"
                 onClick={() => setDeleteScanDialogOpen(false)}
-                className="px-4 py-2 rounded-pill font-semibold text-secondaryText"
+                className="px-4 py-2 rounded-full font-semibold text-textSecondary hover:text-textPrimary"
               >
                 Cancel
               </button>
@@ -245,7 +245,7 @@ export default function DashboardPage() {
                   resetScan()
                   setDeleteScanDialogOpen(false)
                 }}
-                className="px-4 py-2 rounded-pill bg-danger text-white font-semibold"
+                className="px-4 py-2 rounded-full bg-danger text-white font-semibold shadow-sm"
               >
                 Delete Scan
               </button>

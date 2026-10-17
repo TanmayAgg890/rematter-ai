@@ -113,34 +113,34 @@ export default function RecyclingPage() {
     <div className="max-w-container mx-auto px-4 sm:px-6 py-12">
       {/* Top Header */}
       <div className="max-w-2xl mx-auto text-center mb-10">
-        <span className="px-3 py-1 rounded-pill bg-leaf-green/15 text-leaf-green text-xs font-bold uppercase tracking-wider inline-block mb-3">
+        <span className="px-3 py-1 rounded-full bg-emerald/10 text-emerald text-xs font-bold uppercase tracking-wider inline-block mb-3">
           Circular Infrastructure
         </span>
-        <h1 className="text-3xl sm:text-4xl font-display font-semibold text-forest mb-3">
+        <h1 className="text-3xl sm:text-4xl font-display font-semibold text-textPrimary mb-3">
           Verified Recycling Directory
         </h1>
-        <p className="text-secondaryText text-sm leading-relaxed">
+        <p className="text-textSecondary text-sm leading-relaxed">
           Ground-truth collection hubs for hazardous e-waste, complex packaging, and municipal material recovery. Zero fabricated entries.
         </p>
       </div>
 
       {/* Filter and Location Bar */}
-      <div className="bg-white rounded-card border border-borderTone p-5 shadow-sm mb-8 space-y-4">
+      <div className="bg-white rounded-2xl border border-borderLight p-5 shadow-sm mb-8 space-y-4">
         <div className="flex flex-col md:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-secondaryText absolute left-3.5 top-3.5" />
+            <Search className="w-4 h-4 text-textSecondary absolute left-3.5 top-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by facility name, address, or material..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-pill border border-borderTone text-sm focus:outline-none focus:ring-2 focus:ring-leaf-green"
+              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-borderLight text-sm text-textPrimary placeholder:text-textSecondary/60 focus:outline-none focus:ring-2 focus:ring-emerald"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3.5 top-3.5 text-secondaryText hover:text-forest"
+                className="absolute right-3.5 top-3.5 text-textSecondary hover:text-textPrimary"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -152,7 +152,7 @@ export default function RecyclingPage() {
             <select
               value={selectedMaterial}
               onChange={(e) => setSelectedMaterial(e.target.value)}
-              className="px-3 py-2 rounded-pill border border-borderTone text-xs bg-white text-forest focus:outline-none focus:ring-2 focus:ring-leaf-green"
+              className="px-3 py-2 rounded-full border border-borderLight text-xs bg-white text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald"
             >
               <option value="all">All Materials</option>
               <option value="e_waste">E-Waste & Batteries</option>
@@ -167,7 +167,7 @@ export default function RecyclingPage() {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="px-3 py-2 rounded-pill border border-borderTone text-xs bg-white text-forest focus:outline-none focus:ring-2 focus:ring-leaf-green"
+              className="px-3 py-2 rounded-full border border-borderLight text-xs bg-white text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald"
             >
               <option value="all">All Cities</option>
               <option value="bengaluru">Bengaluru</option>
@@ -178,12 +178,12 @@ export default function RecyclingPage() {
             </select>
 
             {/* Verified Only Checkbox */}
-            <label className="flex items-center gap-1.5 px-3 py-2 rounded-pill border border-borderTone text-xs font-semibold text-forest cursor-pointer hover:bg-slate-50">
+            <label className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-borderLight text-xs font-semibold text-textPrimary cursor-pointer hover:bg-slate-50">
               <input
                 type="checkbox"
                 checked={verifiedOnly}
                 onChange={(e) => setVerifiedOnly(e.target.checked)}
-                className="text-leaf-green rounded"
+                className="text-emerald rounded focus:ring-emerald"
               />
               <span>Verified Only</span>
             </label>
@@ -193,9 +193,9 @@ export default function RecyclingPage() {
               type="button"
               onClick={handleGetLocation}
               disabled={locating}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-pill bg-ivory border border-borderTone text-xs font-semibold text-forest hover:border-leaf-green transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-ivory border border-borderLight text-xs font-semibold text-textPrimary hover:border-emerald transition-colors"
             >
-              <Navigation className="w-3.5 h-3.5 text-leaf-green" />
+              <Navigation className="w-3.5 h-3.5 text-emerald" />
               <span>{userLocation ? "Location Set" : locating ? "Locating..." : "Use My Location"}</span>
             </button>
           </div>
@@ -208,10 +208,10 @@ export default function RecyclingPage() {
 
       {/* Facilities List */}
       {filteredFacilities.length === 0 ? (
-        <div className="bg-white rounded-card border border-borderTone p-12 text-center max-w-lg mx-auto">
-          <AlertCircle className="w-10 h-10 text-secondaryText mx-auto mb-3" />
-          <h3 className="text-base font-bold text-forest mb-1">No verified facilities match your filters</h3>
-          <p className="text-xs text-secondaryText mb-5">
+        <div className="bg-white rounded-2xl border border-borderLight p-12 text-center max-w-lg mx-auto">
+          <AlertCircle className="w-10 h-10 text-textSecondary mx-auto mb-3" />
+          <h3 className="text-base font-bold text-textPrimary mb-1">No verified facilities match your filters</h3>
+          <p className="text-xs text-textSecondary mb-5">
             We never fabricate facility locations or phone numbers. If no certified center exists in this dataset, please contact your municipal dry waste helpline.
           </p>
           <button
@@ -222,7 +222,7 @@ export default function RecyclingPage() {
               setSelectedCity("all")
               setVerifiedOnly(false)
             }}
-            className="px-4 py-2 rounded-pill bg-forest text-white text-xs font-semibold"
+            className="px-4 py-2 rounded-full bg-forest text-white text-xs font-semibold hover:bg-forest/90 transition-colors"
           >
             Clear Filters
           </button>
@@ -237,38 +237,38 @@ export default function RecyclingPage() {
             return (
               <div
                 key={facility.id}
-                className="bg-white rounded-card border border-borderTone p-6 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between"
+                className="bg-white rounded-2xl border border-borderLight p-6 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
                       {facility.isVerified ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-pill bg-emerald-100 text-emerald-800 text-[11px] font-bold uppercase tracking-wider mb-2">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald/15 text-emerald-800 text-[11px] font-bold uppercase tracking-wider mb-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald" />
                           <span>Verified CPCB / PRO Partner</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-pill bg-amber-100 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
                           <AlertCircle className="w-3.5 h-3.5" />
                           <span>Demo Data (Unverified)</span>
                         </span>
                       )}
-                      <h3 className="text-lg font-bold text-forest">{facility.name}</h3>
+                      <h3 className="text-lg font-bold text-textPrimary">{facility.name}</h3>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => handleOpenReport(facility)}
                       title="Report incorrect information"
-                      className="p-1.5 text-secondaryText hover:text-danger hover:bg-red-50 rounded-full transition-colors"
+                      className="p-1.5 text-textSecondary hover:text-danger hover:bg-red-50 rounded-full transition-colors"
                     >
                       <Flag className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Address */}
-                  <div className="flex items-start gap-2 text-xs text-secondaryText mb-3">
-                    <MapPin className="w-4 h-4 text-leaf-green shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 text-xs text-textSecondary mb-3">
+                    <MapPin className="w-4 h-4 text-emerald shrink-0 mt-0.5" />
                     <span>
                       {facility.address}, {facility.city}, {facility.state} {facility.pincode}
                     </span>
@@ -276,28 +276,28 @@ export default function RecyclingPage() {
 
                   {/* Operating Hours */}
                   {facility.operatingHours && (
-                    <div className="flex items-center gap-2 text-xs text-secondaryText mb-3">
-                      <Clock className="w-4 h-4 text-secondaryText shrink-0" />
+                    <div className="flex items-center gap-2 text-xs text-textSecondary mb-3">
+                      <Clock className="w-4 h-4 text-textSecondary shrink-0" />
                       <span>{facility.operatingHours}</span>
                     </div>
                   )}
 
                   {/* Contact */}
-                  <div className="flex items-center gap-2 text-xs text-forest font-medium mb-4">
-                    <Phone className="w-4 h-4 text-leaf-green shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-textPrimary font-medium mb-4">
+                    <Phone className="w-4 h-4 text-emerald shrink-0" />
                     <span>{facility.contact}</span>
                   </div>
 
                   {/* Accepted Materials Badges */}
                   <div className="mb-4">
-                    <span className="text-[11px] font-semibold text-secondaryText block mb-1.5 uppercase tracking-wider">
+                    <span className="text-[11px] font-semibold text-textSecondary block mb-1.5 uppercase tracking-wider">
                       Accepted Materials:
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {facility.acceptedMaterials.map((mat) => (
                         <span
                           key={mat}
-                          className="px-2 py-0.5 rounded bg-ivory text-forest text-[11px] font-medium border border-borderTone capitalize"
+                          className="px-2.5 py-0.5 rounded-full bg-ivory text-textPrimary text-[11px] font-medium border border-borderLight capitalize"
                         >
                           {mat.replace("_", " ")}
                         </span>
@@ -306,7 +306,7 @@ export default function RecyclingPage() {
                   </div>
 
                   {facility.notes && (
-                    <p className="text-xs text-secondaryText italic mb-4">
+                    <p className="text-xs text-textSecondary italic mb-4">
                       "{facility.notes}"
                     </p>
                   )}
@@ -318,7 +318,7 @@ export default function RecyclingPage() {
                     href={facility.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-leaf-green font-semibold hover:underline inline-flex items-center gap-1"
+                    className="text-emerald font-semibold hover:underline inline-flex items-center gap-1"
                   >
                     <span>Official Portal</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -328,9 +328,9 @@ export default function RecyclingPage() {
                     href={directionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-pill bg-forest text-white font-semibold hover:bg-forest-800 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest text-white font-semibold hover:bg-forest/90 transition-colors shadow-sm"
                   >
-                    <Navigation className="w-3.5 h-3.5 text-lime-fresh" />
+                    <Navigation className="w-3.5 h-3.5 text-lime" />
                     <span>Get Directions</span>
                   </a>
                 </div>
@@ -342,17 +342,17 @@ export default function RecyclingPage() {
 
       {/* Report Modal */}
       {reportModalOpen && selectedFacilityForReport && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-card max-w-md w-full p-6 shadow-xl border border-borderTone">
-            <h3 className="text-base font-bold text-forest mb-2">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-borderLight">
+            <h3 className="text-base font-bold text-textPrimary mb-2">
               Report Incorrect Facility Data
             </h3>
-            <p className="text-xs text-secondaryText mb-4">
+            <p className="text-xs text-textSecondary mb-4">
               Reporting: <strong>{selectedFacilityForReport.name}</strong>
             </p>
 
             {reportSuccess ? (
-              <div className="p-3 bg-emerald-50 text-emerald-800 rounded-lg text-xs text-center">
+              <div className="p-3 bg-emerald/10 text-emerald-800 rounded-lg text-xs text-center font-medium">
                 ✓ Report logged. Our curation team will verify this listing.
               </div>
             ) : (
@@ -362,20 +362,20 @@ export default function RecyclingPage() {
                   value={reportText}
                   onChange={(e) => setReportText(e.target.value)}
                   placeholder="e.g. Phone number out of service, does not accept lithium batteries, new operating hours..."
-                  className="w-full px-3 py-2 text-xs border border-borderTone rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-leaf-green"
+                  className="w-full px-3.5 py-2.5 text-xs border border-borderLight rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-emerald text-textPrimary placeholder:text-textSecondary/60"
                 />
                 <div className="flex items-center justify-end gap-2 text-xs">
                   <button
                     type="button"
                     onClick={() => setReportModalOpen(false)}
-                    className="px-4 py-2 rounded-pill font-semibold text-secondaryText"
+                    className="px-4 py-2 rounded-full font-semibold text-textSecondary hover:text-textPrimary"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleSendReport}
-                    className="px-4 py-2 rounded-pill bg-leaf-green text-white font-semibold"
+                    className="px-4 py-2 rounded-full bg-emerald text-white font-semibold hover:bg-emerald/90 transition-colors shadow-sm"
                   >
                     Submit Report
                   </button>

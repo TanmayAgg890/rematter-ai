@@ -11,22 +11,19 @@ import {
   ArrowRight, 
   ArrowLeft, 
   Edit3, 
-  UploadCloud, 
-  ShieldCheck, 
   Info,
   Check
 } from "lucide-react"
 
 export default function AssessmentPage() {
   const router = useRouter()
-  const { assessment, setAssessment, imagePreviewUrl, itemDescription } = useScanStore()
+  const { assessment, setAssessment } = useScanStore()
 
   const [confirmed, setConfirmed] = React.useState(assessment?.userConfirmed || false)
   const [editing, setEditing] = React.useState(false)
   const [editedMaterial, setEditedMaterial] = React.useState(assessment?.detectedMaterial || "")
   const [notSureExpanded, setNotSureExpanded] = React.useState(false)
 
-  // Redirect if no assessment in session
   React.useEffect(() => {
     if (!assessment) {
       router.push("/scan")
@@ -61,7 +58,7 @@ export default function AssessmentPage() {
       <div className="mb-6">
         <Link
           href="/scan"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondaryText hover:text-forest transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-textSecondary hover:text-textPrimary transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Upload a Clearer Photo (Keeps description)</span>
@@ -71,23 +68,23 @@ export default function AssessmentPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <span className="px-2.5 py-0.5 rounded-pill bg-leaf-green/15 text-leaf-green text-xs font-bold uppercase tracking-wider">
+          <span className="px-2.5 py-0.5 rounded-pill bg-emerald-primary/10 text-emerald-dark text-xs font-bold uppercase tracking-wider">
             Material Assessment
           </span>
           {isHazardous ? (
-            <span className="px-2.5 py-0.5 rounded-pill bg-amber-100 text-amber-800 text-xs font-bold uppercase">
+            <span className="px-2.5 py-0.5 rounded-pill bg-amber-100 text-amber-900 text-xs font-bold uppercase">
               Hazardous / Level 3
             </span>
           ) : (
-            <span className="px-2.5 py-0.5 rounded-pill bg-lime-fresh/40 text-forest text-xs font-bold uppercase">
+            <span className="px-2.5 py-0.5 rounded-pill bg-emerald-primary/15 text-emerald-dark text-xs font-bold uppercase">
               Domestic Stream
             </span>
           )}
         </div>
-        <h1 className="text-3xl font-display font-semibold text-forest mb-2">
+        <h1 className="text-3xl font-display font-semibold text-textPrimary mb-2">
           Verified Material Identity
         </h1>
-        <p className="text-secondaryText text-sm">
+        <p className="text-textSecondary text-sm">
           Please review direct observations vs AI hypotheses before selecting personalized DIY or recycling pathways.
         </p>
       </div>
@@ -108,10 +105,10 @@ export default function AssessmentPage() {
       )}
 
       {/* Core Detected Material Card */}
-      <div className="bg-white rounded-card border border-borderTone p-6 sm:p-8 shadow-sm mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-borderTone">
+      <div className="bg-white rounded-card border border-borderLight p-6 sm:p-8 shadow-sm mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-borderLight">
           <div>
-            <span className="text-xs font-semibold text-secondaryText uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-textSecondary uppercase tracking-wider block mb-1">
               Primary Assessment
             </span>
             {editing ? (
@@ -120,7 +117,7 @@ export default function AssessmentPage() {
                   type="text"
                   value={editedMaterial}
                   onChange={(e) => setEditedMaterial(e.target.value)}
-                  className="px-3 py-1.5 rounded border border-borderTone text-lg font-bold text-forest focus:outline-none focus:ring-2 focus:ring-leaf-green"
+                  className="px-3 py-1.5 rounded border border-borderLight text-lg font-bold text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald-primary"
                 />
                 <button
                   type="button"
@@ -128,46 +125,46 @@ export default function AssessmentPage() {
                     setEditing(false)
                     handleConfirm()
                   }}
-                  className="px-3 py-1.5 rounded bg-leaf-green text-white text-xs font-semibold"
+                  className="px-3 py-1.5 rounded bg-emerald-primary text-forest-950 text-xs font-bold"
                 >
                   Save
                 </button>
               </div>
             ) : (
-              <h2 className="text-2xl font-bold text-forest flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-textPrimary flex items-center gap-2">
                 <span>{editedMaterial || assessment.detectedMaterial}</span>
                 <button
                   type="button"
                   onClick={() => setEditing(true)}
                   aria-label="Edit material name"
-                  className="p-1 rounded hover:bg-slate-100 text-secondaryText hover:text-forest"
+                  className="p-1 rounded hover:bg-slate-100 text-textSecondary hover:text-textPrimary"
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
               </h2>
             )}
-            <div className="flex items-center gap-2 mt-1.5 text-xs text-secondaryText">
-              <span>Category: <strong className="text-forest capitalize">{assessment.category}</strong></span>
+            <div className="flex items-center gap-2 mt-1.5 text-xs text-textSecondary">
+              <span>Category: <strong className="text-textPrimary capitalize">{assessment.category}</strong></span>
               <span>•</span>
-              <span>Condition: <strong className="text-forest capitalize">{assessment.condition}</strong></span>
+              <span>Condition: <strong className="text-textPrimary capitalize">{assessment.condition}</strong></span>
               <span>•</span>
-              <span>Quantity: <strong className="text-forest">{assessment.quantity}</strong></span>
+              <span>Quantity: <strong className="text-textPrimary">{assessment.quantity}</strong></span>
             </div>
           </div>
 
           <div>
             {confirmed ? (
-              <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-pill bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold">
-                <Check className="w-4 h-4" />
+              <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-pill bg-emerald-primary/10 border border-emerald-primary/30 text-emerald-dark text-xs font-bold">
+                <Check className="w-4 h-4 text-emerald-primary" />
                 <span>Material Confirmed</span>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-pill bg-forest text-white text-xs font-semibold hover:bg-forest-800 transition-colors shadow-sm"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-pill bg-forest-900 text-textLight text-xs font-semibold hover:bg-forest-800 transition-colors shadow-sm"
               >
-                <CheckCircle2 className="w-4 h-4 text-lime-fresh" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-light" />
                 <span>Confirm Material</span>
               </button>
             )}
@@ -176,21 +173,21 @@ export default function AssessmentPage() {
 
         {/* Candidate Alternatives */}
         {assessment.candidateMaterials && assessment.candidateMaterials.length > 1 && (
-          <div className="py-5 border-b border-borderTone">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-secondaryText mb-3">
+          <div className="py-5 border-b border-borderLight">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-textSecondary mb-3">
               Candidate Hypotheses (AI Probability)
             </h3>
             <div className="space-y-2">
               {assessment.candidateMaterials.map((c, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-3 rounded-lg bg-ivory/60 border border-borderTone/80 text-xs"
+                  className="flex items-center justify-between p-3 rounded-lg bg-ivory/60 border border-borderLight text-xs"
                 >
                   <div>
-                    <span className="font-semibold text-forest">{c.name}</span>
-                    {c.notes && <p className="text-secondaryText text-[11px] mt-0.5">{c.notes}</p>}
+                    <span className="font-semibold text-textPrimary">{c.name}</span>
+                    {c.notes && <p className="text-textSecondary text-[11px] mt-0.5">{c.notes}</p>}
                   </div>
-                  <span className="font-mono font-medium text-forest bg-white px-2 py-0.5 rounded border border-borderTone">
+                  <span className="font-mono font-medium text-textPrimary bg-white px-2 py-0.5 rounded border border-borderLight">
                     {Math.round(c.confidence * 100)}% match
                   </span>
                 </div>
@@ -199,19 +196,19 @@ export default function AssessmentPage() {
           </div>
         )}
 
-        {/* Visible Evidence vs Uncertainties Grid */}
+        {/* Visible Evidence vs Uncertainties */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
           {/* Direct Observation */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-forest mb-3 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-leaf-green" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-textPrimary mb-3 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-primary" />
               <span>Direct Visible Evidence</span>
             </h3>
-            <ul className="space-y-2 text-xs text-secondaryText">
+            <ul className="space-y-2 text-xs text-textSecondary">
               {assessment.visibleEvidence && assessment.visibleEvidence.length > 0 ? (
                 assessment.visibleEvidence.map((ev, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="text-leaf-green font-bold">•</span>
+                    <span className="text-emerald-primary font-bold">•</span>
                     <span>{ev}</span>
                   </li>
                 ))
@@ -221,13 +218,13 @@ export default function AssessmentPage() {
             </ul>
           </div>
 
-          {/* Uncertainties (Honest AI) */}
+          {/* Uncertainties */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-forest mb-3 flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-secondaryText" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-textPrimary mb-3 flex items-center gap-1.5">
+              <Info className="w-4 h-4 text-textSecondary" />
               <span>Known Uncertainties</span>
             </h3>
-            <ul className="space-y-2 text-xs text-secondaryText">
+            <ul className="space-y-2 text-xs text-textSecondary">
               {assessment.uncertainties && assessment.uncertainties.length > 0 ? (
                 assessment.uncertainties.map((u, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -243,27 +240,27 @@ export default function AssessmentPage() {
         </div>
       </div>
 
-      {/* "Not Sure?" Clarification Drawer */}
-      <div className="mb-8 p-4 rounded-card bg-ivory border border-borderTone">
+      {/* "Not Sure?" Guidance */}
+      <div className="mb-8 p-4 rounded-card bg-ivory border border-borderLight">
         <button
           type="button"
           onClick={() => setNotSureExpanded(!notSureExpanded)}
-          className="w-full flex items-center justify-between text-xs font-semibold text-forest hover:text-leaf-green"
+          className="w-full flex items-center justify-between text-xs font-semibold text-textPrimary hover:text-emerald-dark"
         >
           <span className="flex items-center gap-2">
-            <HelpCircle className="w-4 h-4 text-leaf-green" />
+            <HelpCircle className="w-4 h-4 text-emerald-primary" />
             <span>Not sure if this assessment is accurate?</span>
           </span>
-          <span className="text-leaf-green underline">{notSureExpanded ? "Hide Guidance" : "Check Tips"}</span>
+          <span className="text-emerald-dark underline">{notSureExpanded ? "Hide Guidance" : "Check Tips"}</span>
         </button>
 
         {notSureExpanded && (
-          <div className="mt-4 pt-4 border-t border-borderTone text-xs text-secondaryText space-y-2">
+          <div className="mt-4 pt-4 border-t border-borderLight text-xs text-textSecondary space-y-2">
             <p>
-              • Look at the bottom of plastic bottles/containers for a 3-arrow triangle with a number from 1 to 7.
+              • Look at the bottom of plastic containers for a 3-arrow triangle with a resin number (1 to 7).
             </p>
             <p>
-              • If clothing, check the inside hip seam for the fabric content tag (e.g. 100% cotton vs polyester blend).
+              • If clothing, check the inside hip seam for the fabric content tag (e.g. 100% cotton vs polyester).
             </p>
             <p>
               • You can edit the material name directly above, or continue with broad category recommendations.
@@ -276,7 +273,7 @@ export default function AssessmentPage() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <Link
           href="/scan"
-          className="text-xs font-semibold text-secondaryText hover:text-forest"
+          className="text-xs font-semibold text-textSecondary hover:text-textPrimary"
         >
           ← Edit Photo & Description
         </Link>
@@ -284,7 +281,7 @@ export default function AssessmentPage() {
         <button
           type="button"
           onClick={handleContinue}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-pill bg-leaf-green text-white font-semibold text-sm hover:bg-leaf-600 transition-all shadow-md"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-pill bg-emerald-primary text-forest-950 font-bold text-sm hover:bg-emerald-400 transition-all shadow-md"
         >
           <span>Continue to Personalization</span>
           <ArrowRight className="w-4 h-4" />

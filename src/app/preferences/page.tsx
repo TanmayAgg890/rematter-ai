@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { useScanStore } from "@/lib/store/use-scan-store"
 import { 
   UserPreferences, 
@@ -115,28 +114,28 @@ export default function PreferencesPage() {
     <div className="max-w-2xl mx-auto px-4 py-12">
       {/* Step Indicator */}
       <div className="mb-8">
-        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-secondaryText mb-2">
+        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">
           <span>Personalize Your Resources</span>
           <span>Step {step} of {totalSteps}</span>
         </div>
-        <div className="w-full h-1.5 bg-borderTone rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-borderLight rounded-full overflow-hidden">
           <div
-            className="h-full bg-leaf-green transition-all duration-300"
+            className="h-full bg-emerald-primary transition-all duration-300"
             style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
       </div>
 
       {/* Wizard Steps */}
-      <div className="bg-white rounded-card border border-borderTone p-6 sm:p-8 shadow-sm mb-6">
+      <div className="bg-white rounded-card border border-borderLight p-6 sm:p-8 shadow-sm mb-6">
         {/* Step 1: Experience */}
         {step === 1 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <GraduationCap className="w-5 h-5 text-leaf-green" />
-              <h2 className="text-xl font-bold text-forest">What is your crafting / DIY experience?</h2>
+              <GraduationCap className="w-5 h-5 text-emerald-primary" />
+              <h2 className="text-xl font-bold text-textPrimary">What is your crafting / DIY experience?</h2>
             </div>
-            <p className="text-secondaryText text-sm mb-6">
+            <p className="text-textSecondary text-sm mb-6">
               ReMatter will never suggest complex joinery or dangerous tools to beginners.
             </p>
 
@@ -166,17 +165,17 @@ export default function PreferencesPage() {
                     onClick={() => setExperience(opt.id as ExperienceLevel)}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
                       selected
-                        ? "border-leaf-green bg-lime-fresh/25 shadow-sm"
-                        : "border-borderTone hover:border-slate-300 bg-white"
+                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
+                        : "border-borderLight hover:border-slate-300 bg-white"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-forest text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-secondaryText leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-leaf-green border-leaf-green text-white" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -192,10 +191,10 @@ export default function PreferencesPage() {
         {step === 2 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Wrench className="w-5 h-5 text-leaf-green" />
-              <h2 className="text-xl font-bold text-forest">What tools do you have on hand?</h2>
+              <Wrench className="w-5 h-5 text-emerald-primary" />
+              <h2 className="text-xl font-bold text-textPrimary">What tools do you have on hand?</h2>
             </div>
-            <p className="text-secondaryText text-sm mb-6">
+            <p className="text-textSecondary text-sm mb-6">
               Tool availability is our heaviest feasibility constraint (weight = 0.25).
             </p>
 
@@ -225,17 +224,17 @@ export default function PreferencesPage() {
                     onClick={() => setTools(opt.id as ToolAvailability)}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
                       selected
-                        ? "border-leaf-green bg-lime-fresh/25 shadow-sm"
-                        : "border-borderTone hover:border-slate-300 bg-white"
+                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
+                        : "border-borderLight hover:border-slate-300 bg-white"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-forest text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-secondaryText leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-leaf-green border-leaf-green text-white" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -251,10 +250,10 @@ export default function PreferencesPage() {
         {step === 3 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Coins className="w-5 h-5 text-leaf-green" />
-              <h2 className="text-xl font-bold text-forest">What is your extra budget for this project?</h2>
+              <Coins className="w-5 h-5 text-emerald-primary" />
+              <h2 className="text-xl font-bold text-textPrimary">What is your extra budget for this project?</h2>
             </div>
-            <p className="text-secondaryText text-sm mb-6">
+            <p className="text-textSecondary text-sm mb-6">
               We strictly enforce ₹0 budgets by filtering out projects requiring purchases.
             </p>
 
@@ -289,17 +288,17 @@ export default function PreferencesPage() {
                     onClick={() => setBudget(opt.id as BudgetTier)}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
                       selected
-                        ? "border-leaf-green bg-lime-fresh/25 shadow-sm"
-                        : "border-borderTone hover:border-slate-300 bg-white"
+                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
+                        : "border-borderLight hover:border-slate-300 bg-white"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-forest text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-secondaryText leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-leaf-green border-leaf-green text-white" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -315,10 +314,10 @@ export default function PreferencesPage() {
         {step === 4 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-5 h-5 text-leaf-green" />
-              <h2 className="text-xl font-bold text-forest">How much time do you want to spend?</h2>
+              <Clock className="w-5 h-5 text-emerald-primary" />
+              <h2 className="text-xl font-bold text-textPrimary">How much time do you want to spend?</h2>
             </div>
-            <p className="text-secondaryText text-sm mb-6">
+            <p className="text-textSecondary text-sm mb-6">
               We penalize or filter out long multi-day builds if you just need a quick solution.
             </p>
 
@@ -353,17 +352,17 @@ export default function PreferencesPage() {
                     onClick={() => setTime(opt.id as TimeCommitment)}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
                       selected
-                        ? "border-leaf-green bg-lime-fresh/25 shadow-sm"
-                        : "border-borderTone hover:border-slate-300 bg-white"
+                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
+                        : "border-borderLight hover:border-slate-300 bg-white"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-forest text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-secondaryText leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-leaf-green border-leaf-green text-white" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -375,14 +374,14 @@ export default function PreferencesPage() {
           </div>
         )}
 
-        {/* Step 5: Goal & Extra Constraints */}
+        {/* Step 5: Goal */}
         {step === 5 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Target className="w-5 h-5 text-leaf-green" />
-              <h2 className="text-xl font-bold text-forest">What is your primary goal?</h2>
+              <Target className="w-5 h-5 text-emerald-primary" />
+              <h2 className="text-xl font-bold text-textPrimary">What is your primary goal?</h2>
             </div>
-            <p className="text-secondaryText text-sm mb-6">
+            <p className="text-textSecondary text-sm mb-6">
               Aligning on purpose prevents useless clutter and ensures genuine value.
             </p>
 
@@ -417,17 +416,17 @@ export default function PreferencesPage() {
                     onClick={() => setGoal(opt.id as ProjectGoal)}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
                       selected
-                        ? "border-leaf-green bg-lime-fresh/25 shadow-sm"
-                        : "border-borderTone hover:border-slate-300 bg-white"
+                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
+                        : "border-borderLight hover:border-slate-300 bg-white"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-forest text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-secondaryText leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-leaf-green border-leaf-green text-white" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -438,7 +437,7 @@ export default function PreferencesPage() {
             </div>
 
             <div>
-              <label htmlFor="extra" className="block text-xs font-semibold uppercase tracking-wider text-forest mb-1">
+              <label htmlFor="extra" className="block text-xs font-semibold uppercase tracking-wider text-textPrimary mb-1">
                 Any specific room or constraint? (Optional)
               </label>
               <input
@@ -447,7 +446,7 @@ export default function PreferencesPage() {
                 value={extraConstraints}
                 onChange={(e) => setExtraConstraints(e.target.value)}
                 placeholder="e.g. For kitchen herbs, no drilling into walls, compact balcony..."
-                className="w-full px-4 py-2 rounded-lg border border-borderTone text-sm focus:outline-none focus:ring-2 focus:ring-leaf-green"
+                className="w-full px-4 py-2 rounded-lg border border-borderLight text-sm text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald-primary"
               />
             </div>
           </div>
@@ -467,7 +466,7 @@ export default function PreferencesPage() {
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-xs font-semibold text-secondaryText hover:text-forest"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-xs font-semibold text-textSecondary hover:text-textPrimary"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -477,7 +476,7 @@ export default function PreferencesPage() {
           <button
             type="button"
             onClick={handleNext}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-forest text-white text-sm font-semibold hover:bg-forest-800 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-forest-900 text-textLight text-sm font-semibold hover:bg-forest-800 transition-colors shadow-sm"
           >
             <span>Next</span>
             <ArrowRight className="w-4 h-4" />
@@ -487,16 +486,16 @@ export default function PreferencesPage() {
             type="button"
             onClick={handleSubmit}
             disabled={isGeneratingIdeas}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-pill bg-leaf-green text-white text-sm font-semibold hover:bg-leaf-600 transition-all shadow-md disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-pill bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 transition-all shadow-md disabled:opacity-50"
           >
             {isGeneratingIdeas ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-lime-fresh" />
+                <Loader2 className="w-4 h-4 animate-spin text-forest-950" />
                 <span>Computing Feasibility & Ranking...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-lime-fresh" />
+                <Sparkles className="w-4 h-4 text-forest-950" />
                 <span>Show My Personalized Ideas</span>
                 <ArrowRight className="w-4 h-4" />
               </>
