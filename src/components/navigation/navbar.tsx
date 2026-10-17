@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Sparkles, Recycle, Menu, X, ArrowRight, ShieldCheck } from "lucide-react"
+import { ThemeToggle } from "@/components/theme/theme-toggle"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -41,25 +42,23 @@ export function Navbar() {
     { label: "Dashboard", href: "/dashboard" },
   ]
 
-  const isHome = pathname === "/"
-
   return (
     <>
       <header
-        className={`sticky top-0 z-50 transition-colors duration-200 ${
-          isScrolled || !isHome
-            ? "bg-forest-900/95 backdrop-blur-md border-b border-white/10 text-textLight shadow-sm"
-            : "bg-forest-800/90 backdrop-blur-sm text-textLight border-b border-white/10"
+        className={`sticky top-0 z-50 transition-colors duration-200 border-b ${
+          isScrolled
+            ? "bg-white/95 dark:bg-[#0B1713]/95 backdrop-blur-md border-borderLightSubtle dark:border-white/10 shadow-sm"
+            : "bg-white/80 dark:bg-[#102A22]/90 backdrop-blur-sm border-borderLightSubtle/60 dark:border-white/10"
         }`}
       >
         <div className="max-w-container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Brand */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-display font-bold text-xl tracking-tight focus:outline-none focus:ring-2 focus:ring-emerald-primary rounded-lg px-1 text-textLight"
+            className="flex items-center gap-2.5 font-display font-bold text-xl tracking-tight text-textLightPrimary dark:text-textDarkPrimary focus-ring rounded-lg px-1"
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-primary/20 flex items-center justify-center text-emerald-primary">
-              <Recycle className="w-5 h-5 text-emerald-light" />
+            <div className="w-8 h-8 rounded-full bg-emerald-primary/15 dark:bg-emerald-primary/20 flex items-center justify-center text-emerald-primary">
+              <Recycle className="w-5 h-5 text-emerald-primary" />
             </div>
             <span>ReMatter <span className="text-emerald-primary font-semibold">AI</span></span>
           </Link>
@@ -72,10 +71,10 @@ export function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`transition-colors duration-150 focus:outline-none focus:underline ${
+                  className={`transition-colors duration-150 focus-ring rounded-md px-1 py-0.5 ${
                     active 
-                      ? "text-emerald-light font-semibold" 
-                      : "text-textLightMuted hover:text-textLight"
+                      ? "text-emerald-primary font-semibold" 
+                      : "text-textLightSecondary dark:text-textDarkSecondary hover:text-emerald-primary dark:hover:text-textDarkPrimary"
                   }`}
                 >
                   {link.label}
@@ -84,11 +83,13 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Action CTA */}
+          {/* Action CTA & Theme Toggle */}
           <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
+            
             <Link
               href="/scan"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 transition-all hover:translate-y-[-1px] shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-primary"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 active:scale-95 transition-all shadow-sm focus-ring"
             >
               <Sparkles className="w-4 h-4 text-forest-950" />
               <span>Start a Waste Scan</span>
@@ -96,27 +97,31 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Hamburger Button */}
-          <button
-            type="button"
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileMenuOpen}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-textLight hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-primary"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Right Controls */}
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle compact />
+            
+            <button
+              type="button"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg text-textLightPrimary dark:text-textDarkPrimary hover:bg-black/5 dark:hover:bg-white/10 focus-ring"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Slide-down Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-forest-900 text-textLight border-b border-white/10 px-5 py-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden bg-white dark:bg-forest-surface text-textLightPrimary dark:text-textDarkPrimary border-b border-borderLightSubtle dark:border-white/10 px-5 py-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
             <nav className="flex flex-col gap-4 text-base font-medium">
               {navLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="py-2 text-textLightMuted hover:text-emerald-light border-b border-white/10"
+                  className="py-2 text-textLightSecondary dark:text-textDarkSecondary hover:text-emerald-primary border-b border-borderLightSubtle/50 dark:border-white/10"
                 >
                   {link.label}
                 </Link>
@@ -124,7 +129,7 @@ export function Navbar() {
               <div className="pt-2">
                 <Link
                   href="/scan"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-pill bg-emerald-primary text-forest-950 font-bold shadow-sm"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-emerald-primary text-forest-950 font-bold shadow-sm active:scale-95 transition-all"
                 >
                   <Sparkles className="w-4 h-4 text-forest-950" />
                   <span>Start a Waste Scan</span>
@@ -136,11 +141,11 @@ export function Navbar() {
         )}
       </header>
 
-      {/* Demo Mode Indicator */}
-      <div className="bg-forest-950 border-b border-white/10 py-1.5 px-4 text-center text-xs text-textLightMuted flex items-center justify-center gap-2">
+      {/* Trust Demo Mode Indicator */}
+      <div className="bg-[#071410] border-b border-white/10 py-1.5 px-4 text-center text-xs text-[#C0CEC5] flex items-center justify-center gap-2">
         <ShieldCheck className="w-3.5 h-3.5 text-emerald-primary" />
         <span>
-          <strong className="text-emerald-light">Demo Mode Active:</strong> Verified sample fixtures available for instant testing.
+          <strong className="text-emerald-light">Deterministic Decision Support:</strong> Ground-truth safety gates & verified circular pathways.
         </span>
       </div>
     </>

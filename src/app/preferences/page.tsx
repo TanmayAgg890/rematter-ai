@@ -114,11 +114,11 @@ export default function PreferencesPage() {
     <div className="max-w-2xl mx-auto px-4 py-12">
       {/* Step Indicator */}
       <div className="mb-8">
-        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">
+        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-textLightSecondary dark:text-textDarkSecondary mb-2">
           <span>Personalize Your Resources</span>
           <span>Step {step} of {totalSteps}</span>
         </div>
-        <div className="w-full h-1.5 bg-borderLight rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-borderLightSubtle dark:bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full bg-emerald-primary transition-all duration-300"
             style={{ width: `${(step / totalSteps) * 100}%` }}
@@ -127,15 +127,15 @@ export default function PreferencesPage() {
       </div>
 
       {/* Wizard Steps */}
-      <div className="bg-white rounded-card border border-borderLight p-6 sm:p-8 shadow-sm mb-6">
+      <div className="bg-white dark:bg-forest-surface rounded-card border border-borderLightSubtle dark:border-white/10 p-6 sm:p-8 shadow-sm mb-6">
         {/* Step 1: Experience */}
         {step === 1 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
               <GraduationCap className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textPrimary">What is your crafting / DIY experience?</h2>
+              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What is your crafting / DIY experience?</h2>
             </div>
-            <p className="text-textSecondary text-sm mb-6">
+            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
               ReMatter will never suggest complex joinery or dangerous tools to beginners.
             </p>
 
@@ -163,19 +163,19 @@ export default function PreferencesPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setExperience(opt.id as ExperienceLevel)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
                       selected
                         ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLight hover:border-slate-300 bg-white"
+                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -192,9 +192,9 @@ export default function PreferencesPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Wrench className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textPrimary">What tools do you have on hand?</h2>
+              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What tools do you have on hand?</h2>
             </div>
-            <p className="text-textSecondary text-sm mb-6">
+            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
               Tool availability is our heaviest feasibility constraint (weight = 0.25).
             </p>
 
@@ -222,19 +222,19 @@ export default function PreferencesPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setTools(opt.id as ToolAvailability)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
                       selected
                         ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLight hover:border-slate-300 bg-white"
+                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -251,9 +251,9 @@ export default function PreferencesPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Coins className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textPrimary">What is your extra budget for this project?</h2>
+              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What is your extra budget for this project?</h2>
             </div>
-            <p className="text-textSecondary text-sm mb-6">
+            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
               We strictly enforce ₹0 budgets by filtering out projects requiring purchases.
             </p>
 
@@ -286,19 +286,19 @@ export default function PreferencesPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setBudget(opt.id as BudgetTier)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
                       selected
                         ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLight hover:border-slate-300 bg-white"
+                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -315,9 +315,9 @@ export default function PreferencesPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textPrimary">How much time do you want to spend?</h2>
+              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">How much time do you want to spend?</h2>
             </div>
-            <p className="text-textSecondary text-sm mb-6">
+            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
               We penalize or filter out long multi-day builds if you just need a quick solution.
             </p>
 
@@ -350,19 +350,19 @@ export default function PreferencesPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setTime(opt.id as TimeCommitment)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
                       selected
                         ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLight hover:border-slate-300 bg-white"
+                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -379,9 +379,9 @@ export default function PreferencesPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Target className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textPrimary">What is your primary goal?</h2>
+              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What is your primary goal?</h2>
             </div>
-            <p className="text-textSecondary text-sm mb-6">
+            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
               Aligning on purpose prevents useless clutter and ensures genuine value.
             </p>
 
@@ -414,19 +414,19 @@ export default function PreferencesPage() {
                     key={opt.id}
                     type="button"
                     onClick={() => setGoal(opt.id as ProjectGoal)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between ${
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
                       selected
                         ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLight hover:border-slate-300 bg-white"
+                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
                     }`}
                   >
                     <div>
-                      <span className="font-semibold text-textPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textSecondary leading-relaxed">{opt.desc}</span>
+                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
+                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300"
+                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
                       }`}
                     >
                       {selected && <Check className="w-3.5 h-3.5" />}
@@ -437,7 +437,7 @@ export default function PreferencesPage() {
             </div>
 
             <div>
-              <label htmlFor="extra" className="block text-xs font-semibold uppercase tracking-wider text-textPrimary mb-1">
+              <label htmlFor="extra" className="block text-xs font-semibold uppercase tracking-wider text-textLightPrimary dark:text-textDarkPrimary mb-1">
                 Any specific room or constraint? (Optional)
               </label>
               <input
@@ -446,7 +446,7 @@ export default function PreferencesPage() {
                 value={extraConstraints}
                 onChange={(e) => setExtraConstraints(e.target.value)}
                 placeholder="e.g. For kitchen herbs, no drilling into walls, compact balcony..."
-                className="w-full px-4 py-2 rounded-lg border border-borderLight text-sm text-textPrimary focus:outline-none focus:ring-2 focus:ring-emerald-primary"
+                className="w-full px-4 py-2 rounded-lg border border-borderLightSubtle dark:border-white/10 bg-white dark:bg-forest-elevated text-sm text-textLightPrimary dark:text-textDarkPrimary placeholder:text-textLightSecondary/50 dark:placeholder:text-textDarkSecondary/50 focus:outline-none focus:ring-2 focus:ring-emerald-primary"
               />
             </div>
           </div>
@@ -455,7 +455,7 @@ export default function PreferencesPage() {
 
       {/* Error Banner */}
       {ideasError && (
-        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-danger text-sm flex items-start gap-2.5">
+        <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-danger dark:text-red-300 text-sm flex items-start gap-2.5">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
           <p>{ideasError}</p>
         </div>
@@ -466,7 +466,7 @@ export default function PreferencesPage() {
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-xs font-semibold text-textSecondary hover:text-textPrimary"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -476,7 +476,7 @@ export default function PreferencesPage() {
           <button
             type="button"
             onClick={handleNext}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-forest-900 text-textLight text-sm font-semibold hover:bg-forest-800 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-forest-900 text-white text-sm font-semibold hover:bg-forest-800 transition-colors shadow-sm focus-ring"
           >
             <span>Next</span>
             <ArrowRight className="w-4 h-4" />
@@ -486,7 +486,7 @@ export default function PreferencesPage() {
             type="button"
             onClick={handleSubmit}
             disabled={isGeneratingIdeas}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-pill bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 transition-all shadow-md disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-pill bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 transition-all shadow-md disabled:opacity-50 focus-ring"
           >
             {isGeneratingIdeas ? (
               <>
