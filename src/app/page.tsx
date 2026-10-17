@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { HeroSection } from "@/components/hero/hero-section"
+import { InteractiveWasteInput } from "@/components/home/interactive-waste-input"
+import { ExplainableDecisionMatrix } from "@/components/home/explainable-decision-matrix"
 import { Reveal, StaggerContainer, StaggerItem } from "@/components/motion/reveal"
 import { 
   Sparkles, 
@@ -30,7 +32,10 @@ export default function HomePage() {
       {/* 1. Fluid Particles Hero Section */}
       <HeroSection />
 
-      {/* 2. Trust & Principles Strip */}
+      {/* 2. Interactive Multimodal Waste Input Section */}
+      <InteractiveWasteInput />
+
+      {/* 3. Trust & Principles Strip */}
       <section className="bg-[#102A22] dark:bg-[#071410] border-b border-white/10 py-4 px-4 overflow-hidden">
         <div className="max-w-container mx-auto flex flex-wrap items-center justify-between gap-6 text-xs text-[#C0CEC5] font-medium">
           <div className="flex items-center gap-2">
@@ -52,7 +57,190 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. How ReMatter AI Works (4 Simple Steps) */}
+      {/* 4. Explore Materials (6 Supported Categories) */}
+      <section className="py-24 bg-[#EAF3ED] dark:bg-[#102A22] text-textLightPrimary dark:text-[#F4F8F5] transition-colors duration-200">
+        <div className="max-w-container mx-auto px-4 sm:px-6">
+          <Reveal className="max-w-2xl mb-14">
+            <span className="px-3 py-1 rounded-full bg-emerald-primary/15 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
+              Materials
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-semibold mb-4 text-textLightPrimary dark:text-[#F4F8F5]">
+              Explore Material Possibilities
+            </h2>
+            <p className="text-textLightSecondary dark:text-[#C0CEC5] text-base">
+              Each waste stream behaves differently. ReMatter evaluates material characteristics before proposing a pathway.
+            </p>
+          </Reveal>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* 1. Plastic */}
+            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
+                <Boxes className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Plastic & Packaging</h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+                Bottles, jugs, HDPE containers, bubble wraps. Evaluated for food-safety boundaries and mechanical cut stability.
+              </p>
+              <Link href="/explore?category=plastic" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
+                Explore plastic ideas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* 2. Paper & Cardboard */}
+            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Paper & Cardboard</h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+                Shipping cartons, kraft paper, pulp trays. Assessed for structural dry storage, custom dividers, and garden mulching.
+              </p>
+              <Link href="/explore?category=paper_cardboard" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
+                Explore cardboard ideas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* 3. Textiles */}
+            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
+                <Shirt className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Textile & Worn Apparel</h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+                Cotton tees, denim, linen scraps. Filtered for no-sew functional bags, shop rags, and fiber shredding.
+              </p>
+              <Link href="/explore?category=textile" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
+                Explore textile ideas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* 4. Wood & Offcuts */}
+            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
+                <Trees className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Reclaimed Wood & Pallets</h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+                Clean pallets, timber offcuts, wooden crates. Screened for chemical treatment stamps (HT vs MB) and splinter risks.
+              </p>
+              <Link href="/explore?category=wood" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
+                Explore wood ideas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* 5. Electronics */}
+            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
+                <Cpu className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Electronics & Cables</h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+                Peripherals, charging cords, small enclosures. Safe component harvesting for makers, zero lithium battery tampering.
+              </p>
+              <Link href="/explore?category=electronic" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
+                Explore e-waste ideas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* 6. Organics */}
+            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
+                <Leaf className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Organic & Biomass</h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+                Coffee grounds, citrus peels, eggshells, garden clippings. Guided hot composting, natural odor absorbers, and soil amendments.
+              </p>
+              <Link href="/explore?category=organic" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
+                Explore organic ideas <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Understand Your Options (3 Circular Pathways) */}
+      <section className="py-24 px-4 sm:px-6 max-w-container mx-auto">
+        <Reveal className="text-center max-w-2xl mx-auto mb-16">
+          <span className="px-3 py-1 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
+            Circularity
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary mb-4">
+            Understand Your Options
+          </h2>
+          <p className="text-textLightSecondary dark:text-textDarkSecondary text-base leading-relaxed">
+            Not all circular paths are equal. ReMatter prioritizes retaining the highest material value with the least required energy.
+          </p>
+        </Reveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Reuse */}
+          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
+                <Repeat className="w-6 h-6" />
+              </div>
+              <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase mb-3">
+                Direct Utilization
+              </div>
+              <h3 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
+                Direct Reuse
+              </h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-5">
+                Using an item again for its original purpose or an identical utility without structural modification.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-borderLightSubtle/60 dark:border-white/5 text-xs text-textLightSecondary dark:text-textDarkSecondary">
+              <strong>Examples:</strong> Refilling glass jars, reusing sturdy delivery boxes, sanitizing spray bottles.
+            </div>
+          </div>
+
+          {/* Repurpose */}
+          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase mb-3">
+                Adaptive Upcycling
+              </div>
+              <h3 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
+                Creative Repurposing
+              </h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-5">
+                Modifying the shape or combining with other materials to create a completely new functional object.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-borderLightSubtle/60 dark:border-white/5 text-xs text-textLightSecondary dark:text-textDarkSecondary">
+              <strong>Examples:</strong> Pallet planters, denim tool rolls, acoustic panels from egg trays.
+            </div>
+          </div>
+
+          {/* Recycle */}
+          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
+                <Recycle className="w-6 h-6" />
+              </div>
+              <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase mb-3">
+                Certified Recovery
+              </div>
+              <h3 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
+                Authorized Recycling
+              </h3>
+              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-5">
+                Processing raw material through industrial recovery when DIY is unsafe, contaminated, or inefficient.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-borderLightSubtle/60 dark:border-white/5 text-xs text-textLightSecondary dark:text-textDarkSecondary">
+              <strong>Examples:</strong> Swollen lithium cells, PET pelletizing, municipal MRF recovery.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. How ReMatter AI Works (4 Simple Steps) */}
       <section id="how-it-works" className="py-24 px-4 sm:px-6 max-w-container mx-auto">
         <Reveal className="text-center max-w-2xl mx-auto mb-16">
           <span className="px-3 py-1 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
@@ -133,193 +321,10 @@ export default function HomePage() {
         </StaggerContainer>
       </section>
 
-      {/* 4. Explore Materials (6 Supported Categories) */}
-      <section className="py-24 bg-[#EAF3ED] dark:bg-[#102A22] text-textLightPrimary dark:text-[#F4F8F5] transition-colors duration-200">
-        <div className="max-w-container mx-auto px-4 sm:px-6">
-          <Reveal className="max-w-2xl mb-14">
-            <span className="px-3 py-1 rounded-full bg-emerald-primary/15 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
-              Materials
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-display font-semibold mb-4 text-textLightPrimary dark:text-[#F4F8F5]">
-              Explore Material Possibilities
-            </h2>
-            <p className="text-textLightSecondary dark:text-[#C0CEC5] text-base">
-              Each waste stream behaves differently. ReMatter evaluates material characteristics before proposing a pathway.
-            </p>
-          </Reveal>
+      {/* 7. Why This, Not That? (Explainable Circular Decisions - Hackathon USP) */}
+      <ExplainableDecisionMatrix />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* 1. Plastic */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
-                <Boxes className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Plastic & Packaging</h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
-                Bottles, jugs, HDPE containers, bubble wraps. Evaluated for food-safety boundaries and mechanical cut stability.
-              </p>
-              <Link href="/explore?category=plastic" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
-                Explore plastic ideas <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* 2. Paper & Cardboard */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Paper & Cardboard</h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
-                Shipping cartons, kraft paper, pulp trays. Assessed for structural dry storage, custom dividers, and garden mulching.
-              </p>
-              <Link href="/explore?category=paper_cardboard" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
-                Explore cardboard ideas <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* 3. Textiles */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
-                <Shirt className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Textile & Worn Apparel</h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
-                Cotton tees, denim, linen scraps. Filtered for no-sew functional bags, shop rags, and fiber shredding.
-              </p>
-              <Link href="/explore?category=textile" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
-                Explore textile ideas <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* 4. Wood & Offcuts */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
-                <Trees className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Reclaimed Wood & Pallets</h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
-                Untreated pallet timber, carpentry scraps, crates. Evaluated for chemical treatment stamps (HT vs MB).
-              </p>
-              <Link href="/explore?category=wood" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
-                Explore timber ideas <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* 5. Organic */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
-                <Leaf className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary">Organic & Bio Scraps</h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
-                Coffee grounds, citrus peels, dry leaves. Guided aerobic composting and natural cleaning infusions.
-              </p>
-              <Link href="/explore?category=organic" className="text-xs font-semibold text-emerald-primary hover:underline inline-flex items-center gap-1 focus-ring rounded">
-                Explore organic ideas <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* 6. E-Waste */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-amber-500/30 hover:border-amber-400/60 transition-all shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center text-amber-500 mb-4">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-textLightPrimary dark:text-textDarkPrimary flex items-center gap-2">
-                <span>E-Waste & Electronics</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-300 font-mono font-semibold">Specialist</span>
-              </h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
-                Swollen batteries, motherboards, chargers. Strictly routed to Level 3 certified hazardous recyclers.
-              </p>
-              <Link href="/recycling" className="text-xs font-semibold text-amber-600 dark:text-amber-300 hover:underline inline-flex items-center gap-1 focus-ring rounded">
-                Find authorized recyclers <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Understand Your Options: Reuse vs Repurpose vs Recycle */}
-      <section className="py-24 px-4 sm:px-6 max-w-container mx-auto">
-        <Reveal className="text-center max-w-2xl mx-auto mb-16">
-          <span className="px-3 py-1 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
-            Circular Foundations
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary mb-4">
-            Understand Your Options
-          </h2>
-          <p className="text-textLightSecondary dark:text-textDarkSecondary text-base leading-relaxed">
-            ReMatter helps you choose the highest-impact, lowest-energy pathway for every material.
-          </p>
-        </Reveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Option 1: Reuse */}
-          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
-                <Repeat className="w-6 h-6" />
-              </div>
-              <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase mb-3">
-                Zero Modification
-              </div>
-              <h3 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
-                Direct Reuse
-              </h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-5">
-                Using an item again for its original or adjacent purpose with little to no transformation. Preserves 100% of the embedded energy.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-borderLightSubtle/60 dark:border-white/5 text-xs text-textLightSecondary dark:text-textDarkSecondary">
-              <strong>Examples:</strong> Washing glass jars for bulk pantries, reusing cardboard boxes for storage.
-            </div>
-          </div>
-
-          {/* Option 2: Repurpose */}
-          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
-                <RefreshCw className="w-6 h-6" />
-              </div>
-              <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase mb-3">
-                Creative Upcycling
-              </div>
-              <h3 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
-                Repurpose & Upcycle
-              </h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-5">
-                Converting discarded matter into a completely new, functional object using your available tools, budget, and skills.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-borderLightSubtle/60 dark:border-white/5 text-xs text-textLightSecondary dark:text-textDarkSecondary">
-              <strong>Examples:</strong> Pallet timber planters, t-shirt produce bags, tin can organizers.
-            </div>
-          </div>
-
-          {/* Option 3: Recycle */}
-          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
-                <Recycle className="w-6 h-6" />
-              </div>
-              <div className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase mb-3">
-                Certified Recovery
-              </div>
-              <h3 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
-                Authorized Recycling
-              </h3>
-              <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-5">
-                Processing raw material through industrial recovery when DIY is unsafe, contaminated, or inefficient.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-borderLightSubtle/60 dark:border-white/5 text-xs text-textLightSecondary dark:text-textDarkSecondary">
-              <strong>Examples:</strong> Swollen lithium cells, PET pelletizing, municipal MRF recovery.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Feasibility Framework (Explainable Math) */}
+      {/* 8. Feasibility Framework (Explainable Math) */}
       <section id="feasibility" className="py-24 px-4 sm:px-6 bg-[#EAF2F4] dark:bg-[#071410] border-y border-borderLightSubtle dark:border-white/10 transition-colors duration-200">
         <div className="max-w-container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <Reveal>
@@ -394,7 +399,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. Safety and Responsible Use Callout */}
+      {/* 9. Safety and Responsible Use Callout */}
       <section id="responsible-recycling" className="py-20 px-4 sm:px-6 max-w-container mx-auto">
         <div className="bg-[#102A22] text-[#F4F8F5] rounded-3xl p-8 sm:p-12 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
           <div className="max-w-xl">
@@ -426,7 +431,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. Final Call to Action */}
+      {/* 10. Final Call to Action */}
       <section className="py-24 px-4 sm:px-6 text-center max-w-2xl mx-auto">
         <Reveal>
           <h2 className="text-3xl sm:text-4xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary mb-4">
@@ -441,7 +446,7 @@ export default function HomePage() {
           >
             <Sparkles className="w-5 h-5 text-forest-950" />
             <span>Start a Waste Scan</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </Reveal>
       </section>

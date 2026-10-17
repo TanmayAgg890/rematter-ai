@@ -7,19 +7,20 @@ import {
   X, 
   Send, 
   ArrowRight, 
-  Compass, 
   HelpCircle, 
   Recycle, 
   ShieldCheck, 
-  Layers,
   ChevronDown,
-  RotateCcw
+  RotateCcw,
+  Languages
 } from "lucide-react"
+import { RematterGuideCharacter } from "./rematter-guide-character"
 
 interface Message {
   id: string
   sender: "assistant" | "user"
   text: string
+  fullText?: string
   action?: {
     label: string
     href: string
@@ -36,7 +37,7 @@ export function RematterGuide() {
     {
       id: "greeting",
       sender: "assistant",
-      text: "Hi! I can help you understand ReMatter AI, assess a material, and explore suitable reuse or recycling options. Where would you like to start?",
+      text: "Hi! I'm your ReMatter Guide. Ask me anything in English, हिन्दी, or Hinglish — about assessing waste, calculating feasibility, or finding certified recyclers.",
     },
   ])
 
@@ -47,9 +48,9 @@ export function RematterGuide() {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
-  }, [messages, isOpen])
+  }, [messages, isOpen, isLoading])
 
-  // Context-specific quick actions depending on pathname
+  // Context-specific quick actions depending on pathname + multilingual questions
   const quickActions = React.useMemo(() => {
     switch (pathname) {
       case "/scan":
@@ -81,22 +82,44 @@ export function RematterGuide() {
           { label: "Hazardous E-Waste", query: "Where do swollen batteries or electronics go?" },
           { label: "Scan Waste Item", href: "/scan" },
         ]
-      case "/dashboard":
-        return [
-          { label: "Saved Ideas Help", query: "How do I resume or complete a saved project?" },
-          { label: "Start New Scan", href: "/scan" },
-          { label: "Browse Materials", href: "/explore" },
-        ]
       default:
-        // Homepage and other routes
+        // Homepage and general
         return [
-          { label: "Start a Waste Scan", href: "/scan" },
-          { label: "Explore Materials", href: "/explore" },
-          { label: "How Feasibility Works", query: "How does the feasibility formula work?" },
+          { label: "How Feasibility Works", query: "How does the feasibility formula S = 100 * sum(w_f * s_f) work?" },
+          { label: "पुरानी बोतल से क्या बनाएं? (हिन्दी)", query: "पुरानी खाली कांच की बोतलों से क्या बना सकते हैं?" },
+          { label: "Jeans Upcycle (Hinglish)", query: "Mere paas purani jeans hai, zero budget DIY idea batao" },
           { label: "Verified Recyclers", href: "/recycling" },
         ]
     }
   }, [pathname])
+
+  // Word-by-word reveal for incoming assistant messages
+  const streamReveal = (messageId: string, fullText: string, action?: { label: string; href: string }) => {
+    const words = fullText.split(" ")
+    let currentIdx = 0
+
+    // Set initial with first word
+    setMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, text: words[0] || "" } : m))
+    )
+
+    const interval = setInterval(() => {
+      currentIdx++
+      if (currentIdx < words.length) {
+        const partial = words.slice(0, currentIdx + 1).join(" ")
+        setMessages((prev) =>
+          prev.map((m) => (m.id === messageId ? { ...m, text: partial } : m))
+        )
+      } else {
+        clearInterval(interval)
+        if (action) {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === messageId ? { ...m, action } : m))
+          )
+        }
+      }
+    }, 28)
+  }
 
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputMessage).trim()
@@ -118,16 +141,24 @@ export function RematterGuide() {
       })
 
       const data = await res.json()
+      const assistantMsgId = `assistant-${Date.now()}`
+
       if (data.ok && data.data) {
+        const replyText = data.data.reply
+        const suggestedAction = data.data.suggestedAction || undefined
+
+        // Insert message shell then stream words
         setMessages((prev) => [
           ...prev,
           {
-            id: `assistant-${Date.now()}`,
+            id: assistantMsgId,
             sender: "assistant",
-            text: data.data.reply,
-            action: data.data.suggestedAction || undefined,
+            text: "",
+            fullText: replyText,
           },
         ])
+
+        streamReveal(assistantMsgId, replyText, suggestedAction)
       } else {
         setMessages((prev) => [
           ...prev,
@@ -145,7 +176,7 @@ export function RematterGuide() {
         {
           id: `err-${Date.now()}`,
           sender: "assistant",
-          text: "I'm currently running in offline guide mode. You can begin a scan or view verified recyclers below.",
+          text: "I'm currently running in offline guide mode. You can begin a waste scan or view verified recyclers below.",
           action: { label: "Go to Waste Scan", href: "/scan" },
         },
       ])
@@ -163,35 +194,44 @@ export function RematterGuide() {
     }
   }
 
+  const handlePrimaryScanAction = () => {
+    if (pathname === "/") {
+      setIsOpen(false)
+      const el = document.getElementById("waste-input")
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" })
+        const textarea = document.getElementById("waste-description")
+        setTimeout(() => textarea?.focus(), 500)
+      } else {
+        router.push("/scan")
+      }
+    } else {
+      router.push("/scan")
+      setIsOpen(false)
+    }
+  }
+
   const handleReset = () => {
     setMessages([
       {
         id: "greeting",
         sender: "assistant",
-        text: "Hi! I can help you understand ReMatter AI, assess a material, and explore suitable reuse or recycling options. Where would you like to start?",
+        text: "Hi! I'm your ReMatter Guide. Ask me anything in English, हिन्दी, or Hinglish — about assessing waste, calculating feasibility, or finding certified recyclers.",
       },
     ])
   }
 
   return (
     <>
-      {/* Floating launcher trigger */}
+      {/* Floating launcher trigger with high-fidelity animated Character */}
       {!isOpen && (
         <aside aria-label="ReMatter AI Assistant Launcher" className="fixed bottom-6 right-6 z-40">
-          <button
-            type="button"
+          <RematterGuideCharacter
+            state={isLoading ? "thinking" : "idle"}
+            size="md"
             onClick={() => setIsOpen(true)}
-            aria-label="Open ReMatter Guide Assistant"
-            className="group flex items-center gap-2.5 h-12 pl-4 pr-5 rounded-full bg-emerald-primary text-forest-950 font-bold text-xs tracking-wide shadow-xl hover:shadow-2xl hover:bg-emerald-400 active:scale-95 transition-all duration-200 focus-ring"
-          >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-forest-900 opacity-60"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-forest-950"></span>
-            </span>
-            <Sparkles className="w-4 h-4 text-forest-950" />
-            <span className="hidden sm:inline">ReMatter Guide</span>
-            <span className="sm:hidden">Guide</span>
-          </button>
+            showPillLabel={true}
+          />
         </aside>
       )}
 
@@ -200,23 +240,25 @@ export function RematterGuide() {
         <aside
           role="region"
           aria-label="ReMatter Guide Assistant Panel"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] max-h-[85vh] h-[580px] flex flex-col rounded-2xl bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[85vh] h-[600px] flex flex-col rounded-2xl bg-white dark:bg-[#102A22] border border-borderLightSubtle dark:border-white/10 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 bg-ivory-soft dark:bg-forest-elevated border-b border-borderLightSubtle dark:border-white/10">
+          {/* Header with mini Robot character */}
+          <div className="flex items-center justify-between px-4 py-3 bg-ivory-soft dark:bg-[#18352A] border-b border-borderLightSubtle dark:border-white/10">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-emerald-primary/15 dark:bg-emerald-primary/20 flex items-center justify-center text-emerald-primary">
-                <Compass className="w-4 h-4" />
-              </div>
+              <RematterGuideCharacter
+                state={isLoading ? "thinking" : "speaking"}
+                size="sm"
+                showPillLabel={false}
+              />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-xs font-bold text-textLightPrimary dark:text-textDarkPrimary">
+                  <h3 className="text-xs font-bold text-textLightPrimary dark:text-[#F4F8F5]">
                     ReMatter Guide
                   </h3>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-primary" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-primary animate-pulse" />
                 </div>
-                <p className="text-[10px] text-textLightSecondary dark:text-textDarkSecondary">
-                  AI Contextual Navigator
+                <p className="text-[10px] text-textLightSecondary dark:text-[#C0CEC5]">
+                  Multilingual Sustainability Companion
                 </p>
               </div>
             </div>
@@ -226,7 +268,7 @@ export function RematterGuide() {
                 type="button"
                 onClick={handleReset}
                 title="Reset conversation"
-                className="p-1.5 rounded-full text-textLightSecondary dark:text-textDarkSecondary hover:text-emerald-primary transition-colors focus-ring"
+                className="p-1.5 rounded-full text-textLightSecondary dark:text-[#C0CEC5] hover:text-emerald-primary transition-colors focus-ring"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -234,11 +276,27 @@ export function RematterGuide() {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Close guide"
-                className="p-1.5 rounded-full text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary transition-colors focus-ring"
+                className="p-1.5 rounded-full text-textLightSecondary dark:text-[#C0CEC5] hover:text-textLightPrimary dark:hover:text-[#F4F8F5] transition-colors focus-ring"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
+          </div>
+
+          {/* Persistent Highlighted Call-To-Action Banner */}
+          <div className="px-3.5 py-2 bg-emerald-primary/10 dark:bg-emerald-primary/15 border-b border-emerald-primary/20 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-primary">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Have an item to evaluate?</span>
+            </div>
+            <button
+              type="button"
+              onClick={handlePrimaryScanAction}
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-primary text-forest-950 font-bold text-[11px] hover:bg-emerald-400 active:scale-95 transition-all shadow-sm focus-ring"
+            >
+              <span>Start a Waste Scan</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
 
           {/* Messages list */}
@@ -254,10 +312,10 @@ export function RematterGuide() {
                   className={`max-w-[88%] px-3.5 py-2.5 rounded-2xl leading-relaxed ${
                     m.sender === "user"
                       ? "bg-emerald-primary text-forest-950 font-medium rounded-br-none"
-                      : "bg-ivory-warm dark:bg-forest-elevated/70 text-textLightPrimary dark:text-textDarkPrimary border border-borderLightSubtle/80 dark:border-white/5 rounded-bl-none"
+                      : "bg-ivory-warm dark:bg-[#081511] text-textLightPrimary dark:text-[#F4F8F5] border border-borderLightSubtle/80 dark:border-white/10 rounded-bl-none shadow-sm"
                   }`}
                 >
-                  <p>{m.text}</p>
+                  <p className="whitespace-pre-wrap">{m.text}</p>
                 </div>
 
                 {/* 1-Click Action Button if provided */}
@@ -270,7 +328,7 @@ export function RematterGuide() {
                         setIsOpen(false)
                       }
                     }}
-                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-primary/10 dark:bg-emerald-primary/20 text-emerald-primary hover:bg-emerald-primary hover:text-forest-950 text-[11px] font-semibold border border-emerald-primary/30 transition-all focus-ring"
+                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-primary/15 text-emerald-primary hover:bg-emerald-primary hover:text-forest-950 text-[11px] font-bold border border-emerald-primary/30 transition-all focus-ring shadow-sm"
                   >
                     <span>{m.action.label}</span>
                     <ArrowRight className="w-3 h-3" />
@@ -280,23 +338,23 @@ export function RematterGuide() {
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-textLightSecondary dark:text-textDarkSecondary text-xs py-2">
+              <div className="flex items-center gap-2 text-textLightSecondary dark:text-[#C0CEC5] text-xs py-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-primary animate-pulse" />
-                <span>Thinking...</span>
+                <span>Thinking in English, हिन्दी & Hinglish...</span>
               </div>
             )}
 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Context Actions */}
-          <div className="px-4 py-2 bg-ivory-warm/60 dark:bg-forest-elevated/30 border-t border-borderLightSubtle/60 dark:border-white/5 flex flex-wrap gap-1.5">
+          {/* Quick Context & Multilingual Actions */}
+          <div className="px-3.5 py-2 bg-ivory-warm/60 dark:bg-[#0C1E17] border-t border-borderLightSubtle/60 dark:border-white/5 flex flex-wrap gap-1.5">
             {quickActions.map((action, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleActionClick(action)}
-                className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 text-textLightPrimary dark:text-textDarkPrimary hover:border-emerald-primary transition-colors focus-ring"
+                className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-[#18352A] border border-borderLightSubtle dark:border-white/10 text-textLightPrimary dark:text-[#F4F8F5] hover:border-emerald-primary transition-colors focus-ring"
               >
                 {action.label}
               </button>
@@ -309,15 +367,15 @@ export function RematterGuide() {
               e.preventDefault()
               handleSendMessage()
             }}
-            className="p-3 bg-white dark:bg-forest-surface border-t border-borderLightSubtle dark:border-white/10 flex items-center gap-2"
+            className="p-3 bg-white dark:bg-[#102A22] border-t border-borderLightSubtle dark:border-white/10 flex items-center gap-2"
           >
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask anything about ReMatter..."
+              placeholder="Ask in English, हिन्दी, or Hinglish..."
               disabled={isLoading}
-              className="flex-1 px-3.5 py-2 text-xs rounded-full bg-ivory-warm dark:bg-forest-elevated border border-borderLightSubtle dark:border-white/10 text-textLightPrimary dark:text-textDarkPrimary placeholder:text-textLightSecondary/60 dark:placeholder:text-textDarkSecondary/60 focus-ring"
+              className="flex-1 px-3.5 py-2 text-xs rounded-full bg-ivory-warm dark:bg-[#081511] border border-borderLightSubtle dark:border-white/10 text-textLightPrimary dark:text-[#F4F8F5] placeholder:text-textLightSecondary/60 dark:placeholder:text-[#C0CEC5]/50 focus-ring"
             />
             <button
               type="submit"

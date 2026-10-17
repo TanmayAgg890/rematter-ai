@@ -29,25 +29,25 @@ export function HeroSection() {
 
         {/* Main Headline (Clean non-editable text, zero caret/cursor artifact) */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-display font-medium tracking-tight text-[#F4F8F5] leading-[1.08] mb-6 select-text">
-          Your waste has <br className="hidden sm:inline" />
-          another <span className="font-semibold text-emerald-primary italic">purpose.</span>
+          Your Waste. <br className="hidden sm:inline" />
+          A New <span className="font-semibold text-emerald-primary italic">Possibility.</span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-base sm:text-lg text-[#C0CEC5] max-w-xl mx-auto leading-relaxed mb-9">
-          Turn discarded materials into practical possibilities. Discover what you can reuse, create, or recycle based on your resources, skills, and budget.
+          Describe what you have, upload a photo, or share your waste-related problem. ReMatter AI helps you explore practical possibilities based on your resources, needs, and budget.
         </p>
 
         {/* CTA Actions */}
         <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto mb-10">
-          <Link
-            href="/scan"
+          <a
+            href="#waste-input"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-7 rounded-full bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg focus-ring"
           >
             <Sparkles className="w-4 h-4 text-forest-950" />
             <span>Start a Waste Scan</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </a>
 
           <Link
             href="/explore"
