@@ -11,11 +11,11 @@ export function GlobalParticlesBackground() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
       <FluidParticlesBackground
-        particleCount={600}
-        mobileParticleCount={250}
-        interactive={false}
+        particleCount={750}
+        mobileParticleCount={320}
+        interactive={true}
         backgroundColor="#0B1713"
-        particleColors={["#2FC48A", "#9BE7BD", "#18352A", "#5FD69E", "#C0CEC5"]}
+        particleColors={["#2FC48A", "#9BE7BD", "#38D394", "#5FD69E", "#F4F8F5"]}
       />
     </div>
   )

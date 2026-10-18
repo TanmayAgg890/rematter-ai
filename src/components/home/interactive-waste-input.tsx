@@ -209,12 +209,12 @@ export function InteractiveWasteInput() {
     <section 
       id="waste-input" 
       ref={containerRef}
-      className="relative w-full py-20 px-4 sm:px-6 bg-[#071410] text-[#F4F8F5] overflow-hidden border-y border-white/10"
+      className="relative w-full py-20 px-4 sm:px-6 bg-transparent text-[#F4F8F5] overflow-hidden border-y border-white/10"
     >
       {/* 1. Atmospheric Animated Waste Words Background */}
       <div 
         aria-hidden="true" 
-        className="absolute inset-0 pointer-events-none overflow-hidden flex flex-col justify-between py-6 opacity-8 select-none"
+        className="absolute inset-0 pointer-events-none overflow-hidden flex flex-col justify-between py-6 opacity-25 select-none"
       >
         {/* Row 1 drifting left */}
         <div className="animate-waste-drift-left whitespace-nowrap text-4xl sm:text-6xl font-display font-black tracking-widest text-[#2FC48A]">
@@ -249,7 +249,7 @@ export function InteractiveWasteInput() {
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Eyebrow & Title */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18352A]/90 border border-[#2FC48A]/30 backdrop-blur-sm mb-4 shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18352A]/80 border border-[#2FC48A]/30 backdrop-blur-md mb-4 shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-emerald-primary" />
             <span className="text-xs font-semibold uppercase tracking-wider text-emerald-light">
               Multimodal Waste Intelligence
@@ -282,7 +282,7 @@ export function InteractiveWasteInput() {
                 key={idx}
                 type="button"
                 onClick={() => handlePromptSelect(prompt.text)}
-                className="text-xs px-3 py-1.5 rounded-full bg-[#122820]/80 hover:bg-[#18352A] border border-white/10 hover:border-emerald-primary/40 text-[#C0CEC5] hover:text-[#F4F8F5] transition-all text-left flex items-center gap-1.5 focus-ring"
+                className="text-xs px-3 py-1.5 rounded-full bg-[#122820]/75 hover:bg-[#18352A]/90 border border-white/10 hover:border-emerald-primary/40 text-[#C0CEC5] hover:text-[#F4F8F5] backdrop-blur-md transition-all text-left flex items-center gap-1.5 focus-ring"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-primary/70" />
                 <span>{prompt.label}</span>
@@ -294,7 +294,7 @@ export function InteractiveWasteInput() {
         {/* Card Input Box */}
         <form 
           onSubmit={handleSubmit}
-          className="rounded-2xl bg-[#0F231C]/90 backdrop-blur-md border border-white/15 p-5 sm:p-7 shadow-2xl relative overflow-hidden focus-within:border-emerald-primary/50 transition-colors"
+          className="rounded-2xl bg-[#081511]/75 backdrop-blur-md border border-white/15 p-5 sm:p-7 shadow-2xl relative overflow-hidden focus-within:border-emerald-primary/50 transition-colors"
         >
           {/* Notification toast if pasted */}
           {pastedStatus && (

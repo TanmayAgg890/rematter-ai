@@ -46,7 +46,7 @@ export default function RootLayout({
         <GlobalParticlesBackground />
         <ThemeProvider>
           <Navbar />
-          <main className="flex-1 relative z-10">{children}</main>
+          <main className="flex-1 relative z-10 bg-transparent">{children}</main>
           <RematterGuide />
           <Footer />
         </ThemeProvider>

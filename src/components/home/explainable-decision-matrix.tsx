@@ -127,7 +127,7 @@ export function ExplainableDecisionMatrix() {
     : activeScenario.bestChoice
 
   return (
-    <section className="py-24 px-4 sm:px-6 bg-white dark:bg-[#0B1713] text-textLightPrimary dark:text-[#F4F8F5] transition-colors duration-200">
+    <section className="py-24 px-4 sm:px-6 bg-transparent text-textLightPrimary dark:text-[#F4F8F5] transition-colors duration-200">
       <div className="max-w-container mx-auto">
         {/* Eyebrow & Headline */}
         <div className="text-center max-w-2xl mx-auto mb-14">
@@ -142,7 +142,7 @@ export function ExplainableDecisionMatrix() {
           </p>
 
           {/* Interactive constraint simulator toggle */}
-          <div className="mt-6 inline-flex items-center gap-3 p-1.5 px-3.5 rounded-full bg-ivory-soft dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 text-xs">
+          <div className="mt-6 inline-flex items-center gap-3 p-1.5 px-3.5 rounded-full bg-ivory-soft/80 dark:bg-forest-surface/80 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 text-xs">
             <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary flex items-center gap-1.5">
               <Wrench className="w-3.5 h-3.5 text-emerald-primary" />
               Simulate Constraint:
@@ -153,7 +153,7 @@ export function ExplainableDecisionMatrix() {
               className={`px-3 py-1 rounded-full font-bold text-xs transition-all ${
                 filterNoTools 
                   ? "bg-emerald-primary text-forest-950 shadow-sm" 
-                  : "bg-white dark:bg-[#18352A] text-textLightSecondary dark:text-[#C0CEC5] border border-borderLightSubtle dark:border-white/10"
+                  : "bg-white/80 dark:bg-[#18352A]/80 text-textLightSecondary dark:text-[#C0CEC5] border border-borderLightSubtle dark:border-white/10"
               }`}
             >
               {filterNoTools ? "✓ 'I Have Zero Tools' Active" : "Click: Test 'I Have Zero Tools'"}
@@ -171,7 +171,7 @@ export function ExplainableDecisionMatrix() {
               className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all focus-ring ${
                 activeScenarioId === s.id
                   ? "bg-emerald-primary text-forest-950 shadow-md font-bold"
-                  : "bg-ivory-soft dark:bg-[#102A22] text-textLightSecondary dark:text-[#C0CEC5] hover:text-textLightPrimary dark:hover:text-[#F4F8F5] border border-borderLightSubtle dark:border-white/10"
+                  : "bg-white/70 dark:bg-[#102A22]/70 backdrop-blur-md text-textLightSecondary dark:text-[#C0CEC5] hover:text-textLightPrimary dark:hover:text-[#F4F8F5] border border-borderLightSubtle dark:border-white/10"
               }`}
             >
               {s.title}
@@ -180,7 +180,7 @@ export function ExplainableDecisionMatrix() {
         </div>
 
         {/* Explainable Decision Card */}
-        <div className="rounded-2xl bg-white dark:bg-[#102A22] border border-borderLightSubtle dark:border-white/15 p-6 sm:p-8 shadow-xl max-w-4xl mx-auto">
+        <div className="rounded-2xl bg-white/80 dark:bg-[#102A22]/80 backdrop-blur-md border border-borderLightSubtle dark:border-white/15 p-6 sm:p-8 shadow-xl max-w-4xl mx-auto">
           {/* Header row with material info and recommended badge */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-borderLightSubtle dark:border-white/10">
             <div>

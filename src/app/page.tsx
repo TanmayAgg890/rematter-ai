@@ -32,15 +32,15 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = React.useState<"scan" | "classify">("scan")
 
   return (
-    <div className="flex flex-col w-full bg-ivory dark:bg-[#0B1713] transition-colors duration-200">
+    <div className="flex flex-col w-full bg-transparent transition-colors duration-200">
       {/* 1. Fluid Particles Hero Section */}
       <HeroSection />
 
       {/* 2. Tab Switcher: Scan vs Classify */}
-      <div id="waste-input" className="bg-[#0B1713] dark:bg-[#0B1713]">
+      <div id="waste-input" className="bg-transparent">
         {/* Tab Bar */}
         <div className="max-w-container mx-auto px-4 sm:px-6 pt-6">
-          <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 gap-1">
+          <div className="inline-flex rounded-full border border-white/10 bg-white/5 backdrop-blur-md p-1 gap-1">
             <button
               type="button"
               onClick={() => setActiveTab("scan")}
@@ -79,7 +79,7 @@ export default function HomePage() {
       </div>
 
       {/* 3. Trust & Principles Strip */}
-      <section className="bg-[#102A22] dark:bg-[#071410] border-b border-white/10 py-4 px-4 overflow-hidden">
+      <section className="bg-transparent border-y border-white/10 py-4 px-4 overflow-hidden backdrop-blur-[2px]">
         <div className="max-w-container mx-auto flex flex-wrap items-center justify-between gap-6 text-xs text-[#C0CEC5] font-medium">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-primary inline-block animate-pulse" />
@@ -101,7 +101,7 @@ export default function HomePage() {
       </section>
 
       {/* 4. Explore Materials (6 Supported Categories) */}
-      <section className="py-24 bg-[#EAF3ED] dark:bg-[#102A22] text-textLightPrimary dark:text-[#F4F8F5] transition-colors duration-200">
+      <section className="py-24 bg-transparent text-textLightPrimary dark:text-[#F4F8F5] transition-colors duration-200">
         <div className="max-w-container mx-auto px-4 sm:px-6">
           <Reveal className="max-w-2xl mb-14">
             <span className="px-3 py-1 rounded-full bg-emerald-primary/15 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
@@ -117,7 +117,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* 1. Plastic */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+            <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
                 <Boxes className="w-5 h-5" />
               </div>
@@ -131,7 +131,7 @@ export default function HomePage() {
             </div>
 
             {/* 2. Paper & Cardboard */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+            <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
                 <Layers className="w-5 h-5" />
               </div>
@@ -145,7 +145,7 @@ export default function HomePage() {
             </div>
 
             {/* 3. Textiles */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+            <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
                 <Shirt className="w-5 h-5" />
               </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
             </div>
 
             {/* 4. Wood & Offcuts */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+            <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
                 <Trees className="w-5 h-5" />
               </div>
@@ -173,7 +173,7 @@ export default function HomePage() {
             </div>
 
             {/* 5. Electronics */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+            <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
                 <Cpu className="w-5 h-5" />
               </div>
@@ -187,7 +187,7 @@ export default function HomePage() {
             </div>
 
             {/* 6. Organics */}
-            <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
+            <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/40 transition-all shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/15 flex items-center justify-center text-emerald-primary mb-4">
                 <Leaf className="w-5 h-5" />
               </div>
@@ -219,7 +219,7 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Reuse */}
-          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
                 <Repeat className="w-6 h-6" />
@@ -240,7 +240,7 @@ export default function HomePage() {
           </div>
 
           {/* Repurpose */}
-          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
                 <Sparkles className="w-6 h-6" />
@@ -261,7 +261,7 @@ export default function HomePage() {
           </div>
 
           {/* Recycle */}
-          <div className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-primary/15 text-emerald-primary flex items-center justify-center mb-6">
                 <Recycle className="w-6 h-6" />
@@ -299,7 +299,7 @@ export default function HomePage() {
 
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Step 1 */}
-          <StaggerItem className="bg-white dark:bg-forest-surface p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <StaggerItem className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-9 h-9 rounded-full bg-emerald-primary/15 text-emerald-primary font-display font-bold flex items-center justify-center mb-5 text-sm">
                 01
@@ -315,7 +315,7 @@ export default function HomePage() {
           </StaggerItem>
 
           {/* Step 2 */}
-          <StaggerItem className="bg-white dark:bg-forest-surface p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <StaggerItem className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-9 h-9 rounded-full bg-emerald-primary/15 text-emerald-primary font-display font-bold flex items-center justify-center mb-5 text-sm">
                 02
@@ -331,7 +331,7 @@ export default function HomePage() {
           </StaggerItem>
 
           {/* Step 3 */}
-          <StaggerItem className="bg-white dark:bg-forest-surface p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <StaggerItem className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-9 h-9 rounded-full bg-emerald-primary/15 text-emerald-primary font-display font-bold flex items-center justify-center mb-5 text-sm">
                 03
@@ -347,7 +347,7 @@ export default function HomePage() {
           </StaggerItem>
 
           {/* Step 4 */}
-          <StaggerItem className="bg-white dark:bg-forest-surface p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
+          <StaggerItem className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md p-7 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm flex flex-col justify-between hover:border-emerald-primary/40 transition-colors">
             <div>
               <div className="w-9 h-9 rounded-full bg-emerald-primary/15 text-emerald-primary font-display font-bold flex items-center justify-center mb-5 text-sm">
                 04
@@ -368,7 +368,7 @@ export default function HomePage() {
       <ExplainableDecisionMatrix />
 
       {/* 8. Feasibility Framework (Explainable Math) */}
-      <section id="feasibility" className="py-24 px-4 sm:px-6 bg-[#EAF2F4] dark:bg-[#071410] border-y border-borderLightSubtle dark:border-white/10 transition-colors duration-200">
+      <section id="feasibility" className="py-24 px-4 sm:px-6 bg-transparent border-y border-borderLightSubtle dark:border-white/10 transition-colors duration-200">
         <div className="max-w-container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <Reveal>
             <span className="px-3 py-1 rounded-full bg-emerald-primary/15 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
@@ -418,13 +418,13 @@ export default function HomePage() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.2} className="bg-white dark:bg-[#122820] text-textLightPrimary dark:text-[#F4F8F5] p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-xl">
+          <Reveal delay={0.2} className="bg-white/80 dark:bg-[#122820]/80 backdrop-blur-md text-textLightPrimary dark:text-[#F4F8F5] p-8 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-borderLightSubtle/80 dark:border-white/10 mb-6">
               <span className="text-xs uppercase tracking-wider font-mono text-emerald-primary font-semibold">Deterministic Formulation</span>
               <span className="text-xs text-textLightSecondary dark:text-[#C0CEC5] font-mono">Eq. 2</span>
             </div>
 
-            <div className="bg-[#F3F6F0] dark:bg-[#18352A] p-5 rounded-xl border border-borderLightSubtle dark:border-white/10 font-mono text-sm mb-6 text-center text-emerald-primary font-bold">
+            <div className="bg-[#F3F6F0]/80 dark:bg-[#18352A]/80 p-5 rounded-xl border border-borderLightSubtle dark:border-white/10 font-mono text-sm mb-6 text-center text-emerald-primary font-bold">
               S = 100 · Σ ( w_f · s_f )
             </div>
 
@@ -432,7 +432,7 @@ export default function HomePage() {
               Where each factor score <code className="text-emerald-primary font-mono font-semibold">s_f ∈ [0, 1]</code> is calculated against your stated resources. The composite score <code className="text-emerald-primary font-mono font-semibold">S</code> is displayed only when inputs are known.
             </p>
 
-            <div className="p-4 rounded-xl bg-[#EAF3ED] dark:bg-forest-800/60 border border-emerald-primary/20 dark:border-white/10 flex items-start gap-3">
+            <div className="p-4 rounded-xl bg-[#EAF3ED]/80 dark:bg-forest-800/60 border border-emerald-primary/20 dark:border-white/10 flex items-start gap-3">
               <Info className="w-4 h-4 text-emerald-primary mt-0.5 shrink-0" />
               <p className="text-xs text-textLightSecondary dark:text-[#C0CEC5] leading-relaxed">
                 <strong>Safety is an eligibility gate, never a score:</strong> If an idea violates safety boundaries (e.g. food contact with uncertified plastic, hazardous electronics), it is dropped completely regardless of score.
@@ -444,7 +444,7 @@ export default function HomePage() {
 
       {/* 9. Safety and Responsible Use Callout */}
       <section id="responsible-recycling" className="py-20 px-4 sm:px-6 max-w-container mx-auto">
-        <div className="bg-[#102A22] text-[#F4F8F5] rounded-3xl p-8 sm:p-12 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
+        <div className="bg-[#102A22]/80 backdrop-blur-md text-[#F4F8F5] rounded-3xl p-8 sm:p-12 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-semibold mb-4">
               <AlertTriangle className="w-3.5 h-3.5" />

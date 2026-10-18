@@ -135,7 +135,7 @@ export function FluidParticlesBackground({
       return (n1 + n2 + n3) * Math.PI
     }
 
-    // Interactive mouse listeners
+    // Interactive mouse listeners — attach to window so pointer is tracked across all page content
     const onPointerMove = (e: PointerEvent) => {
       if (!interactive) return
       const rect = canvas.getBoundingClientRect()
@@ -151,16 +151,16 @@ export function FluidParticlesBackground({
     }
 
     if (interactive) {
-      container.addEventListener("pointermove", onPointerMove, { passive: true })
-      container.addEventListener("pointerleave", onPointerLeave, { passive: true })
+      window.addEventListener("pointermove", onPointerMove, { passive: true })
+      document.addEventListener("pointerleave", onPointerLeave, { passive: true })
     }
 
     // Animation Loop
     const render = () => {
       time += 0.005
 
-      // Gentle trail persistence: clear with high-opacity dark green for fluid motion trails
-      ctx.fillStyle = "rgba(16, 42, 34, 0.22)"
+      // Smooth trail persistence matching theme background #0B1713
+      ctx.fillStyle = "rgba(11, 23, 19, 0.20)"
       ctx.fillRect(0, 0, width, height)
 
       const pLength = particles.length
@@ -236,8 +236,8 @@ export function FluidParticlesBackground({
       cancelAnimationFrame(animationFrameId)
       resizeObserver.disconnect()
       if (interactive) {
-        container.removeEventListener("pointermove", onPointerMove)
-        container.removeEventListener("pointerleave", onPointerLeave)
+        window.removeEventListener("pointermove", onPointerMove)
+        document.removeEventListener("pointerleave", onPointerLeave)
       }
     }
   }, [particleCount, mobileParticleCount, interactive, particleColors])
@@ -250,11 +250,11 @@ export function FluidParticlesBackground({
       aria-hidden="true"
     >
       <canvas ref={canvasRef} className="block w-full h-full pointer-events-none" />
-      {/* Subtle radial overlay for perfect text contrast in center */}
+      {/* Subtle radial vignette that keeps particles brilliant and clear while maintaining text readability */}
       <div 
         className="absolute inset-0 pointer-events-none" 
         style={{
-          background: "radial-gradient(circle at 50% 45%, rgba(16, 42, 34, 0.4) 0%, rgba(11, 31, 25, 0.85) 100%)"
+          background: "radial-gradient(circle at 50% 40%, rgba(11, 23, 19, 0) 0%, rgba(11, 23, 19, 0.45) 100%)"
         }}
       />
     </div>

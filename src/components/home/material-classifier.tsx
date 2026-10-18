@@ -373,7 +373,7 @@ export function MaterialClassifier() {
               key={cat.id}
               type="button"
               onClick={() => handleSelectMaterial(cat.id)}
-              className="group p-4 rounded-2xl bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/60 hover:shadow-md transition-all text-left focus-ring"
+              className="group p-4 rounded-2xl bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/60 hover:shadow-md transition-all text-left focus-ring"
             >
               <div className="w-10 h-10 rounded-xl bg-emerald-primary/10 flex items-center justify-center text-emerald-primary mb-3 group-hover:bg-emerald-primary/20 transition-colors">
                 {cat.icon}
@@ -407,7 +407,7 @@ export function MaterialClassifier() {
           Based on your answers, we&apos;ve built a pre-filled description for your waste scan. You can refine it on the next screen.
         </p>
 
-        <div className="bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 rounded-xl p-4 text-left text-xs text-textLightSecondary dark:text-textDarkSecondary font-mono mb-6 leading-relaxed">
+        <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 rounded-xl p-4 text-left text-xs text-textLightSecondary dark:text-textDarkSecondary font-mono mb-6 leading-relaxed">
           {prefilledText}
         </div>
 
@@ -415,7 +415,7 @@ export function MaterialClassifier() {
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-forest-elevated border border-borderLightSubtle dark:border-white/10 text-sm font-semibold text-textLightPrimary dark:text-textDarkPrimary hover:border-emerald-primary transition-colors focus-ring"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/80 dark:bg-forest-elevated/80 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 text-sm font-semibold text-textLightPrimary dark:text-textDarkPrimary hover:border-emerald-primary transition-colors focus-ring"
           >
             <ChevronLeft className="w-4 h-4" />
             Adjust Answers
@@ -480,7 +480,7 @@ export function MaterialClassifier() {
 
       {/* Safety Gate Alert */}
       {safetyGateMessage && (
-        <div className="mb-5 flex items-start gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-amber-900 dark:text-amber-200 text-sm">
+        <div className="mb-5 flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 backdrop-blur-md border border-amber-500/30 text-amber-900 dark:text-amber-200 text-sm">
           <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <div>
             <strong className="font-semibold block mb-1">Safety Notice</strong>
@@ -511,7 +511,7 @@ export function MaterialClassifier() {
             key={option}
             type="button"
             onClick={() => handleAnswer(currentQuestion.key, option)}
-            className="w-full text-left p-4 rounded-xl bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/60 hover:bg-emerald-primary/5 dark:hover:bg-emerald-primary/10 transition-all text-sm text-textLightPrimary dark:text-textDarkPrimary font-medium flex items-center justify-between group focus-ring"
+            className="w-full text-left p-4 rounded-xl bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/60 hover:bg-emerald-primary/5 dark:hover:bg-emerald-primary/10 transition-all text-sm text-textLightPrimary dark:text-textDarkPrimary font-medium flex items-center justify-between group focus-ring"
           >
             <span>{option}</span>
             <ChevronRight className="w-4 h-4 text-textLightSecondary dark:text-textDarkSecondary group-hover:text-emerald-primary transition-colors" />

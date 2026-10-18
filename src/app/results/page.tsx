@@ -41,7 +41,7 @@ function IdeaDetailPanel({ idea, isSaved, onToggleSave, onFeedback }: {
   return (
     <div className="h-full flex flex-col gap-5">
       {/* Header */}
-      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 shadow-sm">
+      <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 shadow-sm">
         {/* Badges */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
@@ -92,7 +92,7 @@ function IdeaDetailPanel({ idea, isSaved, onToggleSave, onFeedback }: {
       />
 
       {/* Quick Specs */}
-      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-5 shadow-sm">
+      <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md rounded-2xl border border-borderLightSubtle dark:border-white/10 p-5 shadow-sm">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div>
             <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
@@ -134,7 +134,7 @@ function IdeaDetailPanel({ idea, isSaved, onToggleSave, onFeedback }: {
       </div>
 
       {/* Feasibility Score */}
-      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-5 shadow-sm">
+      <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md rounded-2xl border border-borderLightSubtle dark:border-white/10 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs font-bold text-textLightPrimary dark:text-textDarkPrimary uppercase tracking-wider">
             Feasibility Breakdown
@@ -208,7 +208,7 @@ function IdeaDetailPanel({ idea, isSaved, onToggleSave, onFeedback }: {
             className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-colors focus-ring ${
               isSaved
                 ? "bg-emerald-primary text-forest-950 border-emerald-primary"
-                : "bg-white dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary"
+                : "bg-white/80 dark:bg-forest-elevated/80 backdrop-blur-md text-textLightPrimary dark:text-textDarkPrimary border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary"
             }`}
           >
             {isSaved ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
@@ -250,10 +250,10 @@ function IdeaCard({ idea, index, isSelected, onClick }: {
     <button
       type="button"
       onClick={onClick}
-      className={`w-full text-left p-4 rounded-2xl border transition-all focus-ring ${
+      className={`w-full text-left p-4 rounded-2xl border transition-all focus-ring backdrop-blur-md ${
         isSelected
-          ? "bg-emerald-primary/5 dark:bg-emerald-primary/10 border-emerald-primary shadow-sm"
-          : "bg-white dark:bg-forest-surface border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
+          ? "bg-emerald-primary/10 dark:bg-emerald-primary/15 border-emerald-primary shadow-sm"
+          : "bg-white/80 dark:bg-forest-surface/75 border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
       }`}
     >
       <div className="flex items-start justify-between gap-3 mb-2">
