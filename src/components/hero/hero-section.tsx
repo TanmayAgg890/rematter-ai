@@ -3,20 +3,10 @@
 import * as React from "react"
 import Link from "next/link"
 import { ArrowRight, Sparkles, ShieldCheck, Cpu, RefreshCw } from "lucide-react"
-import { FluidParticlesBackground } from "@/components/ui/fluid-particles-background"
 
 export function HeroSection() {
   return (
-    <section className="relative w-full min-h-[580px] lg:min-h-[700px] flex items-center justify-center bg-[#0B1713] text-[#F4F8F5] overflow-hidden py-20 px-4 sm:px-6">
-      {/* 1. Fluid Particles Background Canvas */}
-      <FluidParticlesBackground 
-        particleCount={750}
-        mobileParticleCount={320}
-        interactive={true}
-        backgroundColor="#102A22"
-        particleColors={["#2FC48A", "#9BE7BD", "#18352A", "#F4F8F5", "#5FD69E"]}
-      />
-
+    <section className="relative w-full min-h-[580px] lg:min-h-[700px] flex items-center justify-center bg-transparent text-[#F4F8F5] overflow-hidden py-20 px-4 sm:px-6">
       {/* 2. Centered Content Container */}
       <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
         {/* Eyebrow badge */}

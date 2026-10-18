@@ -1,8 +1,10 @@
 "use client"
 
+import * as React from "react"
 import Link from "next/link"
 import { HeroSection } from "@/components/hero/hero-section"
 import { InteractiveWasteInput } from "@/components/home/interactive-waste-input"
+import { MaterialClassifier } from "@/components/home/material-classifier"
 import { ExplainableDecisionMatrix } from "@/components/home/explainable-decision-matrix"
 import { Reveal, StaggerContainer, StaggerItem } from "@/components/motion/reveal"
 import { 
@@ -27,13 +29,54 @@ import {
 } from "lucide-react"
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = React.useState<"scan" | "classify">("scan")
+
   return (
     <div className="flex flex-col w-full bg-ivory dark:bg-[#0B1713] transition-colors duration-200">
       {/* 1. Fluid Particles Hero Section */}
       <HeroSection />
 
-      {/* 2. Interactive Multimodal Waste Input Section */}
-      <InteractiveWasteInput />
+      {/* 2. Tab Switcher: Scan vs Classify */}
+      <div id="waste-input" className="bg-[#0B1713] dark:bg-[#0B1713]">
+        {/* Tab Bar */}
+        <div className="max-w-container mx-auto px-4 sm:px-6 pt-6">
+          <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 gap-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab("scan")}
+              className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold transition-all focus-ring ${
+                activeTab === "scan"
+                  ? "bg-emerald-primary text-forest-950 shadow-sm"
+                  : "text-[#C0CEC5] hover:text-[#F4F8F5] hover:bg-white/10"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Scan Your Waste
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("classify")}
+              className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold transition-all focus-ring ${
+                activeTab === "classify"
+                  ? "bg-emerald-primary text-forest-950 shadow-sm"
+                  : "text-[#C0CEC5] hover:text-[#F4F8F5] hover:bg-white/10"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              Classify Your Items
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "scan" ? (
+          <InteractiveWasteInput />
+        ) : (
+          <div className="max-w-container mx-auto px-4 sm:px-6 pb-12">
+            <MaterialClassifier />
+          </div>
+        )}
+      </div>
 
       {/* 3. Trust & Principles Strip */}
       <section className="bg-[#102A22] dark:bg-[#071410] border-b border-white/10 py-4 px-4 overflow-hidden">

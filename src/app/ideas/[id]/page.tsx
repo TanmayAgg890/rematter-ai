@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useScanStore } from "@/lib/store/use-scan-store"
 import { ProjectPlan, ReuseIdea } from "@/types"
 import { FIXTURE_ITEMS } from "@/data/fixtures"
+import { Product3DPreview } from "@/components/ui/product-3d-preview"
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -23,8 +24,17 @@ import {
   RotateCcw,
   Sparkles,
   Flag,
-  Share2
+  Share2,
+  Search
 } from "lucide-react"
+
+function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" {...props}>
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  )
+}
 
 export default function IdeaPlanPage() {
   const params = useParams()
@@ -269,8 +279,78 @@ export default function IdeaPlanPage() {
         </div>
       </div>
 
+      {/* ── Rotatable 3D Product Preview ── */}
+      {(plan?.title || currentIdea?.title) && (
+        <div className="mb-8">
+          <Product3DPreview
+            productTitle={plan?.title || currentIdea?.title || "Reclaimed Item"}
+            materialCategory={currentIdea?.category}
+            description={plan?.outcome || currentIdea?.description}
+          />
+        </div>
+      )}
+
+      {/* ── Process Overview ── */}
+      {(plan?.outcome || currentIdea?.description) && (
+        <div className="bg-emerald-primary/5 dark:bg-emerald-primary/10 border border-emerald-primary/20 rounded-2xl p-5 mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-4 h-4 text-emerald-primary" />
+            <span className="text-xs font-bold text-emerald-primary uppercase tracking-wider">Process Overview</span>
+          </div>
+          <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">
+            {plan?.outcome || currentIdea?.description}
+          </p>
+        </div>
+      )}
+
+      {/* ── Watch It Being Made (YouTube Search) ── */}
+      {(plan?.title || currentIdea?.title) && (() => {
+        const searchTerm = encodeURIComponent(
+          `${plan?.title || currentIdea?.title || "upcycle project"} DIY tutorial step by step`
+        )
+        const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${searchTerm}`
+
+        return (
+          <div className="mb-8 bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 flex items-center justify-center shrink-0">
+                <YoutubeIcon className="w-6 h-6 text-red-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-base font-bold text-textLightPrimary dark:text-textDarkPrimary mb-1 flex items-center gap-2">
+                  Watch It Being Made
+                </h2>
+                <p className="text-xs text-textLightSecondary dark:text-textDarkSecondary mb-3 leading-relaxed">
+                  Search YouTube for hands-on tutorials related to this project. Results are provided by YouTube and are not curated or verified by ReMatter AI.
+                </p>
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-forest-elevated border border-borderLightSubtle dark:border-white/10 text-xs mb-3">
+                  <Search className="w-3.5 h-3.5 text-textLightSecondary dark:text-textDarkSecondary shrink-0" />
+                  <span className="text-textLightSecondary dark:text-textDarkSecondary truncate font-mono">
+                    {decodeURIComponent(searchTerm)}
+                  </span>
+                </div>
+                <a
+                  href={youtubeSearchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors shadow-sm focus-ring"
+                >
+                  <YoutubeIcon className="w-3.5 h-3.5" />
+                  <span>Search on YouTube</span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </a>
+                <p className="text-[10px] text-textLightSecondary dark:text-textDarkSecondary mt-2 italic">
+                  YouTube Search — results not verified by ReMatter AI
+                </p>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Materials & Tools Needed ("Already Have vs Need to Get") */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
         {/* Materials */}
         <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm">
           <h2 className="text-sm font-bold text-textLightPrimary dark:text-textDarkPrimary uppercase tracking-wider mb-4 flex items-center gap-2">

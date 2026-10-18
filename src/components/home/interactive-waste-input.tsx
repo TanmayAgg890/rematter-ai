@@ -22,34 +22,28 @@ import { useScanStore } from "@/lib/store/use-scan-store"
 
 const QUICK_PROMPTS = [
   {
-    lang: "en",
-    label: "Glass jars + Scrap wood",
-    text: "I have 4 clean glass jars and some wooden pallet offcuts. I want to make a zero-budget kitchen spice rack or succulent planter using simple hand tools.",
+    label: "Plastic bottles → herb planters",
+    text: "I have several 2-liter PET beverage bottles and leftover cotton rope. I want to make self-watering indoor herb planters with zero extra budget.",
   },
   {
-    lang: "hi",
-    label: "पुरानी टी-शर्ट और डेनिम (हिन्दी)",
-    text: "मेरे पास 3 पुरानी कॉटन टी-शर्ट और फटी हुई डेनिम जीन्स हैं। बिना सिलाई मशीन के इनसे मजबूत शॉपिंग बैग या फ्लोर मैट कैसे बना सकते हैं?",
+    label: "Cardboard boxes → desk organizer",
+    text: "I have lots of corrugated Amazon delivery boxes and packing foam. I want to build a desk organizer or storage drawer with zero budget.",
   },
   {
-    lang: "hinglish",
-    label: "Cardboard + Delivery boxes (Hinglish)",
-    text: "Mere paas bohot saare corrugated Amazon delivery boxes aur packing foam hai. Desk organizer ya storage drawer banana hai zero budget mein.",
+    label: "Old clothes → no-sew bag",
+    text: "I have 3 old cotton t-shirts and torn denim jeans. How can I make a sturdy shopping bag or floor mat without a sewing machine?",
   },
   {
-    lang: "en",
-    label: "Plastic bottles + Cotton rope",
-    text: "Several 2-liter PET beverage bottles and leftover cotton rope. Looking for self-watering indoor herb planters.",
+    label: "Glass jars + wood scraps → spice rack",
+    text: "I have 4 clean glass jars and some wooden pallet offcuts. I want to make a zero-budget kitchen spice rack using simple hand tools.",
   },
   {
-    lang: "hi",
-    label: "टूटा हुआ सिरामिक कप और टाइल्स",
-    text: "टूटा हुआ सिरामिक चाय का कप और कुछ बची हुई टाइल्स हैं। क्या इनसे कोई डेकोरेटिव मोज़ेक कोस्टर या पेन स्टैंड बनाया जा सकता है?",
+    label: "What can I make with e-waste?",
+    text: "I have an old broken laptop, some USB cables, and keyboard parts. What can I safely repurpose or recycle from these electronics?",
   },
   {
-    lang: "hinglish",
-    label: "Purani cycle tyre & tube (Hinglish)",
-    text: "Purana bicycle tyre aur rubber inner tube hai. Waterproof tool pouch ya heavy-duty garden tie straps kaise banaye?",
+    label: "Wood scraps → garden planter",
+    text: "I have leftover untreated pine offcuts and some scrap plywood. What's the best beginner-friendly outdoor planter I can build?",
   },
 ]
 

@@ -4,6 +4,7 @@ import { Navbar } from "@/components/navigation/navbar"
 import { Footer } from "@/components/navigation/footer"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { RematterGuide } from "@/components/assistant/rematter-guide"
+import { GlobalParticlesBackground } from "@/components/ui/global-particles-background"
 
 export const metadata: Metadata = {
   title: "ReMatter AI — Your waste has another purpose",
@@ -41,9 +42,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-[#0B1713] dark:bg-[#0B1713] text-textDarkPrimary antialiased selection:bg-emerald-primary/30 selection:text-white">
+        {/* Global ambient fluid particles — fixed background, pointer-events disabled */}
+        <GlobalParticlesBackground />
         <ThemeProvider>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 relative z-10">{children}</main>
           <RematterGuide />
           <Footer />
         </ThemeProvider>

@@ -116,7 +116,18 @@ export default function PreferencesPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-textLightSecondary dark:text-textDarkSecondary mb-2">
           <span>Personalize Your Resources</span>
-          <span>Step {step} of {totalSteps}</span>
+          <div className="flex items-center gap-3">
+            <span>Step {step} of {totalSteps}</span>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isGeneratingIdeas}
+              className="text-emerald-primary hover:underline font-bold text-xs transition-colors flex items-center gap-1"
+            >
+              <span>Quick Results</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
         </div>
         <div className="w-full h-1.5 bg-borderLightSubtle dark:bg-white/10 rounded-full overflow-hidden">
           <div

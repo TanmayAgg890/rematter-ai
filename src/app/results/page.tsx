@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useScanStore } from "@/lib/store/use-scan-store"
 import { ReuseIdea } from "@/types"
+import { Product3DPreview } from "@/components/ui/product-3d-preview"
 import { 
   Sparkles, 
   ArrowRight, 
@@ -17,20 +18,309 @@ import {
   Clock, 
   ShieldCheck, 
   AlertTriangle, 
-  CheckCircle2, 
-  ChevronRight, 
+  CheckCircle2,
   Info,
   Filter,
   Recycle,
-  Layers
+  ChevronRight,
+  Eye,
+  SlidersHorizontal,
+  X
 } from "lucide-react"
 
+// ─── Idea Detail Panel ────────────────────────────────────────────────────────
+function IdeaDetailPanel({ idea, isSaved, onToggleSave, onFeedback }: {
+  idea: ReuseIdea
+  isSaved: boolean
+  onToggleSave: () => void
+  onFeedback: () => void
+}) {
+  const score = idea.feasibility.score
+  const breakdown = idea.feasibility.breakdown
+
+  return (
+    <div className="h-full flex flex-col gap-5">
+      {/* Header */}
+      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 shadow-sm">
+        {/* Badges */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+            idea.category === "reuse"
+              ? "bg-emerald-primary/10 text-emerald-primary dark:text-mint"
+              : idea.category === "repurpose"
+              ? "bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300"
+              : "bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300"
+          }`}>
+            {idea.category}
+          </span>
+          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase ${
+            idea.level === 1
+              ? "bg-emerald/15 dark:bg-emerald/20 text-emerald-800 dark:text-mint"
+              : idea.level === 2
+              ? "bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300"
+              : "bg-purple-100 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300"
+          }`}>
+            Level {idea.level}
+          </span>
+          {idea.reviewStatus === "demo_fixture" && (
+            <span className="px-2 py-0.5 rounded bg-lime/40 text-forest text-[10px] font-semibold">Demo</span>
+          )}
+        </div>
+
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-textLightPrimary dark:text-textDarkPrimary mb-2">
+          {idea.title}
+        </h2>
+        <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed mb-4">
+          {idea.description}
+        </p>
+
+        {/* Why this fits */}
+        <div className="p-3.5 rounded-xl bg-ivory/80 dark:bg-forest-elevated/80 border border-borderLightSubtle dark:border-white/10 text-xs text-textLightPrimary dark:text-textDarkPrimary flex items-start gap-2.5">
+          <CheckCircle2 className="w-4 h-4 text-emerald-primary shrink-0 mt-0.5" />
+          <div>
+            <strong className="font-semibold">Why this fits your profile: </strong>
+            <span className="text-textLightSecondary dark:text-textDarkSecondary">{idea.whyThisFits}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Rotatable 3D Product Preview ── */}
+      <Product3DPreview
+        productTitle={idea.title}
+        materialCategory={idea.category}
+        description={idea.description}
+      />
+
+      {/* Quick Specs */}
+      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-5 shadow-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+          <div>
+            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" /> Est. Time
+            </span>
+            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+              {idea.estimatedMinutes ? `~${idea.estimatedMinutes} mins` : "Quick"}
+            </span>
+          </div>
+          <div>
+            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
+              <Coins className="w-3.5 h-3.5" /> Extra Cost
+            </span>
+            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+              {idea.estimatedCostINR
+                ? idea.estimatedCostINR.max === 0
+                  ? "₹0 (Free)"
+                  : `₹${idea.estimatedCostINR.min}–₹${idea.estimatedCostINR.max}`
+                : "₹0"}
+            </span>
+          </div>
+          <div>
+            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
+              <Wrench className="w-3.5 h-3.5" /> Tools
+            </span>
+            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary truncate block" title={idea.requiredTools.join(", ")}>
+              {idea.requiredTools.length > 0 ? idea.requiredTools.slice(0, 2).join(", ") : "None"}
+            </span>
+          </div>
+          <div>
+            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5" /> Difficulty
+            </span>
+            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary capitalize">
+              {idea.difficulty}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Feasibility Score */}
+      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-xs font-bold text-textLightPrimary dark:text-textDarkPrimary uppercase tracking-wider">
+            Feasibility Breakdown
+          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-display font-bold text-emerald-primary">
+              {score !== null ? `${score}` : "—"}
+            </span>
+            <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary">/100</span>
+          </div>
+        </div>
+
+        {/* Score progress bar */}
+        {score !== null && (
+          <div className="mb-4">
+            <div className="w-full h-2 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  score >= 70 ? "bg-emerald-primary" : score >= 40 ? "bg-amber-400" : "bg-red-400"
+                }`}
+                style={{ width: `${score}%` }}
+              />
+            </div>
+            <div className="flex justify-between mt-1">
+              <span className="text-[10px] text-textLightSecondary dark:text-textDarkSecondary">{idea.feasibility.qualitativeLabel}</span>
+            </div>
+          </div>
+        )}
+
+        {breakdown && (
+          <div className="grid grid-cols-5 gap-2 text-xs">
+            {[
+              { label: "Tools", key: "tool", weight: "25%" },
+              { label: "Budget", key: "budget", weight: "20%" },
+              { label: "Skill", key: "skill", weight: "20%" },
+              { label: "Time", key: "time", weight: "15%" },
+              { label: "Material", key: "material", weight: "20%" },
+            ].map(({ label, key, weight }) => (
+              <div key={key} className="text-center">
+                <div className="text-[10px] text-textLightSecondary dark:text-textDarkSecondary mb-1">{label}</div>
+                <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mb-1">
+                  <div className="h-full bg-emerald-primary" style={{ width: `${(breakdown as Record<string, number>)[key] * 100}%` }} />
+                </div>
+                <div className="text-[10px] font-mono text-textLightPrimary dark:text-textDarkPrimary">
+                  {Math.round((breakdown as Record<string, number>)[key] * 100)}%
+                </div>
+                <div className="text-[9px] text-textLightSecondary dark:text-textDarkSecondary">w={weight}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Safety Notes */}
+      {idea.safetyNotes && idea.safetyNotes.length > 0 && (
+        <div className="flex items-start gap-2 text-xs text-amber-950 dark:text-amber-200 bg-amber-50/80 dark:bg-amber-950/30 p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/40">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <strong>Safety: </strong>
+            <span>{idea.safetyNotes[0]}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-auto">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onToggleSave}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-colors focus-ring ${
+              isSaved
+                ? "bg-emerald-primary text-forest-950 border-emerald-primary"
+                : "bg-white dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary"
+            }`}
+          >
+            {isSaved ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+            <span>{isSaved ? "Saved" : "Save Idea"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onFeedback}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-textLightSecondary dark:text-textDarkSecondary hover:text-danger hover:bg-red-50 dark:hover:bg-red-950/30 border border-transparent hover:border-red-200 dark:hover:border-red-800/40 transition-colors focus-ring"
+          >
+            <ThumbsDown className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Not for Me</span>
+          </button>
+        </div>
+
+        <Link
+          href={`/ideas/${idea.id}`}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-primary text-forest-950 text-xs font-bold hover:bg-emerald-400 transition-all shadow-sm focus-ring"
+        >
+          <span>View Full Guide</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+// ─── Idea Card (Left Panel) ───────────────────────────────────────────────────
+function IdeaCard({ idea, index, isSelected, onClick }: {
+  idea: ReuseIdea
+  index: number
+  isSelected: boolean
+  onClick: () => void
+}) {
+  const score = idea.feasibility.score
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full text-left p-4 rounded-2xl border transition-all focus-ring ${
+        isSelected
+          ? "bg-emerald-primary/5 dark:bg-emerald-primary/10 border-emerald-primary shadow-sm"
+          : "bg-white dark:bg-forest-surface border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="w-5 h-5 rounded-full bg-forest text-mint text-[10px] font-mono font-bold flex items-center justify-center shrink-0">
+            {index + 1}
+          </span>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            idea.category === "reuse"
+              ? "bg-emerald-primary/10 text-emerald-primary dark:text-mint"
+              : idea.category === "repurpose"
+              ? "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+              : "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
+          }`}>
+            {idea.category}
+          </span>
+        </div>
+        <div className="text-right shrink-0">
+          <span className={`text-sm font-bold font-mono ${
+            score !== null && score >= 70 ? "text-emerald-primary" :
+            score !== null && score >= 40 ? "text-amber-500" : "text-red-400"
+          }`}>
+            {score !== null ? `${score}` : "—"}
+          </span>
+          <span className="text-[10px] text-textLightSecondary dark:text-textDarkSecondary">/100</span>
+        </div>
+      </div>
+
+      <h3 className={`text-sm font-bold mb-1 ${
+        isSelected
+          ? "text-textLightPrimary dark:text-textDarkPrimary"
+          : "text-textLightPrimary dark:text-textDarkPrimary"
+      }`}>
+        {idea.title}
+      </h3>
+
+      <p className="text-xs text-textLightSecondary dark:text-textDarkSecondary line-clamp-2 leading-relaxed mb-2">
+        {idea.description}
+      </p>
+
+      <div className="flex items-center gap-3 text-[10px] text-textLightSecondary dark:text-textDarkSecondary">
+        {idea.estimatedMinutes && (
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" /> {idea.estimatedMinutes}m
+          </span>
+        )}
+        <span className="flex items-center gap-1">
+          <Coins className="w-3 h-3" />
+          {idea.estimatedCostINR?.max === 0 ? "Free" : `₹${idea.estimatedCostINR?.max || 0}`}
+        </span>
+        <span className="capitalize">{idea.difficulty}</span>
+        {isSelected && (
+          <span className="ml-auto flex items-center gap-1 text-emerald-primary font-semibold">
+            <Eye className="w-3 h-3" /> Viewing
+          </span>
+        )}
+      </div>
+    </button>
+  )
+}
+
+// ─── Main Results Page ────────────────────────────────────────────────────────
 export default function ResultsPage() {
   const router = useRouter()
   const { 
     ideas, 
     assessment, 
-    preferences, 
     fallbackReason, 
     savedIdeaIds, 
     toggleSaveIdea,
@@ -39,9 +329,11 @@ export default function ResultsPage() {
 
   const [feedbackModalOpen, setFeedbackModalOpen] = React.useState(false)
   const [selectedIdeaForFeedback, setSelectedIdeaForFeedback] = React.useState<ReuseIdea | null>(null)
-  const [feedbackReason, setFeedbackReason] = React.useState("Lacks required tools")
+  const [feedbackReason, setFeedbackReason] = React.useState("Lacks required tools or equipment")
   const [feedbackSent, setFeedbackSent] = React.useState(false)
   const [hiddenIdeaIds, setHiddenIdeaIds] = React.useState<string[]>([])
+  const [selectedIdeaId, setSelectedIdeaId] = React.useState<string | null>(null)
+  const [compareModalOpen, setCompareModalOpen] = React.useState(false)
 
   React.useEffect(() => {
     if (!assessment) {
@@ -49,10 +341,27 @@ export default function ResultsPage() {
     }
   }, [assessment, router])
 
-  if (!assessment) return null
-
   const visibleIdeas = ideas.filter((idea) => !hiddenIdeaIds.includes(idea.id))
   const hasFeasibleIdeas = visibleIdeas.length > 0 && !fallbackReason
+
+  // Default selection to first idea
+  React.useEffect(() => {
+    if (visibleIdeas.length > 0 && !selectedIdeaId) {
+      setSelectedIdeaId(visibleIdeas[0].id)
+    }
+  }, [visibleIdeas, selectedIdeaId])
+
+  // When an idea is hidden, re-select first visible
+  React.useEffect(() => {
+    if (selectedIdeaId && hiddenIdeaIds.includes(selectedIdeaId)) {
+      const next = visibleIdeas.find(i => !hiddenIdeaIds.includes(i.id))
+      setSelectedIdeaId(next?.id ?? null)
+    }
+  }, [hiddenIdeaIds, selectedIdeaId, visibleIdeas])
+
+  if (!assessment) return null
+
+  const selectedIdea = visibleIdeas.find(i => i.id === selectedIdeaId) ?? visibleIdeas[0] ?? null
 
   const handleOpenFeedback = (idea: ReuseIdea) => {
     setSelectedIdeaForFeedback(idea)
@@ -84,24 +393,34 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-10">
       {/* Top Banner */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-borderLightSubtle dark:border-white/10">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-borderLightSubtle dark:border-white/10">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary dark:text-mint text-xs font-bold uppercase tracking-wider">
               Ranked Possibilities
             </span>
             <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary">
-              Item: <strong className="text-textLightPrimary dark:text-textDarkPrimary">{assessment.detectedMaterial}</strong>
+              Material: <strong className="text-textLightPrimary dark:text-textDarkPrimary">{assessment?.detectedMaterial}</strong>
             </span>
           </div>
-          <h1 className="text-3xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+          <h1 className="text-2xl sm:text-3xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary">
             Your Personalized Circular Pathways
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {visibleIdeas.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setCompareModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-primary/10 hover:bg-emerald-primary/20 text-emerald-primary border border-emerald-primary/30 text-xs font-semibold transition-colors focus-ring"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Compare Top Ideas</span>
+            </button>
+          )}
           <Link
             href="/preferences"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 text-xs font-semibold text-textLightPrimary dark:text-textDarkPrimary hover:border-emerald-primary transition-colors focus-ring"
@@ -116,10 +435,18 @@ export default function ResultsPage() {
             <Recycle className="w-3.5 h-3.5 text-emerald-primary" />
             <span>Recycling Center</span>
           </Link>
+          <button
+            type="button"
+            onClick={() => { resetScan(); router.push("/scan") }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white dark:bg-forest-surface border border-borderLightSubtle dark:border-white/10 text-xs font-semibold text-textLightPrimary dark:text-textDarkPrimary hover:border-emerald-primary transition-colors focus-ring"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-textLightSecondary dark:text-textDarkSecondary" />
+            <span className="hidden sm:inline">New Scan</span>
+          </button>
         </div>
       </div>
 
-      {/* Fallback Screen: When no DIY ideas fit constraints */}
+      {/* No Ideas Fallback */}
       {!hasFeasibleIdeas ? (
         <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-8 sm:p-12 text-center max-w-xl mx-auto shadow-sm">
           <div className="w-14 h-14 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto mb-4">
@@ -132,7 +459,6 @@ export default function ResultsPage() {
             {fallbackReason ||
               "We couldn't find a reuse idea that confidently fits your current tools, budget, and material condition. Let's find a better next step."}
           </p>
-
           <div className="space-y-3">
             <Link
               href="/recycling"
@@ -141,21 +467,16 @@ export default function ResultsPage() {
               <Recycle className="w-4 h-4 text-forest-950" />
               <span>Find Authorized Recycling Drop-offs</span>
             </Link>
-
             <Link
               href="/preferences"
               className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-full bg-ivory dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary border border-borderLightSubtle dark:border-white/10 font-semibold text-sm hover:border-emerald-primary transition-colors focus-ring"
             >
               <Filter className="w-4 h-4" />
-              <span>Change My Tools & Budget Limits</span>
+              <span>Change My Tools &amp; Budget Limits</span>
             </Link>
-
             <button
               type="button"
-              onClick={() => {
-                resetScan()
-                router.push("/scan")
-              }}
+              onClick={() => { resetScan(); router.push("/scan") }}
               className="w-full inline-flex items-center justify-center gap-2 py-2 text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -164,227 +485,47 @@ export default function ResultsPage() {
           </div>
         </div>
       ) : (
-        /* Idea Cards List */
-        <div className="space-y-6">
-          {visibleIdeas.map((idea, index) => {
-            const isSaved = savedIdeaIds.includes(idea.id)
-            const score = idea.feasibility.score
-            const breakdown = idea.feasibility.breakdown
+        /* Two-Column Layout */
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* ── Left Panel: Scrollable Card List ── */}
+          <div className="w-full lg:w-[340px] xl:w-[380px] shrink-0">
+            <div className="mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-primary" />
+              <span className="text-xs font-bold text-textLightSecondary dark:text-textDarkSecondary uppercase tracking-wider">
+                {visibleIdeas.length} idea{visibleIdeas.length !== 1 ? "s" : ""} found
+              </span>
+            </div>
+            <div className="space-y-3 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:pr-1">
+              {visibleIdeas.map((idea, index) => (
+                <IdeaCard
+                  key={idea.id}
+                  idea={idea}
+                  index={index}
+                  isSelected={idea.id === selectedIdeaId}
+                  onClick={() => setSelectedIdeaId(idea.id)}
+                />
+              ))}
+            </div>
+          </div>
 
-            return (
-              <div
-                key={idea.id}
-                className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-all p-6 sm:p-7 shadow-sm"
-              >
-                {/* Card Top: Badges & Rank */}
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-forest text-mint text-xs font-mono font-bold flex items-center justify-center">
-                      #{index + 1}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary text-xs font-bold uppercase tracking-wider">
-                      {idea.category}
-                    </span>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase ${
-                        idea.level === 1
-                          ? "bg-emerald/15 dark:bg-emerald/20 text-emerald-800 dark:text-mint"
-                          : idea.level === 2
-                          ? "bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300"
-                          : "bg-purple-100 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300"
-                      }`}
-                    >
-                      Level {idea.level}
-                    </span>
-                    {idea.reviewStatus === "demo_fixture" && (
-                      <span className="px-2 py-0.5 rounded bg-lime/40 text-forest text-[10px] font-semibold">
-                        Demo fixture
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Feasibility Pill */}
-                  <div className="flex items-center gap-2">
-                    <div className="text-right">
-                      <div className="text-xs font-bold text-textLightPrimary dark:text-textDarkPrimary flex items-center gap-1 justify-end">
-                        <span className="text-textLightSecondary dark:text-textDarkSecondary font-normal">Feasibility:</span>
-                        <span className="text-emerald-primary font-bold">{score !== null ? `${score}/100` : "Assessing"}</span>
-                      </div>
-                      <span className="text-[11px] text-textLightSecondary dark:text-textDarkSecondary block">
-                        {idea.feasibility.qualitativeLabel}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Title & Description */}
-                <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary mb-2">
-                  {idea.title}
-                </h2>
-                <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm leading-relaxed mb-4">
-                  {idea.description}
+          {/* ── Right Panel: Selected Idea Detail ── */}
+          <div className="flex-1 min-w-0 lg:sticky lg:top-6">
+            {selectedIdea ? (
+              <IdeaDetailPanel
+                idea={selectedIdea}
+                isSaved={savedIdeaIds.includes(selectedIdea.id)}
+                onToggleSave={() => toggleSaveIdea(selectedIdea.id)}
+                onFeedback={() => handleOpenFeedback(selectedIdea)}
+              />
+            ) : (
+              <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-12 text-center">
+                <Info className="w-8 h-8 text-textLightSecondary dark:text-textDarkSecondary mx-auto mb-3" />
+                <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary">
+                  Select an idea from the left to see details
                 </p>
-
-                {/* "Why This Fits You" */}
-                <div className="p-3.5 rounded-xl bg-ivory/80 dark:bg-forest-elevated/80 border border-borderLightSubtle dark:border-white/10 mb-5 text-xs text-textLightPrimary dark:text-textDarkPrimary flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-primary shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="font-semibold">Why this fits your profile: </strong>
-                    <span className="text-textLightSecondary dark:text-textDarkSecondary">{idea.whyThisFits}</span>
-                  </div>
-                </div>
-
-                {/* Constraints Metadata Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-borderLightSubtle dark:border-white/10 mb-5 text-xs">
-                  <div>
-                    <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" /> Est. Time
-                    </span>
-                    <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
-                      {idea.estimatedMinutes ? `~${idea.estimatedMinutes} mins` : "Quick"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-                      <Coins className="w-3.5 h-3.5" /> Extra Cost
-                    </span>
-                    <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
-                      {idea.estimatedCostINR
-                        ? idea.estimatedCostINR.max === 0
-                          ? "₹0 (Free)"
-                          : `₹${idea.estimatedCostINR.min} - ₹${idea.estimatedCostINR.max} (est.)`
-                        : "₹0"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-                      <Wrench className="w-3.5 h-3.5" /> Tools Needed
-                    </span>
-                    <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary truncate block" title={idea.requiredTools.join(", ")}>
-                      {idea.requiredTools.length > 0 ? idea.requiredTools.slice(0, 2).join(", ") : "None"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Difficulty
-                    </span>
-                    <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary capitalize">
-                      {idea.difficulty}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Feasibility Breakdown Bars */}
-                {breakdown && (
-                  <div className="mb-5 bg-slate-50 dark:bg-forest-elevated/40 p-4 rounded-xl border border-slate-200/80 dark:border-white/10 text-xs space-y-2">
-                    <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary block mb-1">
-                      Deterministic Feasibility Factor Breakdown:
-                    </span>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                      <div>
-                        <div className="flex justify-between text-[11px] mb-1">
-                          <span className="text-textLightSecondary dark:text-textDarkSecondary">Tools (25%)</span>
-                          <span className="font-mono font-medium text-textLightPrimary dark:text-textDarkPrimary">{Math.round(breakdown.tool * 100)}%</span>
-                        </div>
-                        <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-primary" style={{ width: `${breakdown.tool * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-[11px] mb-1">
-                          <span className="text-textLightSecondary dark:text-textDarkSecondary">Budget (20%)</span>
-                          <span className="font-mono font-medium text-textLightPrimary dark:text-textDarkPrimary">{Math.round(breakdown.budget * 100)}%</span>
-                        </div>
-                        <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-primary" style={{ width: `${breakdown.budget * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-[11px] mb-1">
-                          <span className="text-textLightSecondary dark:text-textDarkSecondary">Skill (20%)</span>
-                          <span className="font-mono font-medium text-textLightPrimary dark:text-textDarkPrimary">{Math.round(breakdown.skill * 100)}%</span>
-                        </div>
-                        <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-primary" style={{ width: `${breakdown.skill * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-[11px] mb-1">
-                          <span className="text-textLightSecondary dark:text-textDarkSecondary">Time (15%)</span>
-                          <span className="font-mono font-medium text-textLightPrimary dark:text-textDarkPrimary">{Math.round(breakdown.time * 100)}%</span>
-                        </div>
-                        <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-primary" style={{ width: `${breakdown.time * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-[11px] mb-1">
-                          <span className="text-textLightSecondary dark:text-textDarkSecondary">Material (20%)</span>
-                          <span className="font-mono font-medium text-textLightPrimary dark:text-textDarkPrimary">{Math.round(breakdown.material * 100)}%</span>
-                        </div>
-                        <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-primary" style={{ width: `${breakdown.material * 100}%` }} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Safety Notes if any */}
-                {idea.safetyNotes && idea.safetyNotes.length > 0 && (
-                  <div className="mb-5 flex items-start gap-2 text-xs text-amber-950 dark:text-amber-200 bg-amber-50/80 dark:bg-amber-950/30 p-3 rounded-lg border border-amber-200 dark:border-amber-800/40">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Safety Precaution: </strong>
-                      <span>{idea.safetyNotes[0]}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Action Controls */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleSaveIdea(idea.id)}
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-colors focus-ring ${
-                        isSaved
-                          ? "bg-emerald-primary text-forest-950 border-emerald-primary"
-                          : "bg-white dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary"
-                      }`}
-                    >
-                      {isSaved ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
-                      <span>{isSaved ? "Saved" : "Save Idea"}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleOpenFeedback(idea)}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-textLightSecondary dark:text-textDarkSecondary hover:text-danger hover:bg-red-50 dark:hover:bg-red-950/30 border border-transparent hover:border-red-200 dark:hover:border-red-800/40 transition-colors focus-ring"
-                    >
-                      <ThumbsDown className="w-3.5 h-3.5" />
-                      <span>Not Suitable for Me</span>
-                    </button>
-                  </div>
-
-                  <Link
-                    href={`/ideas/${idea.id}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-forest-900 text-white text-xs font-bold hover:bg-forest-800 transition-all shadow-sm hover:translate-x-0.5 focus-ring"
-                  >
-                    <span>View Full Plan</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-mint" />
-                  </Link>
-                </div>
               </div>
-            )
-          })}
+            )}
+          </div>
         </div>
       )}
 
@@ -447,6 +588,118 @@ export default function ResultsPage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Compare Ideas Modal */}
+      {compareModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-forest-surface rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-borderLightSubtle dark:border-white/10 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-4 border-b border-borderLightSubtle dark:border-white/10 mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-textLightPrimary dark:text-textDarkPrimary flex items-center gap-2">
+                  <SlidersHorizontal className="w-5 h-5 text-emerald-primary" />
+                  <span>Compare Top Circular Ideas</span>
+                </h3>
+                <p className="text-xs text-textLightSecondary dark:text-textDarkSecondary">
+                  Side-by-side evaluation across your constraints and feasibility factors
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCompareModalOpen(false)}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-textLightSecondary dark:text-textDarkSecondary"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-x-auto flex-1">
+              <table className="w-full text-xs text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="border-b border-borderLightSubtle dark:border-white/10">
+                    <th className="p-3 font-semibold text-textLightSecondary dark:text-textDarkSecondary w-1/4">Criteria</th>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <th key={idea.id} className="p-3 font-bold text-textLightPrimary dark:text-textDarkPrimary w-1/4">
+                        <span className="text-emerald-primary block text-[10px] uppercase font-mono">{idea.category}</span>
+                        {idea.title}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-borderLightSubtle dark:divide-white/5">
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Feasibility Match</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3">
+                        <span className="font-bold text-sm text-emerald-primary font-mono">
+                          {idea.feasibility.score !== null ? `${idea.feasibility.score}/100` : "—"}
+                        </span>
+                        <span className="block text-[10px] text-textLightSecondary dark:text-textDarkSecondary">
+                          {idea.feasibility.qualitativeLabel}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Difficulty</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3 capitalize text-textLightPrimary dark:text-textDarkPrimary font-semibold">
+                        {idea.difficulty} (Level {idea.level})
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Est. Time</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3 text-textLightPrimary dark:text-textDarkPrimary">
+                        {idea.estimatedMinutes ? `~${idea.estimatedMinutes} mins` : "Quick"}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Extra Cost</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3 font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+                        {idea.estimatedCostINR?.max === 0 ? "₹0 (Free)" : `₹${idea.estimatedCostINR?.max || 0}`}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Required Tools</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3 text-textLightPrimary dark:text-textDarkPrimary">
+                        {idea.requiredTools.length > 0 ? idea.requiredTools.join(", ") : "None"}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Why It Fits</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3 text-[11px] text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">
+                        {idea.whyThisFits}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-textLightSecondary dark:text-textDarkSecondary">Action</td>
+                    {visibleIdeas.slice(0, 3).map((idea) => (
+                      <td key={idea.id} className="p-3">
+                        <Link
+                          href={`/ideas/${idea.id}`}
+                          onClick={() => setCompareModalOpen(false)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-primary text-forest-950 font-bold text-xs hover:bg-emerald-400 transition-colors"
+                        >
+                          <span>Open Guide</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
