@@ -6,59 +6,59 @@ import { ArrowRight, Sparkles, ShieldCheck, Cpu, RefreshCw } from "lucide-react"
 
 export function HeroSection() {
   return (
-    <section className="relative w-full min-h-[580px] lg:min-h-[700px] flex items-center justify-center bg-transparent text-[#F4F8F5] overflow-hidden py-20 px-4 sm:px-6">
-      {/* 2. Centered Content Container */}
-      <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
+    <section className="relative w-full min-h-[580px] lg:min-h-[680px] flex items-center justify-center bg-transparent text-[#F5F3F3] overflow-hidden py-20 px-4 sm:px-6">
+      {/* Centered Content Container directly over fluid particles */}
+      <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
         {/* Eyebrow badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18352A]/90 border border-[#2FC48A]/30 backdrop-blur-sm mb-6 shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-emerald-primary animate-pulse" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-light">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-mocha-deep/80 border border-lavender-accent/30 backdrop-blur-md mb-8 shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-lavender-accent animate-pulse" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-platinum-light">
             AI-Powered Circular Materials Platform
           </span>
         </div>
 
-        {/* Main Headline (Clean non-editable text, zero caret/cursor artifact) */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-display font-medium tracking-tight text-[#F4F8F5] leading-[1.08] mb-6 select-text">
+        {/* Main Headline with high-quality typography, confident weight, and letter spacing */}
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-display font-medium tracking-tight text-[#F5F3F3] leading-[1.08] mb-6 select-text">
           Your Waste. <br className="hidden sm:inline" />
-          A New <span className="font-semibold text-emerald-primary italic">Possibility.</span>
+          A New <span className="font-semibold text-lavender-accent italic">Possibility.</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-[#C0CEC5] max-w-xl mx-auto leading-relaxed mb-9">
+        <p className="text-base sm:text-lg text-platinum max-w-2xl mx-auto leading-relaxed mb-10">
           Describe what you have, upload a photo, or share your waste-related problem. ReMatter AI helps you explore practical possibilities based on your resources, needs, and budget.
         </p>
 
         {/* CTA Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto mb-10">
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-12">
           <a
             href="#waste-input"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-7 rounded-full bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg focus-ring"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-8 rounded-full bg-mocha hover:bg-mocha-hover active:scale-95 text-white text-sm font-bold transition-all duration-200 shadow-md hover:shadow-lg focus-ring border border-mocha-light/30"
           >
-            <Sparkles className="w-4 h-4 text-forest-950" />
+            <Sparkles className="w-4 h-4 text-lavender" />
             <span>Start a Waste Scan</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-platinum-light" />
           </a>
 
           <Link
             href="/explore"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-[#18352A]/80 hover:bg-[#215344]/80 border border-white/15 text-[#F4F8F5] text-sm font-semibold transition-colors duration-200 focus-ring"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-7 rounded-full bg-mocha-surface/70 hover:bg-mocha-deep/80 border border-platinum/20 text-[#F5F3F3] text-sm font-semibold transition-colors duration-200 focus-ring backdrop-blur-md"
           >
             <span>Explore Materials</span>
           </Link>
         </div>
 
         {/* Compact Trust / Product Indicators */}
-        <div className="pt-6 border-t border-white/10 w-full max-w-lg flex flex-wrap items-center justify-center gap-6 text-xs text-[#C0CEC5]/80 font-medium">
+        <div className="pt-6 border-t border-platinum/15 w-full max-w-xl flex flex-wrap items-center justify-center gap-6 text-xs text-platinum font-medium">
           <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-primary" />
+            <ShieldCheck className="w-3.5 h-3.5 text-lavender-accent" />
             <span>Deterministic Safety Gates</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <RefreshCw className="w-3.5 h-3.5 text-emerald-primary" />
+            <RefreshCw className="w-3.5 h-3.5 text-lavender-accent" />
             <span>Transparent Feasibility Scoring</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-emerald-primary" />
+            <Cpu className="w-3.5 h-3.5 text-lavender-accent" />
             <span>Zero Hallucinated Recyclers</span>
           </div>
         </div>

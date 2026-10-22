@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useScanStore } from "@/lib/store/use-scan-store"
 import { ProjectPlan, ReuseIdea } from "@/types"
 import { FIXTURE_ITEMS } from "@/data/fixtures"
-import { Product3DPreview } from "@/components/ui/product-3d-preview"
+import { ProductReferenceCard } from "@/components/ui/product-reference-card"
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -16,7 +16,6 @@ import {
   Clock, 
   Coins, 
   Wrench, 
-  ShieldAlert, 
   AlertTriangle, 
   Check, 
   ExternalLink, 
@@ -24,8 +23,8 @@ import {
   RotateCcw,
   Sparkles,
   Flag,
-  Share2,
-  Search
+  Search,
+  RotateCw
 } from "lucide-react"
 
 function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -59,6 +58,7 @@ export default function IdeaPlanPage() {
   const [reportModalOpen, setReportModalOpen] = React.useState(false)
   const [reportReason, setReportReason] = React.useState("")
   const [reportSent, setReportSent] = React.useState(false)
+  const [resetConfirmOpen, setResetConfirmOpen] = React.useState(false)
 
   // Find the idea object
   const currentIdea: ReuseIdea | undefined = 
@@ -67,13 +67,13 @@ export default function IdeaPlanPage() {
       .flatMap((f) => f.candidateIdeas)
       .find((i) => i.id === ideaId)
 
-  // Restore progress from store if available
+  // Restore progress from persistent store on mount
   React.useEffect(() => {
     const savedProg = projectProgress[ideaId]
     if (savedProg) {
       setActiveStep(savedProg.currentStep)
-      setCompletedSteps(savedProg.completedStepIds)
-      setIsCompleted(savedProg.isCompleted)
+      setCompletedSteps(savedProg.completedStepIds || [])
+      setIsCompleted(savedProg.isCompleted || false)
     }
   }, [ideaId, projectProgress])
 
@@ -120,13 +120,13 @@ export default function IdeaPlanPage() {
   if (!currentIdea && !plan && !loading) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-xl font-bold text-textPrimary mb-2">Project Plan Not Found</h2>
-        <p className="text-sm text-textSecondary mb-6">
+        <h2 className="text-xl font-bold text-white mb-2">Project Plan Not Found</h2>
+        <p className="text-sm text-platinum mb-6">
           The requested idea could not be located in your current session.
         </p>
         <Link
           href="/results"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald text-white text-xs font-semibold hover:bg-emerald/90 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-mocha text-white text-xs font-semibold hover:bg-mocha-hover transition-colors shadow-sm"
         >
           Return to Recommendations
         </Link>
@@ -135,7 +135,10 @@ export default function IdeaPlanPage() {
   }
 
   const isSaved = savedIdeaIds.includes(ideaId)
+  const totalSteps = plan?.steps?.length || 5
+  const progressPercent = Math.round((completedSteps.length / Math.max(totalSteps, 1)) * 100)
 
+  // Step completion toggle with instant state and persistent store sync
   const handleToggleStepComplete = (stepNum: number) => {
     let updated: number[]
     if (completedSteps.includes(stepNum)) {
@@ -144,15 +147,36 @@ export default function IdeaPlanPage() {
       updated = [...completedSteps, stepNum]
     }
     setCompletedSteps(updated)
+    const allDone = updated.length >= totalSteps
+    setIsCompleted(allDone)
+
     updateProjectProgress(ideaId, {
       completedStepIds: updated,
-      currentStep: activeStep,
+      currentStep: stepNum,
+      totalSteps,
+      isCompleted: allDone,
+    })
+  }
+
+  const handleResetProgress = () => {
+    setCompletedSteps([])
+    setIsCompleted(false)
+    setActiveStep(1)
+    setResetConfirmOpen(false)
+
+    updateProjectProgress(ideaId, {
+      completedStepIds: [],
+      currentStep: 1,
+      isCompleted: false,
     })
   }
 
   const handleMarkProjectCompleted = () => {
+    const allStepNums = plan?.steps?.map(s => s.stepNumber) || [1, 2, 3, 4, 5]
+    setCompletedSteps(allStepNums)
     setIsCompleted(true)
     updateProjectProgress(ideaId, {
+      completedStepIds: allStepNums,
       isCompleted: true,
       completedAt: new Date().toISOString(),
     })
@@ -181,27 +205,71 @@ export default function IdeaPlanPage() {
     }
   }
 
+  const projectTitle = plan?.title || currentIdea?.title || "Reclaimed Item Project"
+  const projectDescription = plan?.outcome || currentIdea?.description || ""
+  const searchQuery = encodeURIComponent(`${projectTitle} DIY tutorial step by step`)
+  const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       {/* Back link */}
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <Link
           href="/results"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary transition-colors focus-ring"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-platinum hover:text-white transition-colors focus-ring"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to All Ideas</span>
         </Link>
+
+        {completedSteps.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setResetConfirmOpen(true)}
+            className="inline-flex items-center gap-1 text-xs text-platinum/70 hover:text-platinum focus-ring"
+          >
+            <RotateCw className="w-3 h-3" />
+            <span>Reset Progress</span>
+          </button>
+        )}
       </div>
 
-      {/* Plan Header */}
-      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 sm:p-8 shadow-sm mb-8">
+      {/* Confirmation modal for Reset Progress */}
+      {resetConfirmOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#211D1C] border border-white/20 rounded-2xl p-6 max-w-sm w-full text-center">
+            <h3 className="text-base font-bold text-white mb-2">Reset step progress?</h3>
+            <p className="text-xs text-platinum mb-5 leading-relaxed">
+              This will uncheck all marked steps for this project.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setResetConfirmOpen(false)}
+                className="px-4 py-2 rounded-full text-xs text-platinum hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleResetProgress}
+                className="px-5 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Section A: Product Title & Category */}
+      <div className="bg-[#211D1C]/80 backdrop-blur-md rounded-2xl border border-white/15 p-6 sm:p-8 shadow-sm mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary dark:text-mint text-xs font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-mocha-deep text-lavender text-xs font-bold uppercase tracking-wider border border-lavender-accent/30">
               {currentIdea?.category || "Project Plan"}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary text-xs font-bold uppercase">
+            <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-platinum text-xs font-bold uppercase border border-white/10">
               Level {currentIdea?.level || 1}
             </span>
           </div>
@@ -212,11 +280,11 @@ export default function IdeaPlanPage() {
               onClick={() => toggleSaveIdea(ideaId)}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors focus-ring ${
                 isSaved
-                  ? "bg-emerald-primary text-forest-950 border-emerald-primary"
-                  : "bg-white dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary"
+                  ? "bg-mocha text-white border-lavender-accent"
+                  : "bg-white/10 text-platinum border-white/10 hover:border-lavender-accent hover:text-white"
               }`}
             >
-              {isSaved ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+              {isSaved ? <BookmarkCheck className="w-3.5 h-3.5 text-lavender" /> : <Bookmark className="w-3.5 h-3.5" />}
               <span>{isSaved ? "Saved" : "Save"}</span>
             </button>
 
@@ -224,148 +292,125 @@ export default function IdeaPlanPage() {
               type="button"
               onClick={() => setReportModalOpen(true)}
               title="Report incorrect or unsafe advice"
-              className="p-1.5 rounded-full text-textLightSecondary dark:text-textDarkSecondary hover:text-danger hover:bg-red-50 dark:hover:bg-red-950/30 border border-transparent hover:border-red-200 dark:hover:border-red-800/40 transition-colors focus-ring"
+              className="p-1.5 rounded-full text-platinum hover:text-red-400 hover:bg-red-950/30 transition-colors focus-ring"
             >
               <Flag className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-display font-bold text-textLightPrimary dark:text-textDarkPrimary mb-3">
-          {plan?.title || currentIdea?.title}
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#F5F3F3] mb-4">
+          {projectTitle}
         </h1>
 
-        <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm leading-relaxed mb-6">
-          {plan?.outcome || currentIdea?.description}
+        {/* Section B: Short Description FIRST */}
+        <p className="text-platinum text-sm leading-relaxed mb-6">
+          {projectDescription}
         </p>
 
         {/* Quick Specs Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-borderLightSubtle dark:border-white/10 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10 text-xs">
           <div>
-            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> Prep Time
+            <span className="text-platinum block mb-0.5 flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-lavender-accent" /> Prep Time
             </span>
-            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+            <span className="font-semibold text-white">
               {plan?.prepTimeMinutes || 5} mins
             </span>
           </div>
 
           <div>
-            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> Execution
+            <span className="text-platinum block mb-0.5 flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-lavender-accent" /> Execution
             </span>
-            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+            <span className="font-semibold text-white">
               {plan?.executionTimeMinutes || currentIdea?.estimatedMinutes || 25} mins
             </span>
           </div>
 
           <div>
-            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-              <Coins className="w-3.5 h-3.5" /> Extra Budget
+            <span className="text-platinum block mb-0.5 flex items-center gap-1">
+              <Coins className="w-3.5 h-3.5 text-lavender-accent" /> Extra Budget
             </span>
-            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary">
+            <span className="font-semibold text-white">
               {plan?.budgetEstimate || "₹0 (Free)"}
             </span>
           </div>
 
           <div>
-            <span className="text-textLightSecondary dark:text-textDarkSecondary block mb-0.5 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Difficulty
+            <span className="text-platinum block mb-0.5 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-lavender-accent" /> Difficulty
             </span>
-            <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary capitalize">
+            <span className="font-semibold text-white capitalize">
               {plan?.difficulty || currentIdea?.difficulty || "Beginner"}
             </span>
           </div>
         </div>
       </div>
 
-      {/* ── Rotatable 3D Product Preview ── */}
-      {(plan?.title || currentIdea?.title) && (
-        <div className="mb-8">
-          <Product3DPreview
-            productTitle={plan?.title || currentIdea?.title || "Reclaimed Item"}
-            materialCategory={currentIdea?.category}
-            description={plan?.outcome || currentIdea?.description}
-          />
-        </div>
-      )}
+      {/* Section C: Real Product Reference Image (Replaces 3D model) */}
+      <div className="mb-6">
+        <ProductReferenceCard
+          productTitle={projectTitle}
+          materialCategory={currentIdea?.category}
+          description={projectDescription}
+          ideaId={ideaId}
+        />
+      </div>
 
-      {/* ── Process Overview ── */}
-      {(plan?.outcome || currentIdea?.description) && (
-        <div className="bg-emerald-primary/5 dark:bg-emerald-primary/10 border border-emerald-primary/20 rounded-2xl p-5 mb-8">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-emerald-primary" />
-            <span className="text-xs font-bold text-emerald-primary uppercase tracking-wider">Process Overview</span>
+      {/* Section D: YouTube Tutorial Search Link (Near top, before step instructions) */}
+      <div className="mb-8 bg-[#211D1C]/80 backdrop-blur-md rounded-2xl border border-white/15 p-6 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-xl bg-red-950/40 border border-red-500/30 flex items-center justify-center shrink-0">
+            <YoutubeIcon className="w-6 h-6 text-red-400" />
           </div>
-          <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">
-            {plan?.outcome || currentIdea?.description}
-          </p>
-        </div>
-      )}
-
-      {/* ── Watch It Being Made (YouTube Search) ── */}
-      {(plan?.title || currentIdea?.title) && (() => {
-        const searchTerm = encodeURIComponent(
-          `${plan?.title || currentIdea?.title || "upcycle project"} DIY tutorial step by step`
-        )
-        const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${searchTerm}`
-
-        return (
-          <div className="mb-8 bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 flex items-center justify-center shrink-0">
-                <YoutubeIcon className="w-6 h-6 text-red-500" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-base font-bold text-textLightPrimary dark:text-textDarkPrimary mb-1 flex items-center gap-2">
-                  Watch It Being Made
-                </h2>
-                <p className="text-xs text-textLightSecondary dark:text-textDarkSecondary mb-3 leading-relaxed">
-                  Search YouTube for hands-on tutorials related to this project. Results are provided by YouTube and are not curated or verified by ReMatter AI.
-                </p>
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-forest-elevated border border-borderLightSubtle dark:border-white/10 text-xs mb-3">
-                  <Search className="w-3.5 h-3.5 text-textLightSecondary dark:text-textDarkSecondary shrink-0" />
-                  <span className="text-textLightSecondary dark:text-textDarkSecondary truncate font-mono">
-                    {decodeURIComponent(searchTerm)}
-                  </span>
-                </div>
-                <a
-                  href={youtubeSearchUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors shadow-sm focus-ring"
-                >
-                  <YoutubeIcon className="w-3.5 h-3.5" />
-                  <span>Search on YouTube</span>
-                  <ExternalLink className="w-3 h-3 opacity-70" />
-                </a>
-                <p className="text-[10px] text-textLightSecondary dark:text-textDarkSecondary mt-2 italic">
-                  YouTube Search — results not verified by ReMatter AI
-                </p>
-              </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-base font-bold text-[#F5F3F3] mb-1 flex items-center gap-2">
+              Watch It Being Made
+            </h2>
+            <p className="text-xs text-platinum mb-3 leading-relaxed">
+              Explore step-by-step video tutorials demonstrating this project on YouTube.
+            </p>
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-black/30 border border-white/10 text-xs mb-3">
+              <Search className="w-3.5 h-3.5 text-platinum shrink-0" />
+              <span className="text-platinum truncate font-mono">
+                {decodeURIComponent(searchQuery)}
+              </span>
             </div>
+            <a
+              href={youtubeSearchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition-colors shadow-sm focus-ring"
+            >
+              <YoutubeIcon className="w-3.5 h-3.5" />
+              <span>Search Tutorial on YouTube</span>
+              <ExternalLink className="w-3 h-3 opacity-70" />
+            </a>
+            <p className="text-[10px] text-platinum/60 mt-2 italic">
+              YouTube Search link for verified relevant project builds
+            </p>
           </div>
-        )
-      })()}
+        </div>
+      </div>
 
-      {/* Materials & Tools Needed ("Already Have vs Need to Get") */}
+      {/* Section E: Materials & Tools Checklist (Already Have vs Need to Get) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
         {/* Materials */}
-        <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm">
-          <h2 className="text-sm font-bold text-textLightPrimary dark:text-textDarkPrimary uppercase tracking-wider mb-4 flex items-center gap-2">
+        <div className="bg-[#211D1C]/80 backdrop-blur-md p-6 rounded-2xl border border-white/15 shadow-sm">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-platinum mb-4 flex items-center gap-2">
             <span>Materials Checklist</span>
           </h2>
           <ul className="space-y-2.5 text-xs">
             {plan?.materialsNeeded && plan.materialsNeeded.length > 0 ? (
               plan.materialsNeeded.map((m, i) => (
-                <li key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-ivory/60 dark:bg-forest-elevated/60 border border-borderLightSubtle dark:border-white/10">
-                  <span className="font-medium text-textLightPrimary dark:text-textDarkPrimary">{m.name}</span>
+                <li key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10">
+                  <span className="font-medium text-white">{m.name}</span>
                   <span
                     className={`px-2.5 py-0.5 rounded text-[10px] font-semibold ${
                       m.alreadyHaveLikely
-                        ? "bg-emerald/15 dark:bg-emerald/20 text-emerald-800 dark:text-mint"
-                        : "bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200"
+                        ? "bg-mocha/40 text-lavender border border-lavender-accent/30"
+                        : "bg-amber-950/40 text-amber-300 border border-amber-600/30"
                     }`}
                   >
                     {m.alreadyHaveLikely ? "Already have" : "Need to get"}
@@ -373,43 +418,56 @@ export default function IdeaPlanPage() {
                 </li>
               ))
             ) : (
-              <li className="text-textLightSecondary dark:text-textDarkSecondary italic">Only your primary reclaimed item</li>
+              <li className="text-platinum italic">Only your primary reclaimed item</li>
             )}
           </ul>
         </div>
 
         {/* Tools */}
-        <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm">
-          <h2 className="text-sm font-bold text-textLightPrimary dark:text-textDarkPrimary uppercase tracking-wider mb-4 flex items-center gap-2">
-            <Wrench className="w-4 h-4 text-emerald-primary" />
+        <div className="bg-[#211D1C]/80 backdrop-blur-md p-6 rounded-2xl border border-white/15 shadow-sm">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-platinum mb-4 flex items-center gap-2">
+            <Wrench className="w-4 h-4 text-lavender-accent" />
             <span>Required Equipment</span>
           </h2>
           <ul className="space-y-2.5 text-xs">
             {plan?.toolsNeeded && plan.toolsNeeded.length > 0 ? (
               plan.toolsNeeded.map((t, i) => (
-                <li key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-ivory/60 dark:bg-forest-elevated/60 border border-borderLightSubtle dark:border-white/10">
-                  <span className="font-medium text-textLightPrimary dark:text-textDarkPrimary">{t.name}</span>
-                  <span className="px-2.5 py-0.5 rounded bg-slate-100 dark:bg-forest-elevated text-textLightPrimary dark:text-textDarkPrimary text-[10px] font-semibold">
-                    Standard toolkit
+                <li key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10">
+                  <span className="font-medium text-white">{t.name}</span>
+                  <span className="px-2.5 py-0.5 rounded bg-white/10 text-platinum text-[10px] font-semibold border border-white/10">
+                    Standard tool
                   </span>
                 </li>
               ))
             ) : (
-              <li className="text-textLightSecondary dark:text-textDarkSecondary italic">No tools required</li>
+              <li className="text-platinum italic">No tools required (no-cut / zero-tool reuse)</li>
             )}
           </ul>
         </div>
       </div>
 
-      {/* Step-by-Step Instructions */}
-      <div className="bg-white dark:bg-forest-surface rounded-2xl border border-borderLightSubtle dark:border-white/10 p-6 sm:p-8 shadow-sm mb-8">
-        <div className="flex items-center justify-between pb-4 border-b border-borderLightSubtle dark:border-white/10 mb-6">
-          <h2 className="text-lg font-bold text-textLightPrimary dark:text-textDarkPrimary">Numbered Execution Steps</h2>
-          <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary font-medium">
-            {completedSteps.length} of {plan?.steps?.length || 0} completed
-          </span>
+      {/* Section F: Step-by-Step Instructions & Interactive Completion Tracking */}
+      <div className="bg-[#211D1C]/80 backdrop-blur-md rounded-2xl border border-white/15 p-6 sm:p-8 shadow-sm mb-8">
+        {/* Progress Bar & Header */}
+        <div className="pb-4 border-b border-white/10 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-bold text-[#F5F3F3]">
+              Step-by-Step Execution
+            </h2>
+            <span className="text-xs font-mono text-lavender-accent font-semibold">
+              {completedSteps.length} of {totalSteps} completed ({progressPercent}%)
+            </span>
+          </div>
+
+          <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-mocha transition-all duration-300"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
 
+        {/* Steps List */}
         <div className="space-y-6">
           {plan?.steps && plan.steps.map((st) => {
             const isStepDone = completedSteps.includes(st.stepNumber)
@@ -418,49 +476,53 @@ export default function IdeaPlanPage() {
                 key={st.stepNumber}
                 className={`p-5 rounded-xl border transition-all ${
                   isStepDone
-                    ? "bg-emerald/5 dark:bg-emerald/10 border-emerald/30 dark:border-emerald/40"
-                    : "bg-ivory/40 dark:bg-forest-elevated/40 border-borderLightSubtle dark:border-white/10"
+                    ? "bg-mocha/20 border-lavender-accent/40 text-white"
+                    : "bg-white/5 border-white/10 text-platinum"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-full bg-forest-900 text-mint text-xs font-bold flex items-center justify-center shrink-0">
+                    <span className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center shrink-0 border ${
+                      isStepDone 
+                        ? "bg-mocha text-white border-lavender-accent" 
+                        : "bg-white/10 text-platinum border-white/15"
+                    }`}>
                       {st.stepNumber}
                     </span>
-                    <h3 className="text-base font-bold text-textLightPrimary dark:text-textDarkPrimary">{st.title}</h3>
+                    <h3 className="text-base font-bold text-[#F5F3F3]">{st.title}</h3>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleToggleStepComplete(st.stepNumber)}
                     aria-label={`Mark step ${st.stepNumber} complete`}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 border transition-colors focus-ring ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 border transition-all focus-ring ${
                       isStepDone
-                        ? "bg-emerald-primary text-forest-950 border-emerald-primary"
-                        : "bg-white dark:bg-forest-elevated text-textLightSecondary dark:text-textDarkSecondary border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
+                        ? "bg-mocha text-white border-lavender-accent shadow-sm"
+                        : "bg-white/10 text-platinum border-white/10 hover:border-lavender-accent hover:text-white"
                     }`}
                   >
                     <Check className="w-3.5 h-3.5" />
-                    <span>{isStepDone ? "Done" : "Mark Done"}</span>
+                    <span>{isStepDone ? "Completed ✓" : "Mark as Complete"}</span>
                   </button>
                 </div>
 
-                <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary leading-relaxed pl-10 mb-3">
+                <p className="text-sm leading-relaxed pl-10 mb-3 text-platinum">
                   {st.instruction}
                 </p>
 
-                {/* Safety Warning if present */}
+                {/* Safety Warning */}
                 {st.safetyWarning && (
-                  <div className="ml-10 p-2.5 rounded bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2 mb-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="ml-10 p-2.5 rounded-lg bg-amber-950/40 border border-amber-600/40 text-amber-200 text-xs flex items-start gap-2 mb-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <span><strong>Precaution:</strong> {st.safetyWarning}</span>
                   </div>
                 )}
 
-                {/* Pro-tip if present */}
+                {/* Pro-tip */}
                 {st.tip && (
-                  <div className="ml-10 text-xs text-emerald-primary dark:text-mint italic font-medium">
-                    💡 Tip: {st.tip}
+                  <div className="ml-10 text-xs text-lavender italic font-medium">
+                    💡 Pro Tip: {st.tip}
                   </div>
                 )}
               </div>
@@ -468,114 +530,35 @@ export default function IdeaPlanPage() {
           })}
         </div>
 
-        {/* Completion Action */}
-        <div className="mt-8 pt-6 border-t border-borderLightSubtle dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Completion State */}
+        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             {isCompleted ? (
-              <div className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-mint bg-emerald/10 px-4 py-2 rounded-full border border-emerald/20">
-                <CheckCircle2 className="w-4 h-4 text-emerald-primary" />
-                <span>Project marked completed!</span>
+              <div className="inline-flex items-center gap-2 text-sm font-bold text-white bg-mocha/40 px-5 py-2.5 rounded-full border border-lavender-accent/40 shadow-sm">
+                <CheckCircle2 className="w-4 h-4 text-lavender-accent" />
+                <span>All steps completed! Great work circular maker.</span>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={handleMarkProjectCompleted}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-primary text-forest-950 text-sm font-semibold hover:bg-emerald-400 transition-colors shadow-sm focus-ring"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-mocha hover:bg-mocha-hover text-white text-sm font-semibold transition-all shadow-md focus-ring border border-mocha-light/20"
               >
-                <CheckCircle2 className="w-4 h-4 text-forest-950" />
-                <span>Mark Project as Completed</span>
+                <CheckCircle2 className="w-4 h-4 text-lavender" />
+                <span>Mark All Steps Complete</span>
               </button>
             )}
           </div>
 
           <Link
             href="/recycling"
-            className="text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary inline-flex items-center gap-1.5 focus-ring"
+            className="text-xs font-semibold text-platinum hover:text-white inline-flex items-center gap-1.5 focus-ring"
           >
-            <Recycle className="w-3.5 h-3.5 text-emerald-primary" />
-            <span>Recycling alternative if you abandon project</span>
+            <Recycle className="w-3.5 h-3.5 text-lavender-accent" />
+            <span>Recycling alternative if project is abandoned</span>
           </Link>
         </div>
       </div>
-
-      {/* Safety & Common Mistakes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-textLightPrimary dark:text-textDarkPrimary mb-3 flex items-center gap-1.5">
-            <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <span>Safety Checklist</span>
-          </h3>
-          <ul className="space-y-2 text-xs text-textLightSecondary dark:text-textDarkSecondary">
-            {plan?.safetyChecklist && plan.safetyChecklist.map((sc, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
-                <span>{sc}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-borderLightSubtle dark:border-white/10 shadow-sm">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-textLightPrimary dark:text-textDarkPrimary mb-3 flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-textLightSecondary dark:text-textDarkSecondary" />
-            <span>Common Pitfalls to Avoid</span>
-          </h3>
-          <ul className="space-y-2 text-xs text-textLightSecondary dark:text-textDarkSecondary">
-            {plan?.commonMistakes && plan.commonMistakes.map((cm, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="text-textLightSecondary dark:text-textDarkSecondary font-bold">•</span>
-                <span>{cm}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Report Modal */}
-      {reportModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-forest-surface rounded-2xl max-w-md w-full p-6 shadow-xl border border-borderLightSubtle dark:border-white/10">
-            <h3 className="text-lg font-bold text-textLightPrimary dark:text-textDarkPrimary mb-2">
-              Report Incorrect or Unsafe Advice
-            </h3>
-            <p className="text-xs text-textLightSecondary dark:text-textDarkSecondary mb-4">
-              Help maintain strict safety and material fidelity. Tell us what is incorrect about this plan.
-            </p>
-
-            {reportSent ? (
-              <div className="p-4 bg-emerald/10 text-emerald-800 dark:text-mint rounded-lg text-sm text-center font-medium">
-                ✓ Report submitted. Thank you for keeping ReMatter safe.
-              </div>
-            ) : (
-              <>
-                <textarea
-                  rows={3}
-                  value={reportReason}
-                  onChange={(e) => setReportReason(e.target.value)}
-                  placeholder="e.g. Chemical incompatibility, unsafe cutting instruction, impossible tool requirement..."
-                  className="w-full px-3.5 py-2.5 text-xs border border-borderLightSubtle dark:border-white/10 bg-white dark:bg-forest-elevated rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-emerald-primary text-textLightPrimary dark:text-textDarkPrimary placeholder:text-textLightSecondary/60 dark:placeholder:text-textDarkSecondary/60"
-                />
-                <div className="flex items-center justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setReportModalOpen(false)}
-                    className="px-4 py-2 rounded-full text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSendReport}
-                    className="px-5 py-2 rounded-full bg-danger text-white text-xs font-semibold shadow-sm focus-ring"
-                  >
-                    Send Report
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

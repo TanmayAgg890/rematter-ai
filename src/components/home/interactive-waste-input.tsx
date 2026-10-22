@@ -7,174 +7,130 @@ import {
   ArrowRight, 
   UploadCloud, 
   Image as ImageIcon, 
-  Video as VideoIcon, 
-  FileText, 
   X, 
-  Wrench, 
-  Coins, 
-  Target, 
-  Check, 
   Clipboard, 
-  Languages,
   AlertCircle
 } from "lucide-react"
 import { useScanStore } from "@/lib/store/use-scan-store"
+import { validateImageUpload } from "@/lib/validation/upload"
 
+// English-only suggestion scenarios reflecting the user requirements
 const QUICK_PROMPTS = [
   {
-    label: "Plastic bottles → herb planters",
+    label: "Plastic Bottle → Self-Watering Planter",
     text: "I have several 2-liter PET beverage bottles and leftover cotton rope. I want to make self-watering indoor herb planters with zero extra budget.",
   },
   {
-    label: "Cardboard boxes → desk organizer",
-    text: "I have lots of corrugated Amazon delivery boxes and packing foam. I want to build a desk organizer or storage drawer with zero budget.",
+    label: "Old Jeans → Denim Organizer",
+    text: "I have torn denim jeans and cotton scraps. I want to create a hanging wall pocket organizer using basic household scissors.",
   },
   {
-    label: "Old clothes → no-sew bag",
-    text: "I have 3 old cotton t-shirts and torn denim jeans. How can I make a sturdy shopping bag or floor mat without a sewing machine?",
+    label: "Cardboard Box → Desk Organizer",
+    text: "I have corrugated delivery boxes and kraft paper. I want to build a sturdy multi-tier desk organizer with zero extra budget.",
   },
   {
-    label: "Glass jars + wood scraps → spice rack",
-    text: "I have 4 clean glass jars and some wooden pallet offcuts. I want to make a zero-budget kitchen spice rack using simple hand tools.",
+    label: "Glass Jar → Storage Container",
+    text: "I have 4 clean glass food jars with intact metal lids. I want to turn them into airtight pantry or workshop storage containers.",
   },
   {
-    label: "What can I make with e-waste?",
-    text: "I have an old broken laptop, some USB cables, and keyboard parts. What can I safely repurpose or recycle from these electronics?",
-  },
-  {
-    label: "Wood scraps → garden planter",
-    text: "I have leftover untreated pine offcuts and some scrap plywood. What's the best beginner-friendly outdoor planter I can build?",
+    label: "Wood Scraps → Small Planter",
+    text: "I have leftover untreated timber offcuts and small wooden slats. I want to build a simple beginner windowsill planter box.",
   },
 ]
 
-const WASTE_WORDS_ROW_1 = [
-  "REUSE", "REPURPOSE", "RECYCLE", "UPCYCLE", "CIRCULARITY", "GLASS", "CARDBOARD", "TEXTILE", "ORGANIC", "METALS", "RECOVER", "REIMAGINE"
-]
-
-const WASTE_WORDS_ROW_2 = [
-  "PLASTICS", "E-WASTE", "BIOMASS", "WOOD", "ZERO WASTE", "UPCYCLE", "RESPONSIBLE", "REPAIR", "DIVERSIFY", "INNOVATE", "SUSTAINABLE", "REMATTER"
+const WASTE_WORDS_ROW = [
+  "RECOVER", "REIMAGINE", "REUSE", "REPURPOSE", "RECYCLE", "UPCYCLE", "CIRCULARITY", "GLASS", "CARDBOARD", "TEXTILE", "WOOD", "ORGANIC", "METALS", "ZERO WASTE"
 ]
 
 export function InteractiveWasteInput() {
   const router = useRouter()
   const setScanInput = useScanStore((state) => state.setScanInput)
-  const setPreferences = useScanStore((state) => state.setPreferences)
 
   const [description, setDescription] = React.useState("")
-  const [imagePreview, setImagePreview] = React.useState<string | null>(null)
-  const [mediaType, setMediaType] = React.useState<"image" | "video_frame" | "document" | null>(null)
-  const [mediaNote, setMediaNote] = React.useState<string | null>(null)
-  const [pastedStatus, setPastedStatus] = React.useState<string | null>(null)
-  const [isProcessingMedia, setIsProcessingMedia] = React.useState(false)
   const [selectedTools, setSelectedTools] = React.useState<"household" | "basic_tools" | "workshop">("household")
-  const [selectedBudget, setSelectedBudget] = React.useState<"free" | "under_200" | "flexible">("free")
-  const [selectedGoal, setSelectedGoal] = React.useState<"useful" | "min_effort" | "sellable">("useful")
+  const [selectedBudget, setSelectedBudget] = React.useState<"free" | "under_200" | "200_1000">("free")
+  const [selectedGoal, setSelectedGoal] = React.useState<"useful" | "sellable" | "min_effort" | "recycle">("useful")
+
+  // Media attachment states
+  const [attachedImage, setAttachedImage] = React.useState<{ file: File; preview: string; name: string } | null>(null)
+  const [mediaError, setMediaError] = React.useState<string | null>(null)
+  const [pastedStatus, setPastedStatus] = React.useState<string | null>(null)
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
-  const videoInputRef = React.useRef<HTMLInputElement>(null)
-  const docInputRef = React.useRef<HTMLInputElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  // Listen for Clipboard Paste (Ctrl+V) anywhere within the container
+  // Native Clipboard Ctrl+V pasting listener
   React.useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
-      if (!e.clipboardData) return
-      const items = e.clipboardData.items
+      const items = e.clipboardData?.items
+      if (!items) return
+
       for (let i = 0; i < items.length; i++) {
-        if (items[i].type.startsWith("image/")) {
-          const file = items[i].getAsFile()
-          if (file) {
-            e.preventDefault()
-            processImageFile(file, "Pasted from clipboard")
-            break
+        const item = items[i]
+        if (item.type.indexOf("image") !== -1) {
+          const file = item.getAsFile()
+          if (!file) continue
+
+          const val = validateImageUpload(file)
+          if (!val.isValid) {
+            setMediaError(val.error || "Unsupported image from clipboard")
+            return
           }
+
+          const reader = new FileReader()
+          reader.onload = (event) => {
+            const previewUrl = event.target?.result as string
+            setAttachedImage({
+              file,
+              preview: previewUrl,
+              name: `pasted-image-${Date.now().toString().slice(-4)}.png`,
+            })
+            setMediaError(null)
+            setPastedStatus("Image pasted successfully")
+            setTimeout(() => setPastedStatus(null), 3000)
+          }
+          reader.readAsDataURL(file)
+          e.preventDefault()
+          break
         }
       }
     }
 
-    const node = containerRef.current
-    if (node) {
-      node.addEventListener("paste", handlePaste)
-      return () => node.removeEventListener("paste", handlePaste)
+    const currentElem = containerRef.current
+    if (currentElem) {
+      currentElem.addEventListener("paste", handlePaste)
+    }
+
+    return () => {
+      if (currentElem) {
+        currentElem.removeEventListener("paste", handlePaste)
+      }
     }
   }, [])
 
-  const processImageFile = (file: File, sourceNote = "Attached photo") => {
-    setIsProcessingMedia(true)
+  const handleImageUpload = (file: File) => {
+    setMediaError(null)
+    const val = validateImageUpload(file)
+    if (!val.isValid) {
+      setMediaError(val.error || "Invalid file")
+      return
+    }
+
     const reader = new FileReader()
     reader.onload = (e) => {
-      const result = e.target?.result as string
-      setImagePreview(result)
-      setMediaType("image")
-      setMediaNote(sourceNote)
-      setPastedStatus(sourceNote)
-      setIsProcessingMedia(false)
-      setTimeout(() => setPastedStatus(null), 3500)
-    }
-    reader.onerror = () => {
-      setIsProcessingMedia(false)
+      setAttachedImage({
+        file,
+        preview: e.target?.result as string,
+        name: file.name,
+      })
     }
     reader.readAsDataURL(file)
   }
 
-  // Handle Video file by extracting a clean representative frame using Canvas
-  const processVideoFile = (file: File) => {
-    setIsProcessingMedia(true)
-    setMediaNote("Extracting representative video frame...")
-    const video = document.createElement("video")
-    video.src = URL.createObjectURL(file)
-    video.muted = true
-    video.playsInline = true
-    video.currentTime = 1.0
-
-    video.onloadeddata = () => {
-      video.currentTime = Math.min(1.0, video.duration / 2)
-    }
-
-    video.onseeked = () => {
-      try {
-        const canvas = document.createElement("canvas")
-        canvas.width = video.videoWidth || 640
-        canvas.height = video.videoHeight || 360
-        const ctx = canvas.getContext("2d")
-        if (ctx) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-          const frameData = canvas.toDataURL("image/jpeg", 0.85)
-          setImagePreview(frameData)
-          setMediaType("video_frame")
-          setMediaNote("Representative video frame captured for visual AI analysis")
-          setPastedStatus("Frame extracted from video")
-          setTimeout(() => setPastedStatus(null), 3500)
-        }
-      } catch (err) {
-        console.error("Frame extraction error", err)
-      } finally {
-        setIsProcessingMedia(false)
-        URL.revokeObjectURL(video.src)
-      }
-    }
-
-    video.onerror = () => {
-      setIsProcessingMedia(false)
-      setMediaNote(null)
-    }
-  }
-
-  // Handle Document / Notes file
-  const processDocFile = (file: File) => {
-    setMediaType("document")
-    setMediaNote(`Attached notes: ${file.name} (${Math.round(file.size / 1024)} KB)`)
-    setPastedStatus(`Attached document: ${file.name}`)
-    setTimeout(() => setPastedStatus(null), 3500)
-  }
-
-  const handleClearMedia = () => {
-    setImagePreview(null)
-    setMediaType(null)
-    setMediaNote(null)
+  const handleRemoveImage = () => {
+    setAttachedImage(null)
+    setMediaError(null)
     if (fileInputRef.current) fileInputRef.current.value = ""
-    if (videoInputRef.current) videoInputRef.current.value = ""
-    if (docInputRef.current) docInputRef.current.value = ""
   }
 
   const handlePromptSelect = (promptText: string) => {
@@ -183,372 +139,202 @@ export function InteractiveWasteInput() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const trimmed = description.trim()
-    if (!trimmed && !imagePreview) return
+    if (!description.trim() && !attachedImage) {
+      setMediaError("Please describe your discarded item or attach a photo.")
+      return
+    }
 
-    // Save to global scan store
     setScanInput({
-      itemDescription: trimmed || "Uploaded waste material item",
-      imagePreviewUrl: imagePreview,
-      quantity: "1 unit / batch",
-      itemCondition: "clean",
+      itemDescription: description,
+      imagePreviewUrl: attachedImage?.preview || null,
       consentGiven: true,
     })
 
+    const setPreferences = useScanStore.getState().setPreferences
     setPreferences({
       tools: selectedTools,
       budget: selectedBudget,
       goal: selectedGoal,
     })
 
-    // Route to the complete scan & assessment workflow
     router.push("/scan")
   }
 
   return (
-    <section 
-      id="waste-input" 
-      ref={containerRef}
-      className="relative w-full py-20 px-4 sm:px-6 bg-transparent text-[#F4F8F5] overflow-hidden border-y border-white/10"
-    >
-      {/* 1. Atmospheric Animated Waste Words Background */}
+    <div ref={containerRef} className="w-full">
+      {/* 1. Moving Waste-Word Strip on a SINGLE solid mocha/dark-mocha background band */}
       <div 
         aria-hidden="true" 
-        className="absolute inset-0 pointer-events-none overflow-hidden flex flex-col justify-between py-6 opacity-25 select-none"
+        className="w-full bg-[#382923] dark:bg-[#2A1E1A] border-y border-white/10 py-3.5 overflow-hidden select-none shadow-inner"
       >
-        {/* Row 1 drifting left */}
-        <div className="animate-waste-drift-left whitespace-nowrap text-4xl sm:text-6xl font-display font-black tracking-widest text-[#2FC48A]">
-          {WASTE_WORDS_ROW_1.map((word, i) => (
-            <span key={i} className="mx-8 sm:mx-14 inline-block hover:opacity-100 transition-opacity">
-              {word} •
+        <div className="animate-waste-drift-left whitespace-nowrap text-xs sm:text-sm font-display font-semibold tracking-widest text-[#DCD6F7]">
+          {WASTE_WORDS_ROW.map((word, i) => (
+            <span key={i} className="mx-6 sm:mx-10 inline-block opacity-90 hover:opacity-100 transition-opacity">
+              {word} <span className="text-[#B9A9EE] mx-1.5">•</span>
             </span>
           ))}
-          {WASTE_WORDS_ROW_1.map((word, i) => (
-            <span key={`dup-${i}`} className="mx-8 sm:mx-14 inline-block">
-              {word} •
-            </span>
-          ))}
-        </div>
-
-        {/* Row 2 drifting right */}
-        <div className="animate-waste-drift-right whitespace-nowrap text-4xl sm:text-6xl font-display font-black tracking-widest text-[#9BE7BD]">
-          {WASTE_WORDS_ROW_2.map((word, i) => (
-            <span key={i} className="mx-8 sm:mx-14 inline-block">
-              {word} •
-            </span>
-          ))}
-          {WASTE_WORDS_ROW_2.map((word, i) => (
-            <span key={`dup2-${i}`} className="mx-8 sm:mx-14 inline-block">
-              {word} •
+          {WASTE_WORDS_ROW.map((word, i) => (
+            <span key={`dup-${i}`} className="mx-6 sm:mx-10 inline-block opacity-90">
+              {word} <span className="text-[#B9A9EE] mx-1.5">•</span>
             </span>
           ))}
         </div>
       </div>
 
-      {/* 2. Main Interactive Container */}
-      <div className="relative z-10 max-w-4xl mx-auto">
-        {/* Eyebrow & Title */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18352A]/80 border border-[#2FC48A]/30 backdrop-blur-md mb-4 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-primary" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-light">
-              Multimodal Waste Intelligence
-            </span>
-          </div>
-
-          <h2 className="text-3xl sm:text-4xl font-display font-semibold text-[#F4F8F5] mb-3">
-            What waste item do you want to solve?
-          </h2>
-          <p className="text-sm sm:text-base text-[#C0CEC5] leading-relaxed">
-            Type in English, हिन्दी, or Hinglish. Paste an image with <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-emerald-light font-mono text-xs">Ctrl+V</kbd>, attach a video frame, or select a ready-to-test scenario.
-          </p>
-        </div>
-
-        {/* Multilingual Quick Scenarios */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="text-xs font-semibold text-[#C0CEC5] flex items-center gap-1.5">
-              <Languages className="w-3.5 h-3.5 text-emerald-primary" />
-              Quick Inspiration Scenarios:
-            </span>
-            <span className="text-[11px] text-[#C0CEC5]/70 hidden sm:inline">
-              Click any chip to load description
-            </span>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {QUICK_PROMPTS.map((prompt, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handlePromptSelect(prompt.text)}
-                className="text-xs px-3 py-1.5 rounded-full bg-[#122820]/75 hover:bg-[#18352A]/90 border border-white/10 hover:border-emerald-primary/40 text-[#C0CEC5] hover:text-[#F4F8F5] backdrop-blur-md transition-all text-left flex items-center gap-1.5 focus-ring"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-primary/70" />
-                <span>{prompt.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Card Input Box */}
-        <form 
-          onSubmit={handleSubmit}
-          className="rounded-2xl bg-[#081511]/75 backdrop-blur-md border border-white/15 p-5 sm:p-7 shadow-2xl relative overflow-hidden focus-within:border-emerald-primary/50 transition-colors"
-        >
-          {/* Notification toast if pasted */}
-          {pastedStatus && (
-            <div className="absolute top-4 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-primary text-forest-950 font-bold text-xs shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
-              <Clipboard className="w-3.5 h-3.5" />
-              <span>{pastedStatus}</span>
-            </div>
-          )}
-
-          {/* Textarea for Natural Language */}
-          <div className="relative mb-5">
-            <label htmlFor="waste-description" className="sr-only">
-              Waste material description
-            </label>
-            <textarea
-              id="waste-description"
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe what you have (e.g. '5 glass juice bottles, broken wood pallet, no power tools, zero budget. Looking for functional home organizers'). You can also press Ctrl+V to paste a photo directly..."
-              className="w-full rounded-xl bg-[#081511]/90 border border-white/10 p-4 text-sm sm:text-base text-[#F4F8F5] placeholder:text-[#C0CEC5]/50 focus:outline-none focus:border-emerald-primary/60 focus:ring-1 focus:ring-emerald-primary/40 resize-none transition-all leading-relaxed"
-            />
-          </div>
-
-          {/* Media Attachments Preview */}
-          {imagePreview && (
-            <div className="mb-5 p-3.5 rounded-xl bg-[#081511]/80 border border-emerald-primary/30 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 overflow-hidden">
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/20 bg-black shrink-0">
-                  <img
-                    src={imagePreview}
-                    alt="Uploaded waste preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#F4F8F5] truncate">
-                      {mediaType === "video_frame" ? "Extracted Video Frame" : "Visual Media Attached"}
-                    </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-primary/20 text-emerald-light font-medium">
-                      Ready for AI
-                    </span>
-                  </div>
-                  {mediaNote && (
-                    <p className="text-[11px] text-[#C0CEC5] truncate mt-0.5">
-                      {mediaNote}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleClearMedia}
-                className="p-1.5 rounded-full bg-white/10 hover:bg-rose-500/20 text-[#C0CEC5] hover:text-rose-400 transition-colors focus-ring"
-                title="Remove attachment"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Document Note Preview */}
-          {mediaType === "document" && mediaNote && (
-            <div className="mb-5 p-3 rounded-xl bg-[#081511]/80 border border-white/15 flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-[#C0CEC5]">
-                <FileText className="w-4 h-4 text-emerald-primary" />
-                <span>{mediaNote}</span>
-              </div>
-              <button
-                type="button"
-                onClick={handleClearMedia}
-                className="text-[#C0CEC5] hover:text-rose-400"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* Quick Resource & Constraint Selectors */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 pt-2 border-t border-white/10">
-            {/* Tools */}
-            <div>
-              <label className="block text-[11px] font-semibold text-[#C0CEC5] mb-1.5 flex items-center gap-1.5">
-                <Wrench className="w-3 h-3 text-emerald-primary" />
-                Available Tools:
-              </label>
-              <div className="grid grid-cols-3 gap-1.5 text-xs">
-                {(["household", "basic_tools", "workshop"] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setSelectedTools(t)}
-                    className={`py-1.5 px-2 rounded-lg text-center font-medium capitalize border transition-all ${
-                      selectedTools === t
-                        ? "bg-emerald-primary/20 border-emerald-primary text-[#F4F8F5]"
-                        : "bg-[#081511] border-white/10 text-[#C0CEC5] hover:border-white/25"
-                    }`}
-                  >
-                    {t === "household" ? "Household" : t === "basic_tools" ? "Hand Tools" : "Workshop"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Budget */}
-            <div>
-              <label className="block text-[11px] font-semibold text-[#C0CEC5] mb-1.5 flex items-center gap-1.5">
-                <Coins className="w-3 h-3 text-emerald-primary" />
-                Budget Limit:
-              </label>
-              <div className="grid grid-cols-3 gap-1.5 text-xs">
-                {(["free", "under_200", "flexible"] as const).map((b) => (
-                  <button
-                    key={b}
-                    type="button"
-                    onClick={() => setSelectedBudget(b)}
-                    className={`py-1.5 px-2 rounded-lg text-center font-medium border transition-all ${
-                      selectedBudget === b
-                        ? "bg-emerald-primary/20 border-emerald-primary text-[#F4F8F5]"
-                        : "bg-[#081511] border-white/10 text-[#C0CEC5] hover:border-white/25"
-                    }`}
-                  >
-                    {b === "free" ? "₹0 (Free)" : b === "under_200" ? "< ₹200" : "Flexible"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Goal */}
-            <div>
-              <label className="block text-[11px] font-semibold text-[#C0CEC5] mb-1.5 flex items-center gap-1.5">
-                <Target className="w-3 h-3 text-emerald-primary" />
-                Primary Goal:
-              </label>
-              <div className="grid grid-cols-3 gap-1.5 text-xs">
-                {(["useful", "min_effort", "sellable"] as const).map((g) => (
-                  <button
-                    key={g}
-                    type="button"
-                    onClick={() => setSelectedGoal(g)}
-                    className={`py-1.5 px-2 rounded-lg text-center font-medium capitalize border transition-all ${
-                      selectedGoal === g
-                        ? "bg-emerald-primary/20 border-emerald-primary text-[#F4F8F5]"
-                        : "bg-[#081511] border-white/10 text-[#C0CEC5] hover:border-white/25"
-                    }`}
-                  >
-                    {g === "useful" ? "Functional" : g === "min_effort" ? "Easy Fix" : "Sellable"}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Action Footer: Media Buttons + Submit */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
-            {/* Attachment buttons */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Photo Upload */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) processImageFile(file, file.name)
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#081511] hover:bg-[#122820] border border-white/10 text-xs font-medium text-[#C0CEC5] hover:text-[#F4F8F5] transition-colors focus-ring"
-              >
-                <ImageIcon className="w-3.5 h-3.5 text-emerald-primary" />
-                <span>Upload Photo</span>
-              </button>
-
-              {/* Video Frame Extraction */}
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) processVideoFile(file)
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => videoInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#081511] hover:bg-[#122820] border border-white/10 text-xs font-medium text-[#C0CEC5] hover:text-[#F4F8F5] transition-colors focus-ring"
-                title="AI analyzes a clean extracted representative frame from your video"
-              >
-                <VideoIcon className="w-3.5 h-3.5 text-emerald-primary" />
-                <span>Video Frame</span>
-              </button>
-
-              {/* Notes / Document */}
-              <input
-                ref={docInputRef}
-                type="file"
-                accept=".txt,.pdf"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) processDocFile(file)
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => docInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#081511] hover:bg-[#122820] border border-white/10 text-xs font-medium text-[#C0CEC5] hover:text-[#F4F8F5] transition-colors focus-ring"
-              >
-                <FileText className="w-3.5 h-3.5 text-emerald-primary" />
-                <span>Attach Notes</span>
-              </button>
-
-              <span className="text-[11px] text-[#C0CEC5]/60 pl-2 hidden lg:inline">
-                or press <kbd className="font-mono text-emerald-light">Ctrl+V</kbd>
+      {/* 2. Main Interactive Container directly over Fluid Particles Background */}
+      <section 
+        id="waste-input" 
+        className="relative w-full py-16 px-4 sm:px-6 bg-transparent text-[#F5F3F3] overflow-hidden"
+      >
+        <div className="relative z-10 max-w-4xl mx-auto">
+          {/* Eyebrow & Title */}
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-mocha-deep/80 border border-lavender-accent/30 backdrop-blur-md mb-4 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-lavender-accent" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-platinum-light">
+                Multimodal Waste Intelligence
               </span>
             </div>
 
-            {/* Submit Action */}
-            <button
-              type="submit"
-              disabled={isProcessingMedia || (!description.trim() && !imagePreview)}
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-emerald-primary text-forest-950 font-bold text-sm hover:bg-emerald-400 active:scale-95 transition-all shadow-lg hover:shadow-emerald-primary/20 disabled:opacity-40 disabled:cursor-not-allowed focus-ring ml-auto"
-            >
-              <Sparkles className="w-4 h-4 text-forest-950" />
-              <span>Evaluate Possibilities</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <h2 className="text-3xl sm:text-4xl font-display font-semibold text-[#F5F3F3] mb-3">
+              What waste item do you want to solve?
+            </h2>
+            <p className="text-sm sm:text-base text-platinum leading-relaxed">
+              Describe what you have or press <kbd className="px-2 py-0.5 rounded bg-white/10 text-lavender-accent font-mono text-xs border border-white/10">Ctrl+V</kbd> to paste a photo directly from your clipboard.
+            </p>
           </div>
-        </form>
 
-        {/* Small Trust Disclaimer under box */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-[#C0CEC5]/75 text-center">
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-primary" />
-            Private & processed in-memory
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-primary" />
-            Zero hazardous DIY recommendations
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-primary" />
-            Instant feasibility & cost breakdown
-          </span>
+          {/* Quick Suggestion Chips (English-Only) */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-xs font-semibold text-platinum flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-lavender-accent" />
+                Quick Inspiration Scenarios:
+              </span>
+              <span className="text-[11px] text-platinum/70 hidden sm:inline">
+                Click any chip to load description
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {QUICK_PROMPTS.map((prompt, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handlePromptSelect(prompt.text)}
+                  className="text-xs px-3.5 py-1.5 rounded-full bg-mocha-surface/80 hover:bg-mocha-deep border border-platinum/15 hover:border-lavender-accent/50 text-platinum hover:text-[#F5F3F3] backdrop-blur-md transition-all text-left flex items-center gap-2 focus-ring"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-lavender-accent/80" />
+                  <span>{prompt.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Card Input Box (Translucent Glassmorphism) */}
+          <form 
+            onSubmit={handleSubmit}
+            className="rounded-2xl bg-[#211D1C]/75 backdrop-blur-md border border-white/15 p-5 sm:p-7 shadow-2xl relative overflow-hidden focus-within:border-lavender-accent/50 transition-colors"
+          >
+            {/* Notification toast if pasted */}
+            {pastedStatus && (
+              <div className="absolute top-4 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-mocha text-white font-bold text-xs shadow-lg border border-lavender-accent/40 animate-in fade-in slide-in-from-top-2 duration-200">
+                <Clipboard className="w-3.5 h-3.5 text-lavender" />
+                <span>{pastedStatus}</span>
+              </div>
+            )}
+
+            {/* Textarea for Natural Language */}
+            <div className="relative mb-5">
+              <label htmlFor="waste-description" className="sr-only">
+                Waste material description
+              </label>
+              <textarea
+                id="waste-description"
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what you have (e.g. '5 glass juice bottles, broken wood pallet, zero budget. Looking for functional home organizers'). You can also press Ctrl+V to paste a photo directly..."
+                className="w-full rounded-xl bg-[#171515]/90 border border-white/10 p-4 text-sm sm:text-base text-[#F5F3F3] placeholder:text-platinum/50 focus:outline-none focus:border-lavender-accent/60 focus:ring-1 focus:ring-lavender-accent/40 resize-none transition-all leading-relaxed"
+              />
+            </div>
+
+            {/* Attached Image Preview */}
+            {attachedImage && (
+              <div className="mb-5 p-3 rounded-xl bg-mocha-deep/60 border border-lavender-accent/30 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={attachedImage.preview}
+                    alt="Uploaded item"
+                    className="w-14 h-14 object-cover rounded-lg border border-white/20"
+                  />
+                  <div>
+                    <span className="text-xs font-semibold text-platinum-light block truncate max-w-[220px]">
+                      {attachedImage.name}
+                    </span>
+                    <span className="text-[11px] text-lavender block">
+                      Ready for vision analysis
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="p-1.5 rounded-lg text-platinum hover:text-white hover:bg-white/10 transition-colors focus-ring"
+                  title="Remove image"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {mediaError && (
+              <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                <span>{mediaError}</span>
+              </div>
+            )}
+
+            {/* Bottom Controls Row: File Picker & Submit */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) handleImageUpload(e.target.files[0])
+                  }}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-platinum hover:text-[#F5F3F3] transition-colors focus-ring"
+                >
+                  <ImageIcon className="w-4 h-4 text-lavender-accent" />
+                  <span>Choose Photo</span>
+                </button>
+
+                <span className="text-[11px] text-platinum/60 hidden sm:inline">
+                  or press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-lavender-accent font-mono text-[10px]">Ctrl+V</kbd> to paste
+                </span>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-mocha hover:bg-mocha-hover active:scale-95 text-white font-bold text-sm shadow-md transition-all focus-ring border border-mocha-light/20"
+              >
+                <span>Analyze & Find Possibilities</span>
+                <ArrowRight className="w-4 h-4 text-platinum-light" />
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }

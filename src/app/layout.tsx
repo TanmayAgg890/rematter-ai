@@ -41,7 +41,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#0B1713] dark:bg-[#0B1713] text-textDarkPrimary antialiased selection:bg-emerald-primary/30 selection:text-white">
+      <body className="min-h-screen flex flex-col bg-[#171515] dark:bg-[#171515] text-textDarkPrimary antialiased selection:bg-lavender-accent/30 selection:text-white">
         {/* Global ambient fluid particles — fixed background, pointer-events disabled */}
         <GlobalParticlesBackground />
         <ThemeProvider>
@@ -54,4 +54,3 @@ export default function RootLayout({
     </html>
   )
 }
-

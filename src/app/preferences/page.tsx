@@ -48,6 +48,9 @@ export default function PreferencesPage() {
   const [goal, setGoal] = React.useState<ProjectGoal>(preferences.goal)
   const [extraConstraints, setExtraConstraints] = React.useState(preferences.extraConstraints || "")
 
+  // Adaptive contextual question states based on detected material
+  const [contextualAnswer, setContextualAnswer] = React.useState<string>("clean")
+
   React.useEffect(() => {
     if (!assessment) {
       router.push("/scan")
@@ -55,6 +58,71 @@ export default function PreferencesPage() {
   }, [assessment, router])
 
   if (!assessment) return null
+
+  const category = assessment.category || "plastic"
+
+  // Contextual question definition based on detected material
+  const getContextualQuestion = () => {
+    switch (category) {
+      case "textile":
+        return {
+          title: "Clothing & Textile Wearability",
+          subtitle: "What is the structural condition of this garment?",
+          options: [
+            { id: "wearable", label: "Wearable & intact", desc: "Suitable for direct use, repair, or gentle upcycling" },
+            { id: "slightly_damaged", label: "Slightly torn or missing buttons", desc: "Easy to patch, refashion, or hem" },
+            { id: "heavily_damaged", label: "Heavily worn or frayed scraps", desc: "Best for rag strips, organizers, or textile recovery" },
+            { id: "unknown", label: "Not sure / blend unknown", desc: "Broad circular options" },
+          ],
+        }
+      case "plastic":
+        return {
+          title: "Plastic Container Sub-Type",
+          subtitle: "What kind of plastic item is this?",
+          options: [
+            { id: "pet_bottle", label: "Transparent PET drink bottle", desc: "Clean beverage container, ideal for planters & funnels" },
+            { id: "hdpe_jug", label: "Opaque milk / detergent jug (HDPE)", desc: "Rigid durable walls, scoop & organizer projects" },
+            { id: "flexible_wrap", label: "Flexible packaging or film", desc: "Bag liner, wrapping, or MRF plastic recovery" },
+            { id: "unknown", label: "Unknown / mixed plastic", desc: "Safe cut-free projects or recycling drop-off" },
+          ],
+        }
+      case "paper_cardboard":
+        return {
+          title: "Cardboard Moisture & Food Cleanliness",
+          subtitle: "Is the cardboard completely dry and grease-free?",
+          options: [
+            { id: "clean_dry", label: "Clean, dry, and rigid", desc: "Ideal for modular desk storage, dividers & craft" },
+            { id: "damp_salvageable", label: "Slightly bent or damp but salvageable", desc: "Planter liners, seedling pots, or mulch" },
+            { id: "greasy", label: "Soiled with food grease or oil", desc: "Cannot be recycled with dry paper; route to compost" },
+            { id: "unknown", label: "Not sure", desc: "General cardboard reuse" },
+          ],
+        }
+      case "glass":
+        return {
+          title: "Glass Structural Integrity",
+          subtitle: "What is the condition of the glass container?",
+          options: [
+            { id: "intact_jar", label: "Intact food jar with lid", desc: "Safe for pantry storage, candle vessels & organizers" },
+            { id: "intact_bottle", label: "Intact beverage bottle", desc: "Self-watering reservoirs & decorative reuse" },
+            { id: "chipped", label: "Chipped rim or hairline crack", desc: "Do not cut at home; route to certified cullet recycling" },
+            { id: "unknown", label: "Not sure", desc: "Safe handling guidance" },
+          ],
+        }
+      default:
+        return {
+          title: "Material Sub-Characteristics",
+          subtitle: "Tell us about any specific material qualities",
+          options: [
+            { id: "clean", label: "Clean and ready to work with", desc: "Zero additional prep required" },
+            { id: "dirty", label: "Needs washing or de-labeling", desc: "Simple soak or brush cleaning" },
+            { id: "parts_attached", label: "Mixed hardware attached (screws, tape)", desc: "Requires disassembly" },
+            { id: "unknown", label: "Not sure", desc: "Standard guidance" },
+          ],
+        }
+    }
+  }
+
+  const contextualQ = getContextualQuestion()
 
   const handleNext = () => {
     if (step < totalSteps) {
@@ -77,7 +145,9 @@ export default function PreferencesPage() {
       budget,
       time,
       goal,
-      extraConstraints: extraConstraints.trim() || undefined,
+      extraConstraints: extraConstraints.trim() 
+        ? `${extraConstraints.trim()} (Condition detail: ${contextualAnswer})` 
+        : `Condition detail: ${contextualAnswer}`,
     }
 
     setPreferences(updatedPrefs)
@@ -97,13 +167,13 @@ export default function PreferencesPage() {
       const data = await res.json()
 
       if (!res.ok || !data.ok) {
-        throw new Error(data.error || "Failed to generate recommendations.")
+        throw new Error(data.error || "Failed to generate personalized ideas.")
       }
 
       setIdeas(data.data.ideas, data.data.fallbackMessage)
       router.push("/results")
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Error contacting recommendation engine."
+      const message = err instanceof Error ? err.message : "Recommendations failed."
       setIdeasError(message)
     } finally {
       setIsGeneratingIdeas(false)
@@ -112,403 +182,326 @@ export default function PreferencesPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
-      {/* Step Indicator */}
+      {/* Progress Bar */}
       <div className="mb-8">
-        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-textLightSecondary dark:text-textDarkSecondary mb-2">
-          <span>Personalize Your Resources</span>
-          <div className="flex items-center gap-3">
-            <span>Step {step} of {totalSteps}</span>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={isGeneratingIdeas}
-              className="text-emerald-primary hover:underline font-bold text-xs transition-colors flex items-center gap-1"
-            >
-              <span>Quick Results</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
+        <div className="flex items-center justify-between text-xs font-semibold text-platinum mb-2">
+          <span>Step {step} of {totalSteps}</span>
+          <span className="text-lavender-accent font-mono">{Math.round((step / totalSteps) * 100)}%</span>
         </div>
-        <div className="w-full h-1.5 bg-borderLightSubtle dark:bg-white/10 rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
           <div
-            className="h-full bg-emerald-primary transition-all duration-300"
+            className="h-full bg-mocha transition-all duration-300"
             style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
       </div>
 
-      {/* Wizard Steps */}
-      <div className="bg-white dark:bg-forest-surface rounded-card border border-borderLightSubtle dark:border-white/10 p-6 sm:p-8 shadow-sm mb-6">
-        {/* Step 1: Experience */}
+      {/* Step Container (Translucent Glassmorphic) */}
+      <div className="bg-[#211D1C]/80 backdrop-blur-md rounded-2xl border border-white/15 p-6 sm:p-8 shadow-xl mb-6">
+        {/* Step 1: Contextual Material Detail */}
         {step === 1 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <GraduationCap className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What is your crafting / DIY experience?</h2>
+              <span className="px-2.5 py-0.5 rounded-full bg-mocha-deep text-lavender text-xs font-bold uppercase tracking-wider border border-lavender-accent/30">
+                Contextual Question
+              </span>
             </div>
-            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
-              ReMatter will never suggest complex joinery or dangerous tools to beginners.
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-[#F5F3F3] mb-1">
+              {contextualQ.title}
+            </h2>
+            <p className="text-platinum text-sm mb-6 leading-relaxed">
+              {contextualQ.subtitle}
             </p>
 
             <div className="space-y-3">
-              {[
-                {
-                  id: "beginner",
-                  label: "Beginner",
-                  desc: "Comfortable with scissors, tape, and simple folding. No prior woodworking or craft training.",
-                },
-                {
-                  id: "intermediate",
-                  label: "Some Experience",
-                  desc: "Familiar with manual hand tools, basic hand saws, hot glue, or basic sewing.",
-                },
-                {
-                  id: "advanced",
-                  label: "Experienced Maker",
-                  desc: "Comfortable with power tools, soldering, precision joinery, or workshop machinery.",
-                },
-              ].map((opt) => {
-                const selected = experience === opt.id
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setExperience(opt.id as ExperienceLevel)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
-                      selected
-                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
-                    }`}
-                  >
-                    <div>
-                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
-                      }`}
-                    >
-                      {selected && <Check className="w-3.5 h-3.5" />}
-                    </div>
-                  </button>
-                )
-              })}
+              {contextualQ.options.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setContextualAnswer(opt.id)}
+                  className={`w-full p-4 rounded-xl text-left transition-all border flex items-center justify-between ${
+                    contextualAnswer === opt.id
+                      ? "bg-mocha/40 border-lavender-accent text-[#F5F3F3] shadow-sm"
+                      : "bg-white/5 border-white/10 text-platinum hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <div>
+                    <span className="font-bold text-sm block">{opt.label}</span>
+                    <span className="text-xs text-platinum/80">{opt.desc}</span>
+                  </div>
+                  {contextualAnswer === opt.id && (
+                    <Check className="w-5 h-5 text-lavender-accent shrink-0" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Step 2: Tools */}
+        {/* Step 2: Available Tools */}
         {step === 2 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Wrench className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What tools do you have on hand?</h2>
+              <Wrench className="w-4 h-4 text-lavender-accent" />
+              <span className="text-xs font-bold uppercase tracking-wider text-platinum">
+                Available Tools
+              </span>
             </div>
-            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
-              Tool availability is our heaviest feasibility constraint (weight = 0.25).
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-[#F5F3F3] mb-2">
+              What tools do you actually have access to?
+            </h2>
+            <p className="text-platinum text-sm mb-6">
+              We never recommend ideas requiring tools you don&apos;t own.
             </p>
 
             <div className="space-y-3">
               {[
                 {
-                  id: "household",
-                  label: "Household Essentials Only",
-                  desc: "Scissors, ruler, kitchen knife, cotton twine, basic glue or tape.",
+                  id: "household" as ToolAvailability,
+                  title: "Household Scissors & Cleaners Only (Zero Tools)",
+                  desc: "Scissors, utility tape, cotton string, soapy water. No power drills or saws.",
                 },
                 {
-                  id: "basic_tools",
-                  label: "Basic Hand Toolkit",
-                  desc: "Hammer, pliers, hand saw, screwdriver set, utility box-cutter, sandpaper.",
+                  id: "basic_tools" as ToolAvailability,
+                  title: "Basic Hand & DIY Tools",
+                  desc: "Hammer, screwdrivers, hand drill, sandpaper, glue gun, small hand saw.",
                 },
                 {
-                  id: "workshop",
-                  label: "Workshop / Specialized Equipment",
-                  desc: "Drill press, angle grinder, sewing machine, soldering iron, or 3D printer.",
+                  id: "workshop" as ToolAvailability,
+                  title: "Workshop / Community Makerspace",
+                  desc: "Power tools, drill press, jigsaw, clamps, soldering iron, orbital sander.",
                 },
-              ].map((opt) => {
-                const selected = tools === opt.id
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setTools(opt.id as ToolAvailability)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
-                      selected
-                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
-                    }`}
-                  >
-                    <div>
-                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
-                      }`}
-                    >
-                      {selected && <Check className="w-3.5 h-3.5" />}
-                    </div>
-                  </button>
-                )
-              })}
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTools(t.id)}
+                  className={`w-full p-4 rounded-xl text-left transition-all border flex items-center justify-between ${
+                    tools === t.id
+                      ? "bg-mocha/40 border-lavender-accent text-[#F5F3F3] shadow-sm"
+                      : "bg-white/5 border-white/10 text-platinum hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <div>
+                    <span className="font-bold text-sm block">{t.title}</span>
+                    <span className="text-xs text-platinum/80">{t.desc}</span>
+                  </div>
+                  {tools === t.id && (
+                    <Check className="w-5 h-5 text-lavender-accent shrink-0" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Step 3: Budget */}
+        {/* Step 3: Budget Tier */}
         {step === 3 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Coins className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What is your extra budget for this project?</h2>
+              <Coins className="w-4 h-4 text-lavender-accent" />
+              <span className="text-xs font-bold uppercase tracking-wider text-platinum">
+                Additional Budget
+              </span>
             </div>
-            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
-              We strictly enforce ₹0 budgets by filtering out projects requiring purchases.
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-[#F5F3F3] mb-2">
+              What extra budget are you willing to spend?
+            </h2>
+            <p className="text-platinum text-sm mb-6">
+              Many of the best circular solutions cost exactly ₹0.
             </p>
 
             <div className="space-y-3">
               {[
-                {
-                  id: "free",
-                  label: "₹0 (Strict Zero-Cost)",
-                  desc: "Use only what you already have at home. Zero purchases required.",
-                },
-                {
-                  id: "under_200",
-                  label: "Under ₹200",
-                  desc: "Willing to spend a small amount on screws, twine, adhesive, or potting soil.",
-                },
-                {
-                  id: "200_1000",
-                  label: "₹200 – ₹1,000",
-                  desc: "Comfortable buying paint, fasteners, varnish, or specialized hardware.",
-                },
-                {
-                  id: "flexible",
-                  label: "Flexible",
-                  desc: "Open to higher investment if creating a durable, sellable, or high-value piece.",
-                },
-              ].map((opt) => {
-                const selected = budget === opt.id
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setBudget(opt.id as BudgetTier)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
-                      selected
-                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
-                    }`}
-                  >
-                    <div>
-                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
-                      }`}
-                    >
-                      {selected && <Check className="w-3.5 h-3.5" />}
-                    </div>
-                  </button>
-                )
-              })}
+                { id: "free" as BudgetTier, title: "Strict ₹0 (Zero Added Cost)", desc: "Use only what you already have at home." },
+                { id: "under_200" as BudgetTier, title: "Micro-Budget (Under ₹200)", desc: "Affordable hardware like twine, small glue, or seeds." },
+                { id: "200_1000" as BudgetTier, title: "Small Project Budget (₹200 – ₹1,000)", desc: "Paint, specialty fasteners, or small hardware." },
+                { id: "flexible" as BudgetTier, title: "Flexible Budget", desc: "Open to higher quality long-lasting builds." },
+              ].map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => setBudget(b.id)}
+                  className={`w-full p-4 rounded-xl text-left transition-all border flex items-center justify-between ${
+                    budget === b.id
+                      ? "bg-mocha/40 border-lavender-accent text-[#F5F3F3] shadow-sm"
+                      : "bg-white/5 border-white/10 text-platinum hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <div>
+                    <span className="font-bold text-sm block">{b.title}</span>
+                    <span className="text-xs text-platinum/80">{b.desc}</span>
+                  </div>
+                  {budget === b.id && (
+                    <Check className="w-5 h-5 text-lavender-accent shrink-0" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Step 4: Time Commitment */}
+        {/* Step 4: Primary Goal */}
         {step === 4 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">How much time do you want to spend?</h2>
+              <Target className="w-4 h-4 text-lavender-accent" />
+              <span className="text-xs font-bold uppercase tracking-wider text-platinum">
+                Primary Goal
+              </span>
             </div>
-            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
-              We penalize or filter out long multi-day builds if you just need a quick solution.
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-[#F5F3F3] mb-2">
+              What outcome matters most to you?
+            </h2>
+            <p className="text-platinum text-sm mb-6">
+              We rank suggestions according to your practical motivation.
             </p>
 
             <div className="space-y-3">
               {[
-                {
-                  id: "15_min",
-                  label: "~15 Minutes",
-                  desc: "Quick modification, instant direct reuse, or fast functional adaptation.",
-                },
-                {
-                  id: "1_hour",
-                  label: "~1 Hour",
-                  desc: "Single evening or weekend project with measuring, cutting, and assembly.",
-                },
-                {
-                  id: "few_hours",
-                  label: "A Few Hours",
-                  desc: "Detailed project requiring drying, curing, multiple coats, or precision joints.",
-                },
-                {
-                  id: "multiple_days",
-                  label: "Multiple Days / Ongoing",
-                  desc: "Comprehensive workshop craft or multi-stage circular build.",
-                },
-              ].map((opt) => {
-                const selected = time === opt.id
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setTime(opt.id as TimeCommitment)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
-                      selected
-                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
-                    }`}
-                  >
-                    <div>
-                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
-                      }`}
-                    >
-                      {selected && <Check className="w-3.5 h-3.5" />}
-                    </div>
-                  </button>
-                )
-              })}
+                { id: "useful" as ProjectGoal, title: "Functional Everyday Object", desc: "Organizers, planters, tools, storage items." },
+                { id: "min_effort" as ProjectGoal, title: "Quick & Minimum Effort", desc: "Simple 10-minute repurpose or immediate reuse." },
+                { id: "sellable" as ProjectGoal, title: "Aesthetic / Sellable Upcycle", desc: "High craft quality for home decor or gifting." },
+                { id: "recycle" as ProjectGoal, title: "Clean & Certified Recycling", desc: "Route to authorized collection centers." },
+              ].map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  onClick={() => setGoal(g.id)}
+                  className={`w-full p-4 rounded-xl text-left transition-all border flex items-center justify-between ${
+                    goal === g.id
+                      ? "bg-mocha/40 border-lavender-accent text-[#F5F3F3] shadow-sm"
+                      : "bg-white/5 border-white/10 text-platinum hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <div>
+                    <span className="font-bold text-sm block">{g.title}</span>
+                    <span className="text-xs text-platinum/80">{g.desc}</span>
+                  </div>
+                  {goal === g.id && (
+                    <Check className="w-5 h-5 text-lavender-accent shrink-0" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Step 5: Goal */}
+        {/* Step 5: Skill & Time Commitment */}
         {step === 5 && (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Target className="w-5 h-5 text-emerald-primary" />
-              <h2 className="text-xl font-bold text-textLightPrimary dark:text-textDarkPrimary">What is your primary goal?</h2>
+              <Clock className="w-4 h-4 text-lavender-accent" />
+              <span className="text-xs font-bold uppercase tracking-wider text-platinum">
+                Time & Skills
+              </span>
             </div>
-            <p className="text-textLightSecondary dark:text-textDarkSecondary text-sm mb-6">
-              Aligning on purpose prevents useless clutter and ensures genuine value.
-            </p>
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-[#F5F3F3] mb-4">
+              How much time and DIY skill do you have?
+            </h2>
 
-            <div className="space-y-3 mb-6">
-              {[
-                {
-                  id: "useful",
-                  label: "Make Something Useful for Home",
-                  desc: "Practical organizers, planters, storage, or domestic utilities.",
-                },
-                {
-                  id: "min_effort",
-                  label: "Reduce Waste with Minimum Effort",
-                  desc: "Fastest route to avoid landfill without complicated crafting.",
-                },
-                {
-                  id: "sellable",
-                  label: "Explore a Sellable / Giftable Product",
-                  desc: "Aesthetic upcycled design suitable for craft markets or gifting.",
-                },
-                {
-                  id: "recycle",
-                  label: "Donate or Recycle Responsibly",
-                  desc: "Prefer circular disposal and authorized processing facilities.",
-                },
-              ].map((opt) => {
-                const selected = goal === opt.id
-                return (
+            {/* Time */}
+            <div className="mb-6">
+              <label className="block text-xs font-bold uppercase tracking-wider text-platinum mb-2">
+                Available Time
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "15_min" as TimeCommitment, label: "15 minutes" },
+                  { id: "1_hour" as TimeCommitment, label: "Under 1 hour" },
+                  { id: "few_hours" as TimeCommitment, label: "2–3 hours" },
+                  { id: "multiple_days" as TimeCommitment, label: "Weekend craft" },
+                ].map((t) => (
                   <button
-                    key={opt.id}
+                    key={t.id}
                     type="button"
-                    onClick={() => setGoal(opt.id as ProjectGoal)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start justify-between focus-ring ${
-                      selected
-                        ? "border-emerald-primary bg-emerald-primary/10 shadow-sm"
-                        : "border-borderLightSubtle dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white dark:bg-forest-elevated/40"
+                    onClick={() => setTime(t.id)}
+                    className={`p-3 rounded-xl text-xs font-semibold text-center transition-all border ${
+                      time === t.id
+                        ? "bg-mocha text-white border-lavender-accent"
+                        : "bg-white/5 border-white/10 text-platinum hover:bg-white/10"
                     }`}
                   >
-                    <div>
-                      <span className="font-semibold text-textLightPrimary dark:text-textDarkPrimary text-sm block mb-1">{opt.label}</span>
-                      <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary leading-relaxed">{opt.desc}</span>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                        selected ? "bg-emerald-primary border-emerald-primary text-forest-950" : "border-slate-300 dark:border-white/20"
-                      }`}
-                    >
-                      {selected && <Check className="w-3.5 h-3.5" />}
-                    </div>
+                    {t.label}
                   </button>
-                )
-              })}
+                ))}
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="extra" className="block text-xs font-semibold uppercase tracking-wider text-textLightPrimary dark:text-textDarkPrimary mb-1">
-                Any specific room or constraint? (Optional)
+            {/* Skill */}
+            <div className="mb-4">
+              <label className="block text-xs font-bold uppercase tracking-wider text-platinum mb-2">
+                DIY Experience
               </label>
-              <input
-                id="extra"
-                type="text"
-                value={extraConstraints}
-                onChange={(e) => setExtraConstraints(e.target.value)}
-                placeholder="e.g. For kitchen herbs, no drilling into walls, compact balcony..."
-                className="w-full px-4 py-2 rounded-lg border border-borderLightSubtle dark:border-white/10 bg-white dark:bg-forest-elevated text-sm text-textLightPrimary dark:text-textDarkPrimary placeholder:text-textLightSecondary/50 dark:placeholder:text-textDarkSecondary/50 focus:outline-none focus:ring-2 focus:ring-emerald-primary"
-              />
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: "beginner" as ExperienceLevel, label: "Beginner" },
+                  { id: "intermediate" as ExperienceLevel, label: "Intermediate" },
+                  { id: "advanced" as ExperienceLevel, label: "Advanced" },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setExperience(s.id)}
+                    className={`p-3 rounded-xl text-xs font-semibold text-center transition-all border ${
+                      experience === s.id
+                        ? "bg-mocha text-white border-lavender-accent"
+                        : "bg-white/5 border-white/10 text-platinum hover:bg-white/10"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Error Banner */}
       {ideasError && (
-        <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-danger dark:text-red-300 text-sm flex items-start gap-2.5">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <p>{ideasError}</p>
+        <div className="mb-6 p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+          <span>{ideasError}</span>
         </div>
       )}
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-pill text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-semibold text-platinum hover:text-white transition-colors focus-ring"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <span>{step === 1 ? "Back to Assessment" : "Previous Step"}</span>
         </button>
 
         {step < totalSteps ? (
           <button
             type="button"
             onClick={handleNext}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-forest-900 text-white text-sm font-semibold hover:bg-forest-800 transition-colors shadow-sm focus-ring"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-mocha hover:bg-mocha-hover text-white text-xs font-bold transition-all shadow-md focus-ring border border-mocha-light/20"
           >
-            <span>Next</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Next Question</span>
+            <ArrowRight className="w-4 h-4 text-platinum-light" />
           </button>
         ) : (
           <button
             type="button"
             onClick={handleSubmit}
             disabled={isGeneratingIdeas}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-pill bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 transition-all shadow-md disabled:opacity-50 focus-ring"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-mocha hover:bg-mocha-hover text-white text-sm font-bold transition-all shadow-lg focus-ring border border-mocha-light/20 disabled:opacity-50"
           >
             {isGeneratingIdeas ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-forest-950" />
-                <span>Computing Feasibility & Ranking...</span>
+                <Loader2 className="w-4 h-4 animate-spin text-lavender" />
+                <span>Formulating Feasible Ideas...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-forest-950" />
-                <span>Show My Personalized Ideas</span>
-                <ArrowRight className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 text-lavender" />
+                <span>Generate Tailored Ideas</span>
+                <ArrowRight className="w-4 h-4 text-platinum-light" />
               </>
             )}
           </button>

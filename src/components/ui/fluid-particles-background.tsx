@@ -31,14 +31,15 @@ interface FluidParticlesBackgroundProps {
  * Fluid Particles Background component
  * High-performance canvas-based particle flow field with subtle cursor interactivity,
  * ResizeObserver containment, proper rAF cleanup, and prefers-reduced-motion support.
+ * Themed to Mocha Brown, Platinum Silver, and Pale Lavender.
  */
 export function FluidParticlesBackground({
   className = "",
-  particleCount = 850,
-  mobileParticleCount = 380,
+  particleCount = 720,
+  mobileParticleCount = 300,
   interactive = true,
-  backgroundColor = "#102A22",
-  particleColors = ["#2FBF83", "#8CE6B0", "#48A987", "#F7FAF7", "#5FD69E"],
+  backgroundColor = "#171515",
+  particleColors = ["#DCD6F7", "#B9A9EE", "#D5D6D8", "#ECEBED", "#6F5148", "#A0847B", "#F5F3F3"],
 }: FluidParticlesBackgroundProps) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
@@ -86,8 +87,8 @@ export function FluidParticlesBackground({
         originX: x,
         originY: y,
         color,
-        size: Math.random() < 0.2 ? 2.2 : 1.2 + Math.random() * 0.9,
-        alpha: 0.15 + Math.random() * 0.55,
+        size: Math.random() < 0.25 ? 2.4 : 1.2 + Math.random() * 0.9,
+        alpha: 0.18 + Math.random() * 0.58,
         angle: Math.random() * Math.PI * 2,
         speed: 0.35 + Math.random() * 0.65,
         life: randomLife ? Math.random() * maxLife : 0,
@@ -159,8 +160,8 @@ export function FluidParticlesBackground({
     const render = () => {
       time += 0.005
 
-      // Smooth trail persistence matching theme background #0B1713
-      ctx.fillStyle = "rgba(11, 23, 19, 0.20)"
+      // Smooth trail persistence matching dark mocha theme background #171515
+      ctx.fillStyle = "rgba(23, 21, 21, 0.22)"
       ctx.fillRect(0, 0, width, height)
 
       const pLength = particles.length
@@ -240,7 +241,7 @@ export function FluidParticlesBackground({
         document.removeEventListener("pointerleave", onPointerLeave)
       }
     }
-  }, [particleCount, mobileParticleCount, interactive, particleColors])
+  }, [particleCount, mobileParticleCount, interactive, particleColors, backgroundColor])
 
   return (
     <div
@@ -254,7 +255,7 @@ export function FluidParticlesBackground({
       <div 
         className="absolute inset-0 pointer-events-none" 
         style={{
-          background: "radial-gradient(circle at 50% 40%, rgba(11, 23, 19, 0) 0%, rgba(11, 23, 19, 0.45) 100%)"
+          background: "radial-gradient(circle at 50% 40%, rgba(23, 21, 21, 0) 0%, rgba(23, 21, 21, 0.50) 100%)"
         }}
       />
     </div>

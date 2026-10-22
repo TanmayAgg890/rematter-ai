@@ -5,17 +5,25 @@ import { FluidParticlesBackground } from "@/components/ui/fluid-particles-backgr
 
 /**
  * Renders the global ambient fluid particles as a fixed, non-interactive background.
- * Wrapped in a client boundary so layout.tsx (server component) can import it safely.
+ * Recolored to mocha brown, platinum silver, and pale lavender with high continuous performance.
  */
 export function GlobalParticlesBackground() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
       <FluidParticlesBackground
-        particleCount={750}
-        mobileParticleCount={320}
+        particleCount={720}
+        mobileParticleCount={300}
         interactive={true}
-        backgroundColor="#0B1713"
-        particleColors={["#2FC48A", "#9BE7BD", "#38D394", "#5FD69E", "#F4F8F5"]}
+        backgroundColor="#171515"
+        particleColors={[
+          "#DCD6F7", // Pale Lavender
+          "#B9A9EE", // Lavender Accent
+          "#D5D6D8", // Platinum Silver
+          "#ECEBED", // Light Platinum
+          "#6F5148", // Mocha Brown
+          "#A0847B", // Light Mocha
+          "#F5F3F3", // Primary Light Text highlight
+        ]}
       />
     </div>
   )

@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Sparkles, Recycle, Menu, X, ArrowRight, ShieldCheck } from "lucide-react"
+import { Sparkles, Recycle, Menu, X, ArrowRight } from "lucide-react"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 
 export function Navbar() {
@@ -35,8 +35,8 @@ export function Navbar() {
     setMobileMenuOpen(false)
   }, [pathname])
 
+  // "How It Works" removed from primary navigation per user requirement
   const navLinks = [
-    { label: "How It Works", href: "/#how-it-works" },
     { label: "Explore Ideas", href: "/explore" },
     { label: "Recycling Hub", href: "/recycling" },
     { label: "Dashboard", href: "/dashboard" },
@@ -47,8 +47,8 @@ export function Navbar() {
       <header
         className={`sticky top-0 z-50 transition-colors duration-200 border-b ${
           isScrolled
-            ? "bg-white/95 dark:bg-[#0B1713]/95 backdrop-blur-md border-borderLightSubtle dark:border-white/10 shadow-sm"
-            : "bg-white/80 dark:bg-[#102A22]/90 backdrop-blur-sm border-borderLightSubtle/60 dark:border-white/10"
+            ? "bg-[#171515]/95 dark:bg-[#171515]/95 backdrop-blur-md border-white/10 shadow-sm"
+            : "bg-[#171515]/80 dark:bg-[#211D1C]/80 backdrop-blur-sm border-white/10"
         }`}
       >
         <div className="max-w-container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -57,10 +57,10 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2.5 font-display font-bold text-xl tracking-tight text-textLightPrimary dark:text-textDarkPrimary focus-ring rounded-lg px-1"
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-primary/15 dark:bg-emerald-primary/20 flex items-center justify-center text-emerald-primary">
-              <Recycle className="w-5 h-5 text-emerald-primary" />
+            <div className="w-8 h-8 rounded-full bg-mocha-deep dark:bg-mocha/30 border border-mocha/40 flex items-center justify-center text-lavender-accent">
+              <Recycle className="w-5 h-5 text-lavender-accent" />
             </div>
-            <span>ReMatter <span className="text-emerald-primary font-semibold">AI</span></span>
+            <span>ReMatter <span className="text-lavender-accent font-semibold">AI</span></span>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -73,8 +73,8 @@ export function Navbar() {
                   href={link.href}
                   className={`transition-colors duration-150 focus-ring rounded-md px-1 py-0.5 ${
                     active 
-                      ? "text-emerald-primary font-semibold" 
-                      : "text-textLightSecondary dark:text-textDarkSecondary hover:text-emerald-primary dark:hover:text-textDarkPrimary"
+                      ? "text-lavender font-semibold border-b border-lavender-accent" 
+                      : "text-textLightSecondary dark:text-textDarkSecondary hover:text-lavender dark:hover:text-lavender"
                   }`}
                 >
                   {link.label}
@@ -83,71 +83,66 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Action CTA & Theme Toggle */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Right Action + Controls */}
+          <div className="flex items-center gap-3">
             <ThemeToggle />
-            
+
+            {/* Primary Action Button */}
             <Link
               href="/scan"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 active:scale-95 transition-all shadow-sm focus-ring"
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-mocha hover:bg-mocha-hover text-white text-xs font-semibold transition-all shadow-sm focus-ring border border-mocha-light/20"
             >
-              <Sparkles className="w-4 h-4 text-forest-950" />
+              <Sparkles className="w-3.5 h-3.5 text-lavender" />
               <span>Start a Waste Scan</span>
-              <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
 
-          {/* Mobile Right Controls */}
-          <div className="flex items-center gap-2 md:hidden">
-            <ThemeToggle compact />
-            
+            {/* Mobile Hamburger Toggle */}
             <button
               type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-textLightPrimary dark:text-textDarkPrimary hover:bg-black/5 dark:hover:bg-white/10 focus-ring"
+              className="md:hidden p-2 rounded-lg text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary hover:bg-white/5 focus-ring"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Slide-down Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-forest-surface text-textLightPrimary dark:text-textDarkPrimary border-b border-borderLightSubtle dark:border-white/10 px-5 py-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
-            <nav className="flex flex-col gap-4 text-base font-medium">
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 top-16 z-40 bg-[#171515]/95 backdrop-blur-md md:hidden border-b border-white/10 animate-in fade-in slide-in-from-top-4 duration-200"
+        >
+          <div className="flex flex-col p-6 space-y-4">
+            <nav className="flex flex-col space-y-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="py-2 text-textLightSecondary dark:text-textDarkSecondary hover:text-emerald-primary border-b border-borderLightSubtle/50 dark:border-white/10"
+                  className="px-3 py-2 text-base font-medium rounded-lg text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary hover:bg-white/5 transition-colors"
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2">
-                <Link
-                  href="/scan"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-emerald-primary text-forest-950 font-bold shadow-sm active:scale-95 transition-all"
-                >
-                  <Sparkles className="w-4 h-4 text-forest-950" />
-                  <span>Start a Waste Scan</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
             </nav>
-          </div>
-        )}
-      </header>
 
-      {/* Trust Demo Mode Indicator */}
-      <div className="bg-[#071410] border-b border-white/10 py-1.5 px-4 text-center text-xs text-[#C0CEC5] flex items-center justify-center gap-2">
-        <ShieldCheck className="w-3.5 h-3.5 text-emerald-primary" />
-        <span>
-          <strong className="text-emerald-light">Deterministic Decision Support:</strong> Ground-truth safety gates & verified circular pathways.
-        </span>
-      </div>
+            <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+              <Link
+                href="/scan"
+                className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full bg-mocha text-white text-sm font-semibold shadow-md focus-ring"
+              >
+                <Sparkles className="w-4 h-4 text-lavender" />
+                <span>Start a Waste Scan</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

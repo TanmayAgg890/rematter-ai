@@ -2,289 +2,375 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import {
-  Boxes,
-  Layers,
-  Shirt,
-  Trees,
-  Cpu,
-  Leaf,
-  Recycle,
-  ChevronRight,
+import { useScanStore } from "@/lib/store/use-scan-store"
+import { MaterialCategory } from "@/types"
+import { 
+  Boxes, 
+  Layers, 
+  Shirt, 
+  Trees, 
+  Cpu, 
+  Leaf, 
+  ChevronRight, 
   ChevronLeft,
   Sparkles,
-  AlertTriangle,
   CheckCircle2,
-  ArrowRight,
+  AlertTriangle,
+  Recycle,
   SkipForward,
+  Wine,
+  Hammer,
+  ArrowRight
 } from "lucide-react"
-import { useScanStore } from "@/lib/store/use-scan-store"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type MaterialType =
-  | "plastic"
-  | "paper_cardboard"
-  | "textile"
-  | "wood"
-  | "electronic"
-  | "glass"
-  | "metal"
-  | "organic"
-  | null
-
-interface ClassifierState {
-  step: number
-  materialType: MaterialType
-  answers: Record<string, string>
-}
-
-// ─── Material Category Grid ────────────────────────────────────────────────────
-
-const MATERIAL_CATEGORIES: {
-  id: Exclude<MaterialType, null>
+// ─── Material Categories with icons and contextual questions ────────────────
+interface MaterialCategoryDef {
+  id: MaterialCategory
   label: string
   icon: React.ReactNode
   description: string
-}[] = [
+}
+
+export const MATERIAL_CATEGORIES: MaterialCategoryDef[] = [
   {
     id: "plastic",
-    label: "Plastic & Packaging",
+    label: "Plastic",
     icon: <Boxes className="w-5 h-5" />,
-    description: "Bottles, containers, packaging foam",
+    description: "PET bottles, HDPE jugs, containers, flexible wrap",
   },
   {
     id: "paper_cardboard",
     label: "Paper & Cardboard",
     icon: <Layers className="w-5 h-5" />,
-    description: "Boxes, kraft paper, pulp trays",
+    description: "Shipping cartons, pulp trays, kraft paper",
   },
   {
     id: "textile",
-    label: "Textile & Apparel",
+    label: "Clothing & Textiles",
     icon: <Shirt className="w-5 h-5" />,
-    description: "Cotton, denim, linen, synthetic fabric",
+    description: "Denim jeans, cotton t-shirts, linens, fabric scraps",
+  },
+  {
+    id: "glass",
+    label: "Glass",
+    icon: <Wine className="w-5 h-5" />,
+    description: "Jars, drink bottles, culinary containers",
   },
   {
     id: "wood",
     label: "Wood & Pallets",
     icon: <Trees className="w-5 h-5" />,
-    description: "Timber offcuts, pallets, wooden crates",
-  },
-  {
-    id: "electronic",
-    label: "Electronics & E-waste",
-    icon: <Cpu className="w-5 h-5" />,
-    description: "Peripherals, cables, small devices",
-  },
-  {
-    id: "glass",
-    label: "Glass",
-    icon: <Recycle className="w-5 h-5" />,
-    description: "Bottles, jars, window glass",
+    description: "Clean pallets, timber offcuts, wooden crates",
   },
   {
     id: "metal",
-    label: "Metal & Alloys",
-    icon: <Layers className="w-5 h-5" />,
-    description: "Cans, steel parts, copper wire",
+    label: "Metal",
+    icon: <Hammer className="w-5 h-5" />,
+    description: "Aluminum cans, tin containers, copper scrap",
+  },
+  {
+    id: "e_waste",
+    label: "Electronic Waste",
+    icon: <Cpu className="w-5 h-5" />,
+    description: "Old peripherals, cables, small electronics",
   },
   {
     id: "organic",
     label: "Organic & Biomass",
     icon: <Leaf className="w-5 h-5" />,
-    description: "Food scraps, garden clippings, coffee grounds",
+    description: "Coffee grounds, fruit peels, yard clippings",
   },
 ]
 
-// ─── Per-material Questions ────────────────────────────────────────────────────
+// ─── Per-material Contextual Questions ─────────────────────────────────────────
 
 interface Question {
   key: string
   question: string
   options: string[]
   optional?: boolean
-  safetyGate?: string  // If this answer triggers a safety gate
+  safetyGate?: string
   safetyGateAnswer?: string
 }
 
-const MATERIAL_QUESTIONS: Record<Exclude<MaterialType, null>, Question[]> = {
+const MATERIAL_QUESTIONS: Record<MaterialCategory, Question[]> = {
   plastic: [
     {
       key: "type",
-      question: "What type of plastic do you have?",
-      options: ["Beverage bottles (PET)", "Milk jugs / HDPE containers", "Flexible packaging / bags", "Foam / polystyrene", "Mixed / unknown"],
+      question: "What type of plastic bottle or container do you have?",
+      options: [
+        "Transparent beverage bottle (PET #1)", 
+        "Opaque milk / detergent jug (HDPE #2)", 
+        "Food takeout tub / container (PP #5)", 
+        "Flexible packaging or bag", 
+        "Other / not sure"
+      ],
     },
     {
       key: "condition",
-      question: "What is the condition?",
-      options: ["Clean and dry", "Slightly soiled — can be washed", "Contaminated / food waste", "Broken / cracked"],
+      question: "What is its observed condition?",
+      options: [
+        "Clean and intact", 
+        "Slightly soiled — easily rinsed with mild soap", 
+        "Contaminated with oil or chemical residue", 
+        "Crushed or heavily damaged", 
+        "Not sure"
+      ],
+      safetyGate: "⚠️ Chemical- or oil-contaminated plastic cannot be safely reused for household DIY. Route to an authorized hazardous/industrial recycling center.",
+      safetyGateAnswer: "Contaminated with oil or chemical residue",
+    },
+    {
+      key: "quantity",
+      question: "How many units do you have?",
+      options: ["Single unit (1 bottle)", "A few bottles (2–5 units)", "Large batch (6+ units)"],
     },
     {
       key: "goal",
       question: "What is your primary goal?",
-      options: ["Make a functional object (planter, organizer)", "Decorative upcycle", "Find a recycling route", "Sell or donate"],
-    },
-  ],
-  paper_cardboard: [
-    {
-      key: "condition",
-      question: "What is the condition of your paper / cardboard?",
-      options: ["Dry and clean", "Slightly damp but salvageable", "Wet or moldy", "Mixed with plastic tape or labels"],
-    },
-    {
-      key: "type",
-      question: "What type of paper material do you have?",
-      options: ["Corrugated cardboard boxes", "Kraft paper / brown paper", "Newspaper or magazine", "Pulp egg / fruit trays", "Mixed or printed paper"],
-    },
-    {
-      key: "goal",
-      question: "What would you like to make or do?",
-      options: ["Storage organizer or dividers", "Garden mulch or composting", "Art or craft project", "Find recycling route"],
+      options: [
+        "Make a functional DIY product (herb planter, funnel, storage)", 
+        "Create a decorative craft item", 
+        "Find a simple direct reuse", 
+        "Find an authorized recycling drop-off"
+      ],
     },
   ],
   textile: [
     {
-      key: "fabric",
-      question: "What type of fabric or textile do you have?",
-      options: ["Cotton t-shirts or shirts", "Denim jeans or jackets", "Linen or natural fiber", "Synthetic (polyester, nylon)", "Wool or blended fabric"],
+      key: "type",
+      question: "What clothing or textile item do you have?",
+      options: [
+        "Denim jeans / jacket", 
+        "Cotton t-shirt / jersey knit", 
+        "Linen or woven shirt", 
+        "Wool / synthetic blend sweater", 
+        "Fabric scraps / offcuts"
+      ],
     },
     {
       key: "condition",
-      question: "What is the condition of the textile?",
-      options: ["Clean and wearable condition", "Stained but structurally intact", "Torn or worn through", "Mixed / multiple items"],
+      question: "Is the garment wearable or damaged?",
+      options: [
+        "Wearable and clean — great for donation or gentle reuse", 
+        "Slightly torn or missing buttons — easy to repair", 
+        "Heavily worn or frayed — best for upcycled organizers or rag strips", 
+        "Mildewed or stained beyond washing"
+      ],
     },
     {
-      key: "tools",
-      question: "Do you have a sewing machine?",
-      options: ["Yes — I have a sewing machine", "No — hand sewing only", "No tools at all (no-sew preferred)"],
-      optional: true,
+      key: "hardware",
+      question: "Are zippers, buttons, or metal rivets attached?",
+      options: ["Yes, metal hardware present", "Elastic or plastic buttons only", "Plain fabric only", "Not sure"],
     },
     {
       key: "goal",
-      question: "What is your goal?",
-      options: ["Functional bag or tote", "Home textile (rug, cushion, cloth)", "Donate or resell", "Shred for stuffing or cleaning"],
+      question: "What would you like to achieve?",
+      options: [
+        "Repurpose into a useful organizer or shopping bag", 
+        "Simple no-sew cleaning cloths or mats", 
+        "Repair or refashion", 
+        "Find a local clothing donation or textile recycler"
+      ],
     },
   ],
-  wood: [
+  paper_cardboard: [
     {
-      key: "treatment",
-      question: "Is the wood treated or stamped?",
-      options: ["HT (Heat Treated) — safe for DIY", "MB (Methyl Bromide) — do not use", "No stamps — untreated timber", "Not sure / no markings visible"],
+      key: "type",
+      question: "What type of paper / cardboard do you have?",
+      options: [
+        "Corrugated delivery boxes (Amazon/shipping)", 
+        "Kraft brown wrapping paper", 
+        "Pulp egg / fruit trays", 
+        "Printed carton packaging / cereal boxes", 
+        "Mixed paper scraps"
+      ],
     },
     {
       key: "condition",
-      question: "What is the condition of the wood?",
-      options: ["Clean and structurally sound", "Minor splitting or warping", "Nails or screws still attached", "Rotting or water damaged"],
+      question: "Is the cardboard completely dry and grease-free?",
+      options: [
+        "Clean, dry, and rigid", 
+        "Slightly damp or bent but salvageable", 
+        "Greasy / soiled with food oil (e.g. pizza residue)", 
+        "Not sure"
+      ],
+      safetyGate: "⚠️ Greasy cardboard cannot be repurposed for dry storage or processed in standard paper recycling mills. Best routed to organic compost or garden mulch.",
+      safetyGateAnswer: "Greasy / soiled with food oil (e.g. pizza residue)",
+    },
+    {
+      key: "quantity",
+      question: "How many boxes do you have?",
+      options: ["A single box", "2–4 boxes", "A large stack (5+ boxes)"],
     },
     {
       key: "goal",
-      question: "What would you like to build?",
-      options: ["Planter or garden bed", "Furniture (shelf, bench, table)", "Small organizer or storage", "Art or decorative piece"],
-    },
-  ],
-  electronic: [
-    {
-      key: "device",
-      question: "What type of electronics do you have?",
-      options: ["Laptop or desktop PC", "Mobile phone or tablet", "Cables, chargers, peripherals", "Small appliance (fan, radio, lamp)", "Batteries or power banks"],
-      safetyGate: "⚠️ Batteries and swollen lithium cells must go to certified e-waste collection only. Do not attempt to open or repurpose them.",
-      safetyGateAnswer: "Batteries or power banks",
-    },
-    {
-      key: "battery_status",
-      question: "Does the device have a lithium battery?",
-      options: ["Yes — and it appears swollen or damaged", "Yes — but it appears normal", "No battery", "Not sure"],
-      safetyGate: "⚠️ Swollen or damaged lithium batteries are a fire hazard. This item must go to a certified e-waste recycler. No DIY options available.",
-      safetyGateAnswer: "Yes — and it appears swollen or damaged",
-    },
-    {
-      key: "goal",
-      question: "What is your goal?",
-      options: ["Harvest components (for makers)", "Donate or resell the device", "Find a certified recycling route", "Repurpose the enclosure / casing"],
+      question: "What is your primary goal?",
+      options: [
+        "Desk organization or drawer dividers", 
+        "Sturdy household storage caddy", 
+        "Seedling starter pots or garden mulch", 
+        "Cardboard bundle recycling"
+      ],
     },
   ],
   glass: [
     {
       key: "type",
-      question: "What type of glass do you have?",
-      options: ["Food jars (jam, pickle, sauce)", "Beverage bottles", "Vases or decorative glass", "Window or flat glass (avoid cutting)"],
+      question: "What type of glass container do you have?",
+      options: [
+        "Food jar with metal screw lid (jam, pickle, sauce)", 
+        "Clear beverage bottle", 
+        "Decorative bottle / vase", 
+        "Broken glass shards or window pane"
+      ],
+      safetyGate: "⚠️ Broken window pane or cracked glass cannot be cut safely at home without professional lapidary equipment. Route to certified cullet recycling.",
+      safetyGateAnswer: "Broken glass shards or window pane",
     },
     {
       key: "condition",
-      question: "What is the condition?",
-      options: ["Intact and clean", "Chipped but usable", "Cracked or broken shards"],
+      question: "Is the glass fully intact?",
+      options: ["Intact and clean", "Intact but needs label removal", "Slightly chipped around lip", "Cracked"],
     },
     {
       key: "goal",
       question: "What would you like to make?",
-      options: ["Planter, vase, or vessel", "Storage or organizer", "Decorative (candle holder, light)", "Find recycling route"],
+      options: [
+        "Pantry storage or airtight organizer", 
+        "Planter or self-watering vase", 
+        "Candle holder / desk organizer", 
+        "Find a glass bottle recycling point"
+      ],
+    },
+  ],
+  wood: [
+    {
+      key: "type",
+      question: "What type of wood do you have?",
+      options: [
+        "Heat-treated wooden pallet (stamped HT)", 
+        "Untreated pine / timber offcuts", 
+        "Engineered plywood / MDF scraps", 
+        "Chemically treated pallet (stamped MB)"
+      ],
+      safetyGate: "⚠️ Pallets stamped 'MB' were treated with methyl bromide and are unsafe for indoor crafts, furniture, or vegetable planters. Dispose through commercial timber waste.",
+      safetyGateAnswer: "Chemically treated pallet (stamped MB)",
+    },
+    {
+      key: "condition",
+      question: "What is the wood's condition?",
+      options: ["Clean and dry", "Splintered but solid", "Nails/screws still embedded", "Rotten or weathered"],
+    },
+    {
+      key: "goal",
+      question: "What would you like to build?",
+      options: ["Outdoor herb planter", "Simple wall shelf", "Small storage crate", "Drop off at wood recovery hub"],
     },
   ],
   metal: [
     {
       key: "type",
-      question: "What type of metal do you have?",
-      options: ["Aluminium cans", "Steel or tin cans", "Copper wire or pipes", "Scrap iron or steel sheet", "Mixed metal scraps"],
+      question: "What metal item do you have?",
+      options: ["Aluminum soda cans", "Steel soup / food cans", "Copper wire or piping", "Mixed metal hardware scraps"],
     },
     {
       key: "condition",
       question: "What is the condition?",
-      options: ["Clean and rust-free", "Slightly rusted but salvageable", "Heavily corroded", "Sharp edges present"],
+      options: ["Clean and rust-free", "Slightly rusted or sharp edges", "Greasy / contaminated", "Crushed"],
     },
     {
       key: "goal",
       question: "What is your goal?",
-      options: ["DIY functional item (organizer, planter)", "Artistic / sculptural project", "Sell as scrap metal", "Find a recycling facility"],
+      options: ["Desk pen holder or utensil organizer", "Seedling pots", "Scrap metal recovery", "Authorized drop-off"],
+    },
+  ],
+  e_waste: [
+    {
+      key: "battery_status",
+      question: "Does the device have a battery?",
+      options: [
+        "Yes — and it appears swollen or cracked", 
+        "Yes — but battery looks normal", 
+        "No battery / external power only", 
+        "Not sure"
+      ],
+      safetyGate: "⚠️ Swollen lithium batteries are a severe fire and toxic fume hazard. Never attempt DIY dismantling. Take immediately to an authorized e-waste recycler.",
+      safetyGateAnswer: "Yes — and it appears swollen or cracked",
+    },
+    {
+      key: "goal",
+      question: "What would you like to do?",
+      options: [
+        "Harvest harmless cables/housing", 
+        "Donate or refurbish device", 
+        "Find an authorized electronic recycler", 
+        "Not sure"
+      ],
     },
   ],
   organic: [
     {
       key: "type",
-      question: "What type of organic waste do you have?",
-      options: ["Kitchen scraps (vegetable/fruit peels)", "Coffee grounds or tea leaves", "Eggshells", "Garden clippings or leaves", "Mixed compostable waste"],
+      question: "What type of organic material do you have?",
+      options: ["Coffee grounds", "Citrus / vegetable peels", "Eggshells", "Dry garden clippings / leaves"],
     },
     {
       key: "quantity",
-      question: "How much do you have approximately?",
-      options: ["A handful (< 1 kg)", "A bucket full (1–5 kg)", "Large amounts (> 5 kg / ongoing)"],
-      optional: true,
+      question: "How much material do you have?",
+      options: ["Small handful", "1–2 kg bucket", "Ongoing bulk supply"],
     },
     {
       key: "goal",
       question: "What is your goal?",
-      options: ["Compost for garden soil", "Natural fertilizer or plant feed", "Pest deterrent (eggshell, coffee)", "Find organic waste collection point"],
+      options: ["Natural garden fertilizer / compost", "Odor neutralizer", "Plant pest repellant", "Community composting"],
+    },
+  ],
+  composite: [
+    {
+      key: "type",
+      question: "What composite item do you have?",
+      options: ["Tetra Pak / beverage carton", "Multi-layer bubble mailer", "Laminated packaging", "Unknown blend"],
+    },
+    {
+      key: "goal",
+      question: "What is your goal?",
+      options: ["Direct storage organizer", "Seed starter pots", "Specialist composite recycling", "Not sure"],
+    },
+  ],
+  hazardous: [
+    {
+      key: "type",
+      question: "What material is present?",
+      options: ["Lithium battery", "Aerosol / chemical canister", "Paints / solvents", "Biohazard / sharps"],
+      safetyGate: "⚠️ Hazardous items require specialized municipal recovery. DIY repurposing is locked out for personal safety.",
+      safetyGateAnswer: "Lithium battery",
+    },
+    {
+      key: "goal",
+      question: "What is your goal?",
+      options: ["Find authorized hazardous drop-off location"],
     },
   ],
 }
 
-// ─── Result Suggestions ────────────────────────────────────────────────────────
-
-function buildPrefilledScan(materialType: Exclude<MaterialType, null>, answers: Record<string, string>): string {
+function buildPrefilledScan(material: MaterialCategory, answers: Record<string, string>): string {
   const parts: string[] = []
-  const matLabel = MATERIAL_CATEGORIES.find(m => m.id === materialType)?.label || materialType
-
-  parts.push(`Material: ${matLabel}.`)
-
-  if (answers.type) parts.push(`Type: ${answers.type}.`)
-  if (answers.fabric) parts.push(`Fabric: ${answers.fabric}.`)
-  if (answers.device) parts.push(`Device: ${answers.device}.`)
-  if (answers.condition) parts.push(`Condition: ${answers.condition}.`)
-  if (answers.treatment) parts.push(`Wood treatment: ${answers.treatment}.`)
-  if (answers.tools) parts.push(`Sewing capability: ${answers.tools}.`)
-  if (answers.quantity) parts.push(`Quantity: ${answers.quantity}.`)
-  if (answers.goal) parts.push(`Goal: ${answers.goal}.`)
-
-  return parts.join(" ")
+  const cat = MATERIAL_CATEGORIES.find(m => m.id === material)
+  if (cat) parts.push(`Material: ${cat.label}`)
+  for (const [key, value] of Object.entries(answers)) {
+    parts.push(`${key}: ${value}`)
+  }
+  return parts.join(" | ")
 }
-
-// ─── Main Component ────────────────────────────────────────────────────────────
 
 export function MaterialClassifier() {
   const router = useRouter()
-  const { setScanInput } = useScanStore()
+  const setScanInput = useScanStore((state) => state.setScanInput)
 
-  const [state, setState] = React.useState<ClassifierState>({
+  const [state, setState] = React.useState<{
+    step: number // 0 = category select, 1..N = question, N+1 = complete
+    materialType: MaterialCategory | null
+    answers: Record<string, string>
+  }>({
     step: 0,
     materialType: null,
     answers: {},
@@ -292,12 +378,11 @@ export function MaterialClassifier() {
 
   const [safetyGateMessage, setSafetyGateMessage] = React.useState<string | null>(null)
 
-  const questions =
-    state.materialType ? MATERIAL_QUESTIONS[state.materialType] : []
-  const currentQuestion = questions[state.step - 1] ?? null
+  const questions: Question[] = state.materialType ? MATERIAL_QUESTIONS[state.materialType] || [] : []
   const totalSteps = questions.length
+  const currentQuestion = state.step >= 1 && state.step <= totalSteps ? questions[state.step - 1] : null
 
-  const handleSelectMaterial = (id: Exclude<MaterialType, null>) => {
+  const handleSelectMaterial = (id: MaterialCategory) => {
     setState({ step: 1, materialType: id, answers: {} })
     setSafetyGateMessage(null)
   }
@@ -316,7 +401,6 @@ export function MaterialClassifier() {
     const nextStep = state.step + 1
 
     if (nextStep > totalSteps) {
-      // Complete
       setState(s => ({ ...s, answers: newAnswers, step: totalSteps + 1 }))
     } else {
       setState(s => ({ ...s, answers: newAnswers, step: nextStep }))
@@ -351,37 +435,37 @@ export function MaterialClassifier() {
 
   const isComplete = state.materialType && state.step > totalSteps
 
-  // ── Step 0: Category Selection ──
+  // Step 0: Category Selection
   if (state.step === 0) {
     return (
       <div className="py-6">
         <div className="text-center mb-8">
-          <span className="px-3 py-1 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase tracking-wider inline-block mb-3">
+          <span className="px-3 py-1 rounded-full bg-mocha-deep text-lavender text-xs font-bold uppercase tracking-wider inline-block mb-3 border border-lavender-accent/30">
             Material Classification
           </span>
-          <h2 className="text-2xl sm:text-3xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary mb-3">
+          <h2 className="text-2xl sm:text-3xl font-display font-semibold text-[#F5F3F3] mb-3">
             What material do you have?
           </h2>
-          <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary max-w-lg mx-auto">
-            Select the material type to get a guided assessment and find the best reuse, repurpose, or recycle pathway.
+          <p className="text-sm text-platinum max-w-lg mx-auto">
+            Select a material category to start a guided contextual assessment and find the best reuse, repurpose, or recycle pathway.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto">
           {MATERIAL_CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => handleSelectMaterial(cat.id)}
-              className="group p-4 rounded-2xl bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/60 hover:shadow-md transition-all text-left focus-ring"
+              className="group p-4 rounded-2xl bg-[#211D1C]/80 backdrop-blur-md border border-white/10 hover:border-lavender-accent/60 hover:shadow-lg transition-all text-left focus-ring"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-primary/10 flex items-center justify-center text-emerald-primary mb-3 group-hover:bg-emerald-primary/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-mocha-deep/80 border border-lavender-accent/30 flex items-center justify-center text-lavender-accent mb-3 group-hover:bg-mocha transition-colors">
                 {cat.icon}
               </div>
-              <h3 className="text-sm font-bold text-textLightPrimary dark:text-textDarkPrimary mb-1 leading-tight">
+              <h3 className="text-sm font-bold text-white mb-1 leading-tight">
                 {cat.label}
               </h3>
-              <p className="text-[11px] text-textLightSecondary dark:text-textDarkSecondary leading-tight">
+              <p className="text-[11px] text-platinum leading-tight">
                 {cat.description}
               </p>
             </button>
@@ -391,23 +475,23 @@ export function MaterialClassifier() {
     )
   }
 
-  // ── Complete State ──
+  // Complete State
   if (isComplete) {
     const prefilledText = buildPrefilledScan(state.materialType!, state.answers)
 
     return (
       <div className="py-8 max-w-xl mx-auto text-center">
-        <div className="w-14 h-14 rounded-full bg-emerald-primary/15 flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="w-7 h-7 text-emerald-primary" />
+        <div className="w-14 h-14 rounded-full bg-mocha-deep text-lavender flex items-center justify-center mx-auto mb-4 border border-lavender-accent/40 shadow-sm">
+          <CheckCircle2 className="w-7 h-7 text-lavender-accent" />
         </div>
-        <h2 className="text-xl font-display font-bold text-textLightPrimary dark:text-textDarkPrimary mb-2">
-          Classification Complete
+        <h2 className="text-xl font-display font-bold text-[#F5F3F3] mb-2">
+          Contextual Classification Complete
         </h2>
-        <p className="text-sm text-textLightSecondary dark:text-textDarkSecondary mb-6 leading-relaxed">
-          Based on your answers, we&apos;ve built a pre-filled description for your waste scan. You can refine it on the next screen.
+        <p className="text-sm text-platinum mb-6 leading-relaxed">
+          Based on your answers, we have structured a tailored profile for your waste scan. You can refine or scan now.
         </p>
 
-        <div className="bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 rounded-xl p-4 text-left text-xs text-textLightSecondary dark:text-textDarkSecondary font-mono mb-6 leading-relaxed">
+        <div className="bg-[#211D1C]/80 backdrop-blur-md border border-white/10 rounded-xl p-4 text-left text-xs text-platinum font-mono mb-6 leading-relaxed">
           {prefilledText}
         </div>
 
@@ -415,7 +499,7 @@ export function MaterialClassifier() {
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/80 dark:bg-forest-elevated/80 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 text-sm font-semibold text-textLightPrimary dark:text-textDarkPrimary hover:border-emerald-primary transition-colors focus-ring"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-sm font-semibold text-white border border-white/10 focus-ring"
           >
             <ChevronLeft className="w-4 h-4" />
             Adjust Answers
@@ -423,26 +507,26 @@ export function MaterialClassifier() {
           <button
             type="button"
             onClick={handleStartScan}
-            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-emerald-primary text-forest-950 text-sm font-bold hover:bg-emerald-400 transition-all shadow-sm focus-ring"
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-mocha hover:bg-mocha-hover text-white text-sm font-bold shadow-md focus-ring border border-mocha-light/20"
           >
-            <Sparkles className="w-4 h-4 text-forest-950" />
+            <Sparkles className="w-4 h-4 text-lavender" />
             Start AI Scan
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-platinum-light" />
           </button>
         </div>
 
         <button
           type="button"
           onClick={() => setState({ step: 0, materialType: null, answers: {} })}
-          className="mt-4 text-xs text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
+          className="mt-4 text-xs text-platinum hover:text-white focus-ring"
         >
-          ← Start over with a different material
+          ← Choose a different material
         </button>
       </div>
     )
   }
 
-  // ── Question Steps ──
+  // Question Steps
   if (!currentQuestion) return null
 
   return (
@@ -452,36 +536,36 @@ export function MaterialClassifier() {
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-platinum hover:text-white focus-ring"
         >
           <ChevronLeft className="w-4 h-4" /> Back
         </button>
-        <div className="flex-1 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
           <div
-            className="h-full bg-emerald-primary rounded-full transition-all"
+            className="h-full bg-mocha rounded-full transition-all"
             style={{ width: `${(state.step / totalSteps) * 100}%` }}
           />
         </div>
-        <span className="text-[11px] text-textLightSecondary dark:text-textDarkSecondary font-mono shrink-0">
+        <span className="text-[11px] text-platinum font-mono shrink-0">
           {state.step}/{totalSteps}
         </span>
       </div>
 
       {/* Material Badge */}
-      <div className="flex items-center gap-2 mb-5">
-        <span className="px-2.5 py-0.5 rounded-full bg-emerald-primary/10 text-emerald-primary text-xs font-bold uppercase tracking-wider">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="px-3 py-0.5 rounded-full bg-mocha-deep text-lavender text-xs font-bold uppercase tracking-wider border border-lavender-accent/30">
           {MATERIAL_CATEGORIES.find(m => m.id === state.materialType)?.label}
         </span>
-        <ChevronRight className="w-3.5 h-3.5 text-textLightSecondary dark:text-textDarkSecondary" />
-        <span className="text-xs text-textLightSecondary dark:text-textDarkSecondary">
+        <ChevronRight className="w-3.5 h-3.5 text-platinum/60" />
+        <span className="text-xs text-platinum">
           Question {state.step}
         </span>
       </div>
 
       {/* Safety Gate Alert */}
       {safetyGateMessage && (
-        <div className="mb-5 flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 backdrop-blur-md border border-amber-500/30 text-amber-900 dark:text-amber-200 text-sm">
-          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="mb-5 flex items-start gap-3 p-4 rounded-xl bg-amber-950/40 backdrop-blur-md border border-amber-600/40 text-amber-200 text-sm">
+          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <strong className="font-semibold block mb-1">Safety Notice</strong>
             <span className="text-xs leading-relaxed">{safetyGateMessage}</span>
@@ -489,10 +573,10 @@ export function MaterialClassifier() {
               <button
                 type="button"
                 onClick={() => router.push("/recycling")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors focus-ring"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-colors focus-ring"
               >
                 <Recycle className="w-3.5 h-3.5" />
-                Find Certified Recycling
+                Find Certified Recycling Center
               </button>
             </div>
           </div>
@@ -500,7 +584,7 @@ export function MaterialClassifier() {
       )}
 
       {/* Question */}
-      <h2 className="text-xl font-display font-semibold text-textLightPrimary dark:text-textDarkPrimary mb-5">
+      <h2 className="text-xl font-display font-semibold text-[#F5F3F3] mb-5">
         {currentQuestion.question}
       </h2>
 
@@ -511,10 +595,10 @@ export function MaterialClassifier() {
             key={option}
             type="button"
             onClick={() => handleAnswer(currentQuestion.key, option)}
-            className="w-full text-left p-4 rounded-xl bg-white/80 dark:bg-forest-surface/75 backdrop-blur-md border border-borderLightSubtle dark:border-white/10 hover:border-emerald-primary/60 hover:bg-emerald-primary/5 dark:hover:bg-emerald-primary/10 transition-all text-sm text-textLightPrimary dark:text-textDarkPrimary font-medium flex items-center justify-between group focus-ring"
+            className="w-full text-left p-4 rounded-xl bg-[#211D1C]/80 backdrop-blur-md border border-white/10 hover:border-lavender-accent/60 hover:bg-white/10 transition-all text-sm text-white font-medium flex items-center justify-between group focus-ring"
           >
             <span>{option}</span>
-            <ChevronRight className="w-4 h-4 text-textLightSecondary dark:text-textDarkSecondary group-hover:text-emerald-primary transition-colors" />
+            <ChevronRight className="w-4 h-4 text-platinum/60 group-hover:text-lavender transition-colors" />
           </button>
         ))}
       </div>
@@ -524,7 +608,7 @@ export function MaterialClassifier() {
         <button
           type="button"
           onClick={handleSkip}
-          className="mt-4 inline-flex items-center gap-1.5 text-xs text-textLightSecondary dark:text-textDarkSecondary hover:text-textLightPrimary dark:hover:text-textDarkPrimary focus-ring"
+          className="mt-4 inline-flex items-center gap-1.5 text-xs text-platinum hover:text-white focus-ring"
         >
           <SkipForward className="w-3.5 h-3.5" />
           Skip this question
