@@ -21,7 +21,7 @@ export function ThemeToggle({ className = "", compact = false }: ThemeToggleProp
     return (
       <div 
         aria-hidden="true" 
-        className={`w-9 h-9 rounded-full bg-forest-800/40 border border-white/10 ${className}`} 
+        className={`w-9 h-9 rounded-full bg-mocha-deep/40 border border-white/10 ${className}`} 
       />
     )
   }
@@ -36,8 +36,8 @@ export function ThemeToggle({ className = "", compact = false }: ThemeToggleProp
       title={`Switch to ${isDark ? "light" : "dark"} mode`}
       className={`inline-flex items-center justify-center rounded-full transition-all duration-200 border ${
         isDark
-          ? "bg-forest-800/70 border-white/15 text-emerald-light hover:bg-forest-700/80 hover:text-white"
-          : "bg-ivory-200 border-borderLightSubtle text-forest hover:bg-white hover:text-emerald-primary"
+          ? "bg-mocha-deep/80 border-lavender-accent/30 text-lavender-accent hover:bg-mocha-deep hover:border-lavender-accent hover:text-white"
+          : "bg-platinum-light border-mocha/20 text-mocha hover:bg-white hover:text-mocha-hover"
       } ${
         compact 
           ? "w-8 h-8" 
@@ -45,9 +45,9 @@ export function ThemeToggle({ className = "", compact = false }: ThemeToggleProp
       } ${className}`}
     >
       {isDark ? (
-        <Sun className="w-4 h-4 transition-transform duration-300 rotate-0 hover:rotate-45 text-emerald-primary" />
+        <Sun className="w-4 h-4 transition-transform duration-300 rotate-0 hover:rotate-45 text-lavender-accent" />
       ) : (
-        <Moon className="w-4 h-4 transition-transform duration-300 -rotate-12 hover:rotate-0 text-forest" />
+        <Moon className="w-4 h-4 transition-transform duration-300 -rotate-12 hover:rotate-0 text-mocha" />
       )}
     </button>
   )

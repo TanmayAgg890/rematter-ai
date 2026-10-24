@@ -29,11 +29,11 @@ export function RematterGuideCharacter({
       className={`group relative inline-flex items-center gap-2.5 p-1 rounded-full focus-ring cursor-pointer select-none transition-all duration-300 hover:scale-105 active:scale-95 ${className}`}
     >
       {/* Background Soft Glow */}
-      <div className="absolute inset-0 rounded-full bg-emerald-primary/20 blur-md group-hover:bg-emerald-primary/35 transition-all" />
+      <div className="absolute inset-0 rounded-full bg-lavender-accent/20 blur-md group-hover:bg-lavender-accent/35 transition-all" />
 
       {/* Robot Figure Container */}
       <div
-        className="relative flex items-center justify-center rounded-full bg-[#102A22] border-2 border-emerald-primary/40 shadow-xl overflow-visible p-1 group-hover:border-emerald-primary transition-colors"
+        className="relative flex items-center justify-center rounded-full bg-[#211D1C] border-2 border-lavender-accent/40 shadow-xl overflow-visible p-1 group-hover:border-lavender-accent transition-colors"
         style={{ width: dimension, height: dimension }}
       >
         <svg
@@ -138,12 +138,12 @@ export function RematterGuideCharacter({
 
         {/* Live status badge indicator */}
         <span
-          className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#102A22] ${
+          className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#211D1C] ${
             state === "thinking"
               ? "bg-amber-400 animate-ping"
               : state === "speaking"
-              ? "bg-emerald-primary animate-pulse"
-              : "bg-emerald-primary"
+              ? "bg-lavender-accent animate-pulse"
+              : "bg-lavender-accent"
           }`}
         />
       </div>
@@ -152,14 +152,14 @@ export function RematterGuideCharacter({
       {showPillLabel && (
         <div className="hidden sm:flex flex-col items-start pr-3">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold text-forest-950 dark:text-emerald-light tracking-wide">
+            <span className="text-xs font-bold text-platinum-light tracking-wide">
               ReMatter Guide
             </span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-forest-900 text-emerald-light font-semibold">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-mocha-deep text-lavender-accent font-semibold border border-lavender-accent/30">
               AI
             </span>
           </div>
-          <span className="text-[10px] text-textSecondary dark:text-emerald-light/70 font-medium">
+          <span className="text-[10px] text-platinum/80 font-medium">
             {state === "thinking"
               ? "Thinking..."
               : state === "speaking"
@@ -171,7 +171,7 @@ export function RematterGuideCharacter({
 
       {/* Unread Message Count Badge */}
       {unreadCount > 0 && (
-        <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-primary text-forest-950 text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-md">
+        <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-mocha text-white text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-md">
           {unreadCount}
         </span>
       )}

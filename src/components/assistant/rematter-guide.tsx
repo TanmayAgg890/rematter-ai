@@ -240,10 +240,10 @@ export function RematterGuide() {
         <aside
           role="region"
           aria-label="ReMatter Guide Assistant Panel"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[85vh] h-[600px] flex flex-col rounded-2xl bg-white dark:bg-[#102A22] border border-borderLightSubtle dark:border-white/10 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[85vh] h-[600px] flex flex-col rounded-2xl bg-[#211D1C] border border-white/10 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200"
         >
           {/* Header with mini Robot character */}
-          <div className="flex items-center justify-between px-4 py-3 bg-ivory-soft dark:bg-[#18352A] border-b border-borderLightSubtle dark:border-white/10">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#171515] border-b border-white/10">
             <div className="flex items-center gap-2.5">
               <RematterGuideCharacter
                 state={isLoading ? "thinking" : "speaking"}
@@ -255,9 +255,9 @@ export function RematterGuide() {
                   <h3 className="text-xs font-bold text-textLightPrimary dark:text-[#F4F8F5]">
                     ReMatter Guide
                   </h3>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-primary animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-lavender-accent animate-pulse" />
                 </div>
-                <p className="text-[10px] text-textLightSecondary dark:text-[#C0CEC5]">
+                <p className="text-[10px] text-textLightSecondary dark:text-platinum">
                   Multilingual Sustainability Companion
                 </p>
               </div>
@@ -268,7 +268,7 @@ export function RematterGuide() {
                 type="button"
                 onClick={handleReset}
                 title="Reset conversation"
-                className="p-1.5 rounded-full text-textLightSecondary dark:text-[#C0CEC5] hover:text-emerald-primary transition-colors focus-ring"
+                className="p-1.5 rounded-full text-textLightSecondary dark:text-platinum hover:text-lavender-accent transition-colors focus-ring"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -276,7 +276,7 @@ export function RematterGuide() {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Close guide"
-                className="p-1.5 rounded-full text-textLightSecondary dark:text-[#C0CEC5] hover:text-textLightPrimary dark:hover:text-[#F4F8F5] transition-colors focus-ring"
+                className="p-1.5 rounded-full text-textLightSecondary dark:text-platinum hover:text-white transition-colors focus-ring"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -284,18 +284,18 @@ export function RematterGuide() {
           </div>
 
           {/* Persistent Highlighted Call-To-Action Banner */}
-          <div className="px-3.5 py-2 bg-emerald-primary/10 dark:bg-emerald-primary/15 border-b border-emerald-primary/20 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-primary">
+          <div className="px-3.5 py-2 bg-mocha-deep/60 border-b border-lavender-accent/20 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-lavender-accent">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Have an item to evaluate?</span>
             </div>
             <button
               type="button"
               onClick={handlePrimaryScanAction}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-primary text-forest-950 font-bold text-[11px] hover:bg-emerald-400 active:scale-95 transition-all shadow-sm focus-ring"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-mocha hover:bg-mocha-hover active:scale-95 text-white font-bold text-[11px] transition-all shadow-sm focus-ring border border-mocha-light/20"
             >
               <span>Start a Waste Scan</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3 h-3 text-platinum-light" />
             </button>
           </div>
 
@@ -311,8 +311,8 @@ export function RematterGuide() {
                 <div
                   className={`max-w-[88%] px-3.5 py-2.5 rounded-2xl leading-relaxed ${
                     m.sender === "user"
-                      ? "bg-emerald-primary text-forest-950 font-medium rounded-br-none"
-                      : "bg-ivory-warm dark:bg-[#081511] text-textLightPrimary dark:text-[#F4F8F5] border border-borderLightSubtle/80 dark:border-white/10 rounded-bl-none shadow-sm"
+                      ? "bg-mocha text-white font-medium rounded-br-none border border-mocha-light/30 shadow-sm"
+                      : "bg-[#211D1C] text-platinum-light border border-white/10 rounded-bl-none shadow-sm"
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{m.text}</p>
@@ -328,7 +328,7 @@ export function RematterGuide() {
                         setIsOpen(false)
                       }
                     }}
-                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-primary/15 text-emerald-primary hover:bg-emerald-primary hover:text-forest-950 text-[11px] font-bold border border-emerald-primary/30 transition-all focus-ring shadow-sm"
+                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-mocha-deep/80 text-lavender hover:bg-mocha hover:text-white text-[11px] font-bold border border-lavender-accent/30 transition-all focus-ring shadow-sm"
                   >
                     <span>{m.action.label}</span>
                     <ArrowRight className="w-3 h-3" />
@@ -338,8 +338,8 @@ export function RematterGuide() {
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-textLightSecondary dark:text-[#C0CEC5] text-xs py-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-primary animate-pulse" />
+              <div className="flex items-center gap-2 text-platinum text-xs py-2">
+                <span className="w-2 h-2 rounded-full bg-lavender-accent animate-pulse" />
                 <span>Thinking in English, हिन्दी & Hinglish...</span>
               </div>
             )}
@@ -348,13 +348,13 @@ export function RematterGuide() {
           </div>
 
           {/* Quick Context & Multilingual Actions */}
-          <div className="px-3.5 py-2 bg-ivory-warm/60 dark:bg-[#0C1E17] border-t border-borderLightSubtle/60 dark:border-white/5 flex flex-wrap gap-1.5">
+          <div className="px-3.5 py-2 bg-[#171515] border-t border-white/10 flex flex-wrap gap-1.5">
             {quickActions.map((action, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleActionClick(action)}
-                className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-[#18352A] border border-borderLightSubtle dark:border-white/10 text-textLightPrimary dark:text-[#F4F8F5] hover:border-emerald-primary transition-colors focus-ring"
+                className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#211D1C] border border-white/10 text-platinum hover:text-white hover:border-lavender-accent/50 transition-colors focus-ring"
               >
                 {action.label}
               </button>
@@ -367,7 +367,7 @@ export function RematterGuide() {
               e.preventDefault()
               handleSendMessage()
             }}
-            className="p-3 bg-white dark:bg-[#102A22] border-t border-borderLightSubtle dark:border-white/10 flex items-center gap-2"
+            className="p-3 bg-[#211D1C] border-t border-white/10 flex items-center gap-2"
           >
             <input
               type="text"
@@ -375,13 +375,13 @@ export function RematterGuide() {
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Ask in English, हिन्दी, or Hinglish..."
               disabled={isLoading}
-              className="flex-1 px-3.5 py-2 text-xs rounded-full bg-ivory-warm dark:bg-[#081511] border border-borderLightSubtle dark:border-white/10 text-textLightPrimary dark:text-[#F4F8F5] placeholder:text-textLightSecondary/60 dark:placeholder:text-[#C0CEC5]/50 focus-ring"
+              className="flex-1 px-3.5 py-2 text-xs rounded-full bg-[#171515] border border-white/10 text-platinum-light placeholder:text-platinum/50 focus-ring"
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || isLoading}
               aria-label="Send message"
-              className="w-8 h-8 rounded-full bg-emerald-primary text-forest-950 flex items-center justify-center hover:bg-emerald-400 disabled:opacity-40 disabled:hover:bg-emerald-primary transition-colors focus-ring"
+              className="w-8 h-8 rounded-full bg-mocha hover:bg-mocha-hover text-white flex items-center justify-center disabled:opacity-40 transition-colors focus-ring"
             >
               <Send className="w-3.5 h-3.5" />
             </button>

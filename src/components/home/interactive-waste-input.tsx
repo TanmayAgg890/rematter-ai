@@ -96,15 +96,11 @@ export function InteractiveWasteInput() {
       }
     }
 
-    const currentElem = containerRef.current
-    if (currentElem) {
-      currentElem.addEventListener("paste", handlePaste)
-    }
+    // Attach to window so Ctrl+V works anywhere on the page
+    window.addEventListener("paste", handlePaste)
 
     return () => {
-      if (currentElem) {
-        currentElem.removeEventListener("paste", handlePaste)
-      }
+      window.removeEventListener("paste", handlePaste)
     }
   }, [])
 
